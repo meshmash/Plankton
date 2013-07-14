@@ -1,0 +1,5 @@
+C:\Users\Daniel\Documents\Visual Studio 2010\Projects\HalfEdgeMeshLibrary\HalfEdgeMeshLibrary\obj\Release\Plankton.csprojResolveAssemblyReference.cache
+C:\Users\Daniel\Documents\Visual Studio 2010\Projects\HalfEdgeMeshLibrary\HalfEdgeMeshLibrary\bin\Release\Plankton.dll
+C:\Users\Daniel\Documents\Visual Studio 2010\Projects\HalfEdgeMeshLibrary\HalfEdgeMeshLibrary\bin\Release\Plankton.pdb
+C:\Users\Daniel\Documents\Visual Studio 2010\Projects\HalfEdgeMeshLibrary\HalfEdgeMeshLibrary\obj\Release\Plankton.dll
+C:\Users\Daniel\Documents\Visual Studio 2010\Projects\HalfEdgeMeshLibrary\HalfEdgeMeshLibrary\obj\Release\Plankton.pdb
