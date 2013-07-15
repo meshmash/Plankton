@@ -5,7 +5,7 @@ using Grasshopper.Kernel;
 using Rhino.Geometry;
 using Plankton;
 
-namespace PlanktonComponents
+namespace PlanktonGh
 {
     public class DecomposePlankton : GH_Component
     {
@@ -103,7 +103,7 @@ namespace PlanktonComponents
             {
                 //You can add image files to your project resources and access them like this:
                 // return Resources.IconForThisComponent;                
-                return PlanktonComponents.Properties.Resources.plankton_decon;
+                return PlanktonGh.Properties.Resources.plankton_decon;
             }
         }
 

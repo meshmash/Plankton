@@ -6,7 +6,7 @@ using Rhino.Geometry;
 using Grasshopper.Kernel;
 using Plankton;
 
-namespace PlanktonComponents
+namespace PlanktonGh
 {
  
     public class GHMeshToPMesh : GH_Component
@@ -65,7 +65,7 @@ namespace PlanktonComponents
         {
             get
             {
-                return PlanktonComponents.Properties.Resources.plankton;
+                return PlanktonGh.Properties.Resources.plankton;
             }
         }
 

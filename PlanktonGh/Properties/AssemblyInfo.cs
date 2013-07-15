@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PlanktonComponents")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("PlanktonGh")]
+[assembly: AssemblyDescription("Provides components for mesh operations using Plankton's half-edge, ngon mesh representation.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("PlanktonComponents")]
-[assembly: AssemblyCopyright("Copyright ©  2013")]
+[assembly: AssemblyProduct("PlanktonGh")]
+[assembly: AssemblyCopyright("Copyright © 2013 Plankton contributors.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
