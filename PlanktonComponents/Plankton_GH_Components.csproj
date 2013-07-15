@@ -61,7 +61,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\HalfEdgeMeshLibrary\HalfEdgeMeshLibrary\Plankton.csproj">
+    <ProjectReference Include="..\HalfEdgeMeshLibrary\Plankton.csproj">
       <Project>{BDD288F7-C2E2-4C2A-B083-E4D4D21F528F}</Project>
       <Name>Plankton</Name>
       <Private>False</Private>

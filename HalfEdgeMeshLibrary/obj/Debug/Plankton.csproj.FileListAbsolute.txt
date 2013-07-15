@@ -1,4 +1,0 @@
-C:\Users\Daniel\Documents\Visual Studio 2010\Projects\HalfEdgeMeshLibrary\HalfEdgeMeshLibrary\bin\Debug\HalfEdgeMeshLibrary.dll
-C:\Users\Daniel\Documents\Visual Studio 2010\Projects\HalfEdgeMeshLibrary\HalfEdgeMeshLibrary\bin\Debug\HalfEdgeMeshLibrary.pdb
-C:\Users\Daniel\Documents\Visual Studio 2010\Projects\HalfEdgeMeshLibrary\HalfEdgeMeshLibrary\obj\Debug\HalfEdgeMeshLibrary.dll
-C:\Users\Daniel\Documents\Visual Studio 2010\Projects\HalfEdgeMeshLibrary\HalfEdgeMeshLibrary\obj\Debug\HalfEdgeMeshLibrary.pdb
