@@ -52,9 +52,9 @@ namespace PlanktonGh
             Mesh M = new Mesh();          
             if (!DA.GetData(0, ref M)) return;
 
-            P_mesh PlanktonMesh = new P_mesh(M);
+            PlanktonMesh pMesh = new PlanktonMesh(M);
 
-            DA.SetData(0, PlanktonMesh);
+            DA.SetData(0, pMesh);
         }
 
         /// <summary>

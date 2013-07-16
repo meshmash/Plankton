@@ -42,7 +42,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Plankton.cs" />
+    <Compile Include="PlanktonFace.cs" />
+    <Compile Include="PlanktonHalfEdge.cs" />
+    <Compile Include="PlanktonMesh.cs" />
+    <Compile Include="PlanktonVertex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
