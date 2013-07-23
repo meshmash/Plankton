@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PlanktonFace.cs" />
+    <Compile Include="PlanktonFaceList.cs" />
     <Compile Include="PlanktonHalfEdge.cs" />
     <Compile Include="PlanktonMesh.cs" />
     <Compile Include="PlanktonVertex.cs" />

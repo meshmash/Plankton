@@ -54,13 +54,20 @@ namespace Plankton.Test
             }
             
             // Get all halfedges from face #2 and compare against expected
-            List<int> faceTwoHalfedges = pMesh.FaceHEs(2);
+            int[] faceTwoHalfedges = pMesh.Faces.GetHalfedges(2);
             int[] faceTwoHalfedgesExpected = new int[]{ 14, 16, 9, 3 };
-            Assert.AreEqual(4, faceTwoHalfedges.Count);
+            Assert.AreEqual(4, faceTwoHalfedges.Length);
             foreach (int halfedge in faceTwoHalfedgesExpected)
             {
                 Assert.Contains(halfedge, faceTwoHalfedges);
             }
+            // Check that none of these edges are on a boundary (closed mesh)
+            Assert.AreEqual(0, pMesh.Faces.NakedEdgeCount(2));
+            
+            // Get all vertices from face #4 and compare against expected
+            int[] faceFourVertices = pMesh.Faces.GetVertices(4);
+            int[] faceFourVerticesExpected = new int[]{ 4, 7, 3, 0 };
+            Assert.AreEqual(faceFourVerticesExpected, faceFourVertices);
             
             // Get all faces from vertex #1 and compare against expected
             List<int> vertexOneFaces = pMesh.VertexFaces(1);
