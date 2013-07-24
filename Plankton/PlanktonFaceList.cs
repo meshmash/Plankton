@@ -63,6 +63,8 @@ namespace Plankton
             
             int[] array = indices.ToArray(); // using Linq for convenience
             
+            var hs = _mesh.Halfedges;
+            var vs = _mesh.Vertices;
             int n = array.Length;
             
             // Don't allow degenerate faces
@@ -72,11 +74,11 @@ namespace Plankton
             foreach (int i in array)
             {
                 // Check that all vertex indices exist in this mesh
-                if (i < 0 || i >= _mesh.Vertices.Count)
+                if (i < 0 || i >= vs.Count)
                     throw new IndexOutOfRangeException("No vertex exists at this index.");
                 // Check that all vertices are on a boundary
-                int outgoing = _mesh.Vertices[i].OutgoingHalfedge;
-                if (outgoing != -1 && _mesh.Halfedges[outgoing].AdjacentFace != -1)
+                int outgoing = vs[i].OutgoingHalfedge;
+                if (outgoing != -1 && hs[outgoing].AdjacentFace != -1)
                     return -1;
             }
             
@@ -91,16 +93,15 @@ namespace Plankton
                 int v1 = array[i], v2 = array[ii];
                 is_new[i] = true;
                 // Find existing edge, if it exists, by searching 'i'th vertex's neighbourhood
-                if (_mesh.Vertices[v2].OutgoingHalfedge > -1)
+                if (vs[v2].OutgoingHalfedge > -1)
                 {
-                    int[] hs = _mesh.Vertices.GetHalfedges(v2);
-                    foreach (int h in hs)
+                    foreach (int h in vs.GetHalfedgesCirculator(v2))
                     {
-                        if (v1 == _mesh.Halfedges[_mesh.Halfedges.PairHalfedge(h)].StartVertex)
+                        if (v1 == hs[hs.PairHalfedge(h)].StartVertex)
                         {
                             // Don't allow non-manifold edges
-                            if (_mesh.Halfedges[_mesh.Halfedges.PairHalfedge(h)].AdjacentFace > -1) return -1;
-                            loop[i] = _mesh.Halfedges.PairHalfedge(h);
+                            if (hs[hs.PairHalfedge(h)].AdjacentFace > -1) return -1;
+                            loop[i] = hs.PairHalfedge(h);
                             is_new[i] = false;
                             break;
                         }
@@ -119,14 +120,15 @@ namespace Plankton
                     loop[i] = _mesh.Halfedges.Count;
                     is_new[i] = true;
                     // he->next = he->pair
-                    _mesh.Halfedges.Add(new PlanktonHalfedge(v1, this.Count, loop[i] + 1));
-                    _mesh.Halfedges.Add(new PlanktonHalfedge(v2, -1, loop[i]));
-                    _mesh.Vertices[v2].OutgoingHalfedge = loop[i] + 1;
+                    hs.Add(new PlanktonHalfedge(v1, this.Count, loop[i] + 1));
+                    hs.Add(new PlanktonHalfedge(v2, -1, loop[i]));
+                    // ensure vertex->outgoing is boundary if vertex is boundary
+                    vs[v2].OutgoingHalfedge = loop[i] + 1;
                 }
                 else
                 {
                     // Link existing halfedge to new face
-                    _mesh.Halfedges[loop[i]].AdjacentFace = this.Count;
+                    hs[loop[i]].AdjacentFace = this.Count;
                 }
             }
             
@@ -135,44 +137,50 @@ namespace Plankton
             {
                 int v1 = array[i], v2 = array[ii];
                 int id = 0;
-                if (is_new[i])  id += 1;
-                if (is_new[ii]) id += 2;
+                if (is_new[i])  id += 1; // first is new
+                if (is_new[ii]) id += 2; // second is new
                 
                 if (id > 0) // At least one of the halfedge pairs is new...
                 {
                     // Link inner halfedges
-                    _mesh.Halfedges[loop[i]].NextHalfedge = loop[ii];
-                    _mesh.Halfedges[loop[ii]].PrevHalfedge = loop[i];
+                    hs[loop[i]].NextHalfedge = loop[ii];
+                    hs[loop[ii]].PrevHalfedge = loop[i];
                     
                     // Link outer halfedges
-                    int firstHalfedge, currentHalfedge;
+                    int outer_prev = -1, outer_next = -1;
                     switch (id)
                     {
                         case 1: // first is new, second is old
                             // iterate through halfedges clockwise around vertex #v2 until boundary
-                            firstHalfedge = loop[ii];
-                            currentHalfedge = firstHalfedge;
-                            do
+                            foreach (int h in vs.GetHalfedgesCirculator(v2))
                             {
-                                int pair = _mesh.Halfedges.PairHalfedge(currentHalfedge);
-                                currentHalfedge = _mesh.Halfedges[pair].NextHalfedge;
-                            } while (_mesh.Halfedges[_mesh.Halfedges.PairHalfedge(currentHalfedge)].AdjacentFace > -1);
-                            _mesh.Halfedges[_mesh.Halfedges.PairHalfedge(currentHalfedge)].NextHalfedge = _mesh.Halfedges.PairHalfedge(loop[i]);
-                            _mesh.Halfedges[_mesh.Halfedges.PairHalfedge(loop[i])].PrevHalfedge = _mesh.Halfedges.PairHalfedge(currentHalfedge);
+                                if (hs[hs.PairHalfedge(h)].AdjacentFace < 0) // boundary
+                                {
+                                    outer_prev = hs.PairHalfedge(h);
+                                    outer_next = hs.PairHalfedge(loop[i]);
+                                    break;
+                                }
+                            }
                             break;
                         case 2: // second is new, first is old
-                            int outer_next = _mesh.Vertices[v2].OutgoingHalfedge;
-                            _mesh.Halfedges[_mesh.Halfedges.PairHalfedge(loop[ii])].NextHalfedge = outer_next;
-                            _mesh.Halfedges[outer_next].PrevHalfedge = _mesh.Halfedges.PairHalfedge(loop[ii]);
+                            outer_prev = hs.PairHalfedge(loop[ii]);
+                            outer_next = _mesh.Vertices[v2].OutgoingHalfedge;
                             break;
                         case 3: // both are new
-                            _mesh.Halfedges[_mesh.Halfedges.PairHalfedge(loop[ii])].NextHalfedge = _mesh.Halfedges.PairHalfedge(loop[i]);
-                            _mesh.Halfedges[_mesh.Halfedges.PairHalfedge(loop[i])].PrevHalfedge = _mesh.Halfedges.PairHalfedge(loop[ii]);
+                            outer_prev = hs.PairHalfedge(loop[ii]);
+                            outer_next = hs.PairHalfedge(loop[i]);
                             break;
+                    }
+                    // outer_{prev,next} should now be set, so store links in HDS
+                    if (outer_prev > -1 && outer_next > -1)
+                    {
+                        hs[outer_prev].NextHalfedge = outer_next;
+                        hs[outer_next].PrevHalfedge = outer_prev;
                     }
                 }
             }
             
+            // Finally, add the face and return its index
             PlanktonFace f = new PlanktonFace();
             f.FirstHalfedge = loop[0];
             
