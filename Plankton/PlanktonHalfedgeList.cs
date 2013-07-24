@@ -13,7 +13,7 @@ namespace Plankton
         private List<PlanktonHalfedge> _list;
         
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlanktonHalfEdgeList"/> class.
+        /// Initializes a new instance of the <see cref="PlanktonHalfedgeList"/> class.
         /// Should be called from the mesh constructor.
         /// </summary>
         /// <param name="ownerMesh">The mesh to which this list of halfedges belongs.</param>

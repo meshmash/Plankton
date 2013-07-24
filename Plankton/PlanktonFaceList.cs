@@ -16,7 +16,7 @@ namespace Plankton
         private List<PlanktonFace> _list;
         
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlanktonHalfEdgeList"/> class.
+        /// Initializes a new instance of the <see cref="PlanktonFaceList"/> class.
         /// Should be called from the mesh constructor.
         /// </summary>
         /// <param name="ownerMesh">The mesh to which this list of half-edges belongs.</param>
@@ -27,7 +27,7 @@ namespace Plankton
         }
         
         /// <summary>
-        /// Gets the number of half-edges.
+        /// Gets the number of faces.
         /// </summary>
         public int Count
         {
