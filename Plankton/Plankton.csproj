@@ -45,6 +45,7 @@
     <Compile Include="PlanktonFace.cs" />
     <Compile Include="PlanktonFaceList.cs" />
     <Compile Include="PlanktonHalfEdge.cs" />
+    <Compile Include="PlanktonHalfedgeList.cs" />
     <Compile Include="PlanktonMesh.cs" />
     <Compile Include="PlanktonVertex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

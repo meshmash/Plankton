@@ -72,7 +72,7 @@ namespace PlanktonGh
                 AdjF.Add(P.Halfedges[i].AdjacentFace);
                 Next.Add(P.Halfedges[i].NextHalfedge);
                 Prev.Add(P.Halfedges[i].PrevHalfedge);
-                Pair.Add(P.PairHalfedge(i));
+                Pair.Add(P.Halfedges.PairHalfedge(i));
             }
      
             List<int> FaceEdge = new List<int>();

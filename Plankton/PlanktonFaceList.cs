@@ -96,11 +96,11 @@ namespace Plankton
                     List<int> hs = _mesh.VertexAllOutHE(v2);
                     foreach (int h in hs)
                     {
-                        if (v1 == _mesh.Halfedges[_mesh.PairHalfedge(h)].StartVertex)
+                        if (v1 == _mesh.Halfedges[_mesh.Halfedges.PairHalfedge(h)].StartVertex)
                         {
                             // Don't allow non-manifold edges
-                            if (_mesh.Halfedges[_mesh.PairHalfedge(h)].AdjacentFace > -1) return -1;
-                            loop[i] = _mesh.PairHalfedge(h);
+                            if (_mesh.Halfedges[_mesh.Halfedges.PairHalfedge(h)].AdjacentFace > -1) return -1;
+                            loop[i] = _mesh.Halfedges.PairHalfedge(h);
                             is_new[i] = false;
                             break;
                         }
@@ -154,20 +154,20 @@ namespace Plankton
                             currentHalfedge = firstHalfedge;
                             do
                             {
-                                int pair = _mesh.PairHalfedge(currentHalfedge);
+                                int pair = _mesh.Halfedges.PairHalfedge(currentHalfedge);
                                 currentHalfedge = _mesh.Halfedges[pair].NextHalfedge;
-                            } while (_mesh.Halfedges[_mesh.PairHalfedge(currentHalfedge)].AdjacentFace > -1);
-                            _mesh.Halfedges[_mesh.PairHalfedge(currentHalfedge)].NextHalfedge = _mesh.PairHalfedge(loop[i]);
-                            _mesh.Halfedges[_mesh.PairHalfedge(loop[i])].PrevHalfedge = _mesh.PairHalfedge(currentHalfedge);
+                            } while (_mesh.Halfedges[_mesh.Halfedges.PairHalfedge(currentHalfedge)].AdjacentFace > -1);
+                            _mesh.Halfedges[_mesh.Halfedges.PairHalfedge(currentHalfedge)].NextHalfedge = _mesh.Halfedges.PairHalfedge(loop[i]);
+                            _mesh.Halfedges[_mesh.Halfedges.PairHalfedge(loop[i])].PrevHalfedge = _mesh.Halfedges.PairHalfedge(currentHalfedge);
                             break;
                         case 2: // second is new, first is old
                             int outer_next = _mesh.Vertices[v2].OutgoingHalfedge;
-                            _mesh.Halfedges[_mesh.PairHalfedge(loop[ii])].NextHalfedge = outer_next;
-                            _mesh.Halfedges[outer_next].PrevHalfedge = _mesh.PairHalfedge(loop[ii]);
+                            _mesh.Halfedges[_mesh.Halfedges.PairHalfedge(loop[ii])].NextHalfedge = outer_next;
+                            _mesh.Halfedges[outer_next].PrevHalfedge = _mesh.Halfedges.PairHalfedge(loop[ii]);
                             break;
                         case 3: // both are new
-                            _mesh.Halfedges[_mesh.PairHalfedge(loop[ii])].NextHalfedge = _mesh.PairHalfedge(loop[i]);
-                            _mesh.Halfedges[_mesh.PairHalfedge(loop[i])].PrevHalfedge = _mesh.PairHalfedge(loop[ii]);
+                            _mesh.Halfedges[_mesh.Halfedges.PairHalfedge(loop[ii])].NextHalfedge = _mesh.Halfedges.PairHalfedge(loop[i]);
+                            _mesh.Halfedges[_mesh.Halfedges.PairHalfedge(loop[i])].PrevHalfedge = _mesh.Halfedges.PairHalfedge(loop[ii]);
                             break;
                     }
                 }
@@ -270,7 +270,7 @@ namespace Plankton
             int nakedCount = 0;
             foreach (int i in this.GetHalfedgesCirculator(f))
             {
-                if (_mesh.Halfedges[_mesh.PairHalfedge(i)].AdjacentFace == -1) nakedCount++;
+                if (_mesh.Halfedges[_mesh.Halfedges.PairHalfedge(i)].AdjacentFace == -1) nakedCount++;
             }
             return nakedCount;
         }
