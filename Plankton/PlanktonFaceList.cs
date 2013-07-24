@@ -93,7 +93,7 @@ namespace Plankton
                 // Find existing edge, if it exists, by searching 'i'th vertex's neighbourhood
                 if (_mesh.Vertices[v2].OutgoingHalfedge > -1)
                 {
-                    List<int> hs = _mesh.VertexAllOutHE(v2);
+                    int[] hs = _mesh.Vertices.GetHalfedges(v2);
                     foreach (int h in hs)
                     {
                         if (v1 == _mesh.Halfedges[_mesh.Halfedges.PairHalfedge(h)].StartVertex)

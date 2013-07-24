@@ -18,14 +18,24 @@ namespace Plankton
             OutgoingHalfedge = -1;
         }
         public PlanktonVertex(Point3f V)
+            : this()
         {
             Position = (Point3d)V;
-            OutgoingHalfedge = -1;
         }
         public PlanktonVertex(Point3d V)
+            : this()
         {
             Position = V;
-            OutgoingHalfedge = -1;
+        }
+        public PlanktonVertex(double x, double y, double z)
+            : this()
+        {
+            Position = new Point3d(x, y, z);
+        }
+        public PlanktonVertex(float x, float y, float z)
+            : this()
+        {
+            Position = new Point3d(x, y, z);
         }
     }
 }

@@ -48,6 +48,7 @@
     <Compile Include="PlanktonHalfedgeList.cs" />
     <Compile Include="PlanktonMesh.cs" />
     <Compile Include="PlanktonVertex.cs" />
+    <Compile Include="PlanktonVertexList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

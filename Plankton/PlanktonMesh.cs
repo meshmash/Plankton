@@ -11,7 +11,7 @@ namespace Plankton
     public class PlanktonMesh
     {
         #region "members"
-        public List<PlanktonVertex> Vertices;
+        public PlanktonVertexList Vertices;
         public PlanktonHalfEdgeList Halfedges;
         public PlanktonFaceList Faces;
         #endregion
@@ -21,7 +21,7 @@ namespace Plankton
         {
             this.Faces = new PlanktonFaceList(this);
             this.Halfedges = new PlanktonHalfEdgeList(this);
-            this.Vertices = new List<PlanktonVertex>();
+            this.Vertices = new PlanktonVertexList(this);
         }
         public PlanktonMesh(Mesh M) //Create a Plankton Mesh from a Rhino Mesh
             : this()
@@ -210,11 +210,10 @@ namespace Plankton
         public PlanktonMesh(IEnumerable<Point3d> pts, IEnumerable<IEnumerable<int>> faces)
             : this()
         {
+            // TODO: Should we remove this constructor? I doesn't exactly do much...
+            
             // Add vertices
-            foreach (Point3d pt in pts)
-            {
-                this.Vertices.Add(new PlanktonVertex(pt));
-            }
+            this.Vertices.AddVertices(pts);
             
             // Add faces (and half-edges)
             foreach (IEnumerable<int> face in faces)
@@ -308,7 +307,7 @@ namespace Plankton
 
             for (int i = 0; i < P.Vertices.Count; i++)
             {
-                if (P.VertexNakedEdgeCount(i) == 0)
+                if (P.Vertices.NakedEdgeCount(i) == 0)
                 {
                     D.Faces.Add(new PlanktonFace());
                     // D.Faces[i].FirstHalfedge = P.PairHalfedge(P.Vertices[i].OutgoingHalfedge);
@@ -334,7 +333,7 @@ namespace Plankton
                     //DualHE.StartVertex = PrimalHE.AdjacentFace;
                     DualHE.StartVertex = P.Halfedges[P.Halfedges.PairHalfedge(i)].AdjacentFace;
 
-                    if (P.VertexNakedEdgeCount(PrimalHE.StartVertex) == 0)
+                    if (P.Vertices.NakedEdgeCount(PrimalHE.StartVertex) == 0)
                     {
                         //DualHE.AdjacentFace = P.Halfedges[P.PairHalfedge(i)].StartVertex;
                         DualHE.AdjacentFace = PrimalHE.StartVertex;
@@ -377,84 +376,6 @@ namespace Plankton
         //
 
         //skeletonize - build a new mesh with 4 faces for each original edge
-
-        #endregion
-
-        #region "Adjacencies"
-        
-        public List<int> VertexNeighbours(int V)
-            //get the vertices connected to a given vertex by an edge (aka 1-ring)
-        {
-            List<int> NeighbourVs = new List<int>();
-            int FirstHalfedge = Halfedges.PairHalfedge(Vertices[V].OutgoingHalfedge);
-            int CurrentHalfedge = FirstHalfedge;
-            do{
-                NeighbourVs.Add(Halfedges[CurrentHalfedge].StartVertex);
-                CurrentHalfedge = Halfedges.PairHalfedge(Halfedges[CurrentHalfedge].NextHalfedge);
-            } while (CurrentHalfedge != FirstHalfedge);
-            return NeighbourVs;
-        }
-
-        public List<int> VertexFaces(int V)
-            // get the faces which use this vertex
-        {
-            List<int> NeighbourFs = new List<int>();
-            int FirstHalfedge = Vertices[V].OutgoingHalfedge;
-            int CurrentHalfedge = FirstHalfedge;
-            do
-            {
-                NeighbourFs.Add(Halfedges[CurrentHalfedge].AdjacentFace);
-                CurrentHalfedge = Halfedges[Halfedges.PairHalfedge(CurrentHalfedge)].NextHalfedge;
-            } while (CurrentHalfedge != FirstHalfedge);
-            return NeighbourFs;
-        }
-
-
-        public List<int> VertexAllOutHE(int V) // all the outgoing Halfedges from a vertex
-        {
-            List<int> OutHEs = new List<int>();
-            int FirstHalfedge = Vertices[V].OutgoingHalfedge;
-            int CurrentHalfedge = FirstHalfedge;
-            do
-            {
-                OutHEs.Add(CurrentHalfedge);
-                CurrentHalfedge = Halfedges[Halfedges.PairHalfedge(CurrentHalfedge)].NextHalfedge;
-            } while (CurrentHalfedge != FirstHalfedge);
-            return OutHEs;
-        }
-
-        public List<int> VertexAllInHE(int V) // all the incoming Halfedges to a vertex
-        {
-            List<int> InHEs = new List<int>();
-            int FirstHalfedge = Halfedges.PairHalfedge(Vertices[V].OutgoingHalfedge);
-            int CurrentHalfedge = FirstHalfedge;
-            do
-            {
-                InHEs.Add(CurrentHalfedge);
-                CurrentHalfedge = Halfedges.PairHalfedge(Halfedges[CurrentHalfedge].NextHalfedge);
-            } while (CurrentHalfedge != FirstHalfedge);
-            return InHEs;
-        }
-
-        public int IncomingHalfedge(int I)
-        {
-            return Halfedges.PairHalfedge(Vertices[I].OutgoingHalfedge);
-        }
-
-        public int VertexNakedEdgeCount(int V)
-            //the number of connected halfedges which are naked
-            //(this should also be the number of naked connected actual *edges*
-            // - because if the hemesh is good then there should never be a pair of 2 boundary halfedges)
-        {
-            int NakedCount = 0;
-            List<int> Outgoing = VertexAllOutHE(V);
-            for (int i = 0; i < Outgoing.Count; i++)
-            {
-                if (Halfedges[Outgoing[i]].AdjacentFace == -1) { NakedCount++; }
-                if (Halfedges[Halfedges.PairHalfedge(Outgoing[i])].AdjacentFace == -1) { NakedCount++; }
-            }
-            return NakedCount;
-        }
 
         #endregion
     }

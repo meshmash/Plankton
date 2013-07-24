@@ -45,13 +45,15 @@ namespace Plankton.Test
             // Check that half-edges have been linked up correctly
             
             // Get all outgoing halfedges from vertex #0 and compare against expected
-            List<int> vertexZeroHalfedges = pMesh.VertexAllOutHE(0);
+            int[] vertexZeroHalfedges = pMesh.Vertices.GetHalfedges(0);
             int[] vertexZeroHalfedgesExpected = new int[]{ 13, 5, 6 };
-            Assert.AreEqual(3, vertexZeroHalfedges.Count);
+            Assert.AreEqual(3, vertexZeroHalfedges.Length);
             foreach (int halfedge in vertexZeroHalfedgesExpected)
             {
                 Assert.Contains(halfedge, vertexZeroHalfedges);
             }
+            // Check that none of these edges are on a boundary (closed mesh)
+            Assert.AreEqual(0, pMesh.Vertices.NakedEdgeCount(0));
             
             // Get all halfedges from face #2 and compare against expected
             int[] faceTwoHalfedges = pMesh.Faces.GetHalfedges(2);
@@ -70,12 +72,21 @@ namespace Plankton.Test
             Assert.AreEqual(faceFourVerticesExpected, faceFourVertices);
             
             // Get all faces from vertex #1 and compare against expected
-            List<int> vertexOneFaces = pMesh.VertexFaces(1);
+            int[] vertexOneFaces = pMesh.Vertices.GetVertexFaces(1);
             int[] vertexOneFacesExpected = new int[]{ 0, 1, 2 };
-            Assert.AreEqual(3, vertexOneFaces.Count);
+            Assert.AreEqual(3, vertexOneFaces.Length);
             foreach (int face in vertexOneFacesExpected)
             {
                 Assert.Contains(face, vertexOneFaces);
+            }
+            
+            // Get all vertex neighbours from vertex #0 and compare against expected
+            int[] vertexZeroNeighbours = pMesh.Vertices.GetVertexNeighbours(0);
+            int[] vertexZeroNeighboursExpected = new int[]{ 4, 1, 3 };
+            Assert.AreEqual(3, vertexZeroNeighbours.Length);
+            foreach (int vertex in vertexZeroNeighboursExpected)
+            {
+                Assert.Contains(vertex, vertexZeroNeighbours);
             }
         }
     }
