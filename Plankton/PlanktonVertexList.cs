@@ -165,6 +165,7 @@ namespace Plankton
         public IEnumerable<int> GetHalfedgesCirculator(int v)
         {
             int he_first = this[v].OutgoingHalfedge;
+            if (he_first < 0) yield break; // vertex has no connectivity, exit
             int he_current = he_first;
             var hs = _mesh.Halfedges;
             do

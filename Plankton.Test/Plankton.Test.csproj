@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="MeshTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VertexTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Plankton\Plankton.csproj">

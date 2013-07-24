@@ -1,8 +1,6 @@
-﻿using Plankton;
-using NUnit.Framework;
-using Rhino.Geometry;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace Plankton.Test
 {
@@ -14,35 +12,29 @@ namespace Plankton.Test
         {
             // Create a simple cube
             
-            var pts = new Point3d[]
-            {
-                new Point3d(-0.5, -0.5, 0.5),
-                new Point3d(-0.5, -0.5, -0.5),
-                new Point3d(-0.5, 0.5, -0.5),
-                new Point3d(-0.5, 0.5, 0.5),
-                new Point3d(0.5, -0.5, 0.5),
-                new Point3d(0.5, -0.5, -0.5),
-                new Point3d(0.5, 0.5, -0.5),
-                new Point3d(0.5, 0.5, 0.5)
-            };
+            PlanktonMesh pMesh = new PlanktonMesh();
             
-            var fs = new int[][]
-            {
-                new int[]{ 3, 2, 1, 0 },
-                new int[]{ 1, 5, 4, 0 },
-                new int[]{ 2, 6, 5, 1 },
-                new int[]{ 7, 6, 2, 3 },
-                new int[]{ 4, 7, 3, 0 },
-                new int[]{ 5, 6, 7, 4 }
-            };
+            pMesh.Vertices.Add(-0.5, -0.5, 0.5);
+            pMesh.Vertices.Add(-0.5, -0.5, -0.5);
+            pMesh.Vertices.Add(-0.5, 0.5, -0.5);
+            pMesh.Vertices.Add(-0.5, 0.5, 0.5);
+            pMesh.Vertices.Add(0.5, -0.5, 0.5);
+            pMesh.Vertices.Add(0.5, -0.5, -0.5);
+            pMesh.Vertices.Add(0.5, 0.5, -0.5);
+            pMesh.Vertices.Add(0.5, 0.5, 0.5);
             
-            // Create a PlanktonMesh from the points and face-vertex indices
+            pMesh.Faces.AddFace(new int[]{ 3, 2, 1, 0 });
+            pMesh.Faces.AddFace(new int[]{ 1, 5, 4, 0 });
+            pMesh.Faces.AddFace(new int[]{ 2, 6, 5, 1 });
+            pMesh.Faces.AddFace(new int[]{ 7, 6, 2, 3 });
+            pMesh.Faces.AddFace(new int[]{ 4, 7, 3, 0 });
+            pMesh.Faces.AddFace(new int[]{ 5, 6, 7, 4 });
             
-            PlanktonMesh pMesh = new PlanktonMesh(pts, fs);
             
             Assert.AreEqual(24, pMesh.Halfedges.Count);
             
             // Check that half-edges have been linked up correctly
+            // TODO: Add individual unit tests to verify the methods used below
             
             // Get all outgoing halfedges from vertex #0 and compare against expected
             int[] vertexZeroHalfedges = pMesh.Vertices.GetHalfedges(0);
@@ -88,6 +80,10 @@ namespace Plankton.Test
             {
                 Assert.Contains(vertex, vertexZeroNeighbours);
             }
+            
+            // Check that halfedges exist where they are expected to
+            Assert.AreEqual(13, pMesh.Halfedges.FindHalfedge(0, 4)); // exists
+            Assert.AreEqual(-1, pMesh.Halfedges.FindHalfedge(1, 3)); // doesn't exist
         }
     }
 }

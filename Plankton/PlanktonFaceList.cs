@@ -54,8 +54,9 @@ namespace Plankton
         /// <summary>
         /// Adds a new face to the end of the Face list. Creates any halfedge pairs that are required.
         /// </summary>
-        /// <param name="indices">The vertex indices which define this face, ordered anticlockwise.</param>
-        /// <returns>The index of the newly added face.</returns>
+        /// <param name="indices">The vertex indices which define the face, ordered anticlockwise.</param>
+        /// <returns>The index of the newly added face (-1 in the case that the face could not be added).</returns>
+        /// <remarks>The mesh must remain 2-manifold and orientable at all times.</remarks>
         public int AddFace(IEnumerable<int> indices)
         {
             // This method always ensures that if a vertex lies on a boundary,
@@ -91,22 +92,17 @@ namespace Plankton
             for (int i = 0, ii = 1; i < n; i++, ii++, ii %= n)
             {
                 int v1 = array[i], v2 = array[ii];
-                is_new[i] = true;
-                // Find existing edge, if it exists, by searching 'i'th vertex's neighbourhood
-                if (vs[v2].OutgoingHalfedge > -1)
-                {
-                    foreach (int h in vs.GetHalfedgesCirculator(v2))
-                    {
-                        if (v1 == hs[hs.PairHalfedge(h)].StartVertex)
-                        {
-                            // Don't allow non-manifold edges
-                            if (hs[hs.PairHalfedge(h)].AdjacentFace > -1) return -1;
-                            loop[i] = hs.PairHalfedge(h);
-                            is_new[i] = false;
-                            break;
-                        }
-                    }
-                }
+
+                // Find existing edge, if it exists
+                int h = hs.FindHalfedge(v1, v2);
+                if (h < 0)
+                    // No halfedge found, mark for creation
+                    is_new[i] = true;
+                else if (hs[h].AdjacentFace > -1)
+                    // Existing halfedge already has a face (non-manifold)
+                    return -1;
+                else
+                    loop[i] = h;
             }
             
             // Now create any missing halfedge pairs...
@@ -114,14 +110,10 @@ namespace Plankton
             // any recently added halfedges should a non-manifold condition be found.)
             for (int i = 0, ii = 1; i < n; i++, ii++, ii %= n)
             {
-                if (is_new[i]) // new halfedge pair requireds
+                if (is_new[i]) // new halfedge pair required
                 {
                     int v1 = array[i], v2 = array[ii];
-                    loop[i] = _mesh.Halfedges.Count;
-                    is_new[i] = true;
-                    // he->next = he->pair
-                    hs.Add(new PlanktonHalfedge(v1, this.Count, loop[i] + 1));
-                    hs.Add(new PlanktonHalfedge(v2, -1, loop[i]));
+                    loop[i] = hs.AddPair(v1, v2, this.Count);
                     // ensure vertex->outgoing is boundary if vertex is boundary
                     vs[v2].OutgoingHalfedge = loop[i] + 1;
                 }
@@ -135,6 +127,9 @@ namespace Plankton
             // Link halfedges
             for (int i = 0, ii = 1; i < n; i++, ii++, ii %= n)
             {
+                // TODO: consider case of non-manifold vertex
+                // (i.e. vertex with 2+ outgoing boundary halfedges)
+                
                 int v1 = array[i], v2 = array[ii];
                 int id = 0;
                 if (is_new[i])  id += 1; // first is new
@@ -152,19 +147,13 @@ namespace Plankton
                     {
                         case 1: // first is new, second is old
                             // iterate through halfedges clockwise around vertex #v2 until boundary
-                            foreach (int h in vs.GetHalfedgesCirculator(v2))
-                            {
-                                if (hs[hs.PairHalfedge(h)].AdjacentFace < 0) // boundary
-                                {
-                                    outer_prev = hs.PairHalfedge(h);
-                                    outer_next = hs.PairHalfedge(loop[i]);
-                                    break;
-                                }
-                            }
+                            outer_prev = hs.PairHalfedge(vs.GetHalfedgesCirculator(v2)
+                                                         .First(h => hs[hs.PairHalfedge(h)].AdjacentFace < 0));
+                            outer_next = hs.PairHalfedge(loop[i]);
                             break;
                         case 2: // second is new, first is old
                             outer_prev = hs.PairHalfedge(loop[ii]);
-                            outer_next = _mesh.Vertices[v2].OutgoingHalfedge;
+                            outer_next = vs[v2].OutgoingHalfedge;
                             break;
                         case 3: // both are new
                             outer_prev = hs.PairHalfedge(loop[ii]);
@@ -229,6 +218,7 @@ namespace Plankton
         public IEnumerable<int> GetHalfedgesCirculator(int f)
         {
             int he_first = this[f].FirstHalfedge;
+            if (he_first < 0) yield break; // face has no connectivity, exit
             int he_current = he_first;
             do
             {

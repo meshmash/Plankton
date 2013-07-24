@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Plankton
 {
@@ -46,6 +47,22 @@ namespace Plankton
             if (halfedge == null) return -1;
             this._list.Add(halfedge);
             return this.Count - 1;
+        }
+        
+        /// <summary>
+        /// Add a pair of halfedges to the mesh.
+        /// </summary>
+        /// <param name="start">A vertex index (from which the first halfedge originates).</param>
+        /// <param name="end">A vertex index (from which the second halfedge originates).</param>
+        /// <param name="face">A face index (adjacent to the first halfedge).</param>
+        /// <returns>The index of the first halfedge in the pair.</returns>
+        public int AddPair(int start, int end, int face)
+        {
+            // he->next = he->pair
+            int i = this.Count;
+            this.Add(new PlanktonHalfedge(start, face, i + 1));
+            this.Add(new PlanktonHalfedge(end, -1, i));
+            return i;
         }
         
         /// <summary>
@@ -98,6 +115,24 @@ namespace Plankton
             return new int[]{ I, J };
         }
         #endregion
+        
+        /// <summary>
+        /// Gets the halfedge index between two vertices.
+        /// </summary>
+        /// <param name="start">A vertex index.</param>
+        /// <param name="end">A vertex index.</param>
+        /// <returns>If it exists, the index of the halfedge which originates
+        /// from <paramref name="start"/> and terminates at <paramref name="end"/>.
+        /// Otherwise -1 is returned.</returns>
+        public int FindHalfedge(int start, int end)
+        {
+            foreach (int h in _mesh.Vertices.GetHalfedgesCirculator(start))
+            {
+                if (end == this[this.PairHalfedge(h)].StartVertex)
+                    return h;
+            }
+            return -1;
+        }
         
         public void FlipEdge(int index)
         {
