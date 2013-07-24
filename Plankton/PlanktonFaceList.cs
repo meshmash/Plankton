@@ -54,7 +54,7 @@ namespace Plankton
         /// <summary>
         /// Adds a new face to the end of the Face list. Creates any halfedge pairs that are required.
         /// </summary>
-        /// <param name="indices">The indices of the vertices which define this face, ordered anticlockwise.</param>
+        /// <param name="indices">The vertex indices which define this face, ordered anticlockwise.</param>
         /// <returns>The index of the newly added face.</returns>
         public int AddFace(IEnumerable<int> indices)
         {
@@ -149,7 +149,7 @@ namespace Plankton
                     switch (id)
                     {
                         case 1: // first is new, second is old
-                            // iterate through halfedges around vertex #v2
+                            // iterate through halfedges clockwise around vertex #v2 until boundary
                             firstHalfedge = loop[ii];
                             currentHalfedge = firstHalfedge;
                             do
@@ -173,11 +173,10 @@ namespace Plankton
                 }
             }
             
-            int f = this.Count;
-            this.Add(new PlanktonFace());
-            this[f].FirstHalfedge = loop[0];
+            PlanktonFace f = new PlanktonFace();
+            f.FirstHalfedge = loop[0];
             
-            return f;
+            return this.Add(f);
         }
         
         /// <summary>
@@ -202,12 +201,24 @@ namespace Plankton
         #endregion
         
         #region traversals
+        /// <summary>
+        /// Gets the halfedges which bound a face.
+        /// </summary>
+        /// <param name="f">A face index.</param>
+        /// <returns>The indices of halfedges incident to a particular face.
+        /// Ordered anticlockwise around the face.</returns>
         public int[] GetHalfedges(int f)
         {
-            return this.GetHalfedgesEnumerator(f).ToArray();
+            return this.GetHalfedgesCirculator(f).ToArray();
         }
         
-        public IEnumerable<int> GetHalfedgesEnumerator(int f)
+        /// <summary>
+        /// Traverses the halfedge indices which bound a face.
+        /// </summary>
+        /// <param name="f">A face index.</param>
+        /// <returns>An enumerable of halfedge indices incident to the specified face.
+        /// Ordered anticlockwise around the face.</returns>
+        public IEnumerable<int> GetHalfedgesCirculator(int f)
         {
             int he_first = this[f].FirstHalfedge;
             int he_current = he_first;
@@ -220,15 +231,24 @@ namespace Plankton
         }
         #endregion
         
+        /// <summary>
+        /// Gets vertex indices of a face.
+        /// </summary>
+        /// <param name="f">A face index.</param>
+        /// <returns>An array of vertex indices incident to the specified face.
+        /// Ordered anticlockwise around the face.</returns>
         public int[] GetVertices(int f)
-            //get the vertices making up a face
         {
-            return this.GetHalfedgesEnumerator(f)
+            return this.GetHalfedgesCirculator(f)
                 .Select(h => _mesh.Halfedges[h].StartVertex).ToArray();
         }
-
+        
+        /// <summary>
+        /// Gets the barycenter of a face's vertices.
+        /// </summary>
+        /// <param name="f">A face index.</param>
+        /// <returns>The location of the specified face's barycenter.</returns>
         public Point3d FaceCentroid(int f)
-            //the barycenter of a face's vertices
         {
             int[] fvs = this.GetVertices(f);
             Point3d Centroid = new Point3d(0, 0, 0);
@@ -240,10 +260,15 @@ namespace Plankton
             return Centroid;
         }
         
+        /// <summary>
+        /// Gets the number of naked edges which bound this face.
+        /// </summary>
+        /// <param name="f">A face index.</param>
+        /// <returns>The number of halfedges for which the opposite halfedge has no face (i.e. adjacent face index is -1).</returns>
         public int NakedEdgeCount(int f)
         {
             int nakedCount = 0;
-            foreach (int i in this.GetHalfedgesEnumerator(f))
+            foreach (int i in this.GetHalfedgesCirculator(f))
             {
                 if (_mesh.Halfedges[_mesh.PairHalfedge(i)].AdjacentFace == -1) nakedCount++;
             }
@@ -253,7 +278,7 @@ namespace Plankton
         
         #region IEnumerable implementation
         /// <summary>
-        /// Gets an enumerator that yields all half-edges in this collection.
+        /// Gets an enumerator that yields all faces in this collection.
         /// </summary>
         /// <returns>An enumerator.</returns>
         public IEnumerator<PlanktonFace> GetEnumerator()
