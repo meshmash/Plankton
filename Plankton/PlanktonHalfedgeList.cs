@@ -134,16 +134,66 @@ namespace Plankton
             return -1;
         }
         
-        public void FlipEdge(int index)
+        internal int EndVertex(int index)
         {
+            return this[PairHalfedge(index)].StartVertex;
+        }
+        
+        internal void MakeAdjacent(int prev, int next)
+        {
+            this[prev].NextHalfedge = next;
+            this[next].PrevHalfedge = prev;
+        }
+        
+        /// <summary>
+        /// Performs an edge flip. This works by shifting the start/end vertices of the edge
+        /// anticlockwise around their faces (by one vertex) and as such can be applied to any
+        /// n-gon mesh, not just triangulations.
+        /// </summary>
+        /// <param name="index">The index of a halfedge in the edge to be flipped.</param>
+        /// <returns>True on success, otherwise false.</returns>
+        public bool FlipEdge(int index)
+        {
+            // Don't allow if halfedge is on a boundary
+            if (this[index].AdjacentFace < 0 || this[PairHalfedge(index)].AdjacentFace < 0)
+                return false;
+            
+            // Make a note of some useful halfedges, along with 'index' itself
+            int pair = this.PairHalfedge(index);
+            int next = this[index].NextHalfedge;
+            int pair_next = this[pair].NextHalfedge;
+            
             // to flip an edge
             // update 2 start verts
+            this[index].StartVertex = EndVertex(pair_next);
+            this[pair].StartVertex = EndVertex(next);
             // 2 adjacentfaces
+            this[next].AdjacentFace = this[pair].AdjacentFace;
+            this[pair_next].AdjacentFace = this[index].AdjacentFace;
             // 6 nexts
             // 6 prevs
+            this.MakeAdjacent(this[pair].PrevHalfedge, next);
+            this.MakeAdjacent(index, this[next].NextHalfedge);
+            this.MakeAdjacent(next, pair);
+            this.MakeAdjacent(this[index].PrevHalfedge, pair_next);
+            this.MakeAdjacent(pair, this[pair_next].NextHalfedge);
+            this.MakeAdjacent(pair_next, index);
             // for each vert, check if need to update outgoing
+            int v = this[index].StartVertex;
+            if (_mesh.Vertices[v].OutgoingHalfedge == index)
+                _mesh.Vertices[v].OutgoingHalfedge = pair_next;
+            v = this[pair].StartVertex;
+            if (_mesh.Vertices[v].OutgoingHalfedge == pair)
+                _mesh.Vertices[v].OutgoingHalfedge = next;
             // for each face, check if need to update start he
-            throw new NotImplementedException();
+            int f = this[index].AdjacentFace;
+            if (_mesh.Faces[f].FirstHalfedge == next)
+                _mesh.Faces[f].FirstHalfedge = index;
+            f = this[pair].AdjacentFace;
+            if (_mesh.Faces[f].FirstHalfedge == pair_next)
+                _mesh.Faces[f].FirstHalfedge = pair;
+            
+            return true;
         }
         
         public void SplitEdge(int index)
