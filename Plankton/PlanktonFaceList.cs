@@ -150,8 +150,7 @@ namespace Plankton
                     {
                         case 1: // first is new, second is old
                             // iterate through halfedges clockwise around vertex #v2 until boundary
-                            outer_prev = hs.PairHalfedge(vs.GetHalfedgesCirculator(v2)
-                                                         .First(h => hs[hs.PairHalfedge(h)].AdjacentFace < 0));
+                            outer_prev = hs[loop[ii]].PrevHalfedge;
                             outer_next = hs.PairHalfedge(loop[i]);
                             break;
                         case 2: // second is new, first is old
@@ -212,15 +211,20 @@ namespace Plankton
                     {
                         int next = hs[loop[i]].NextHalfedge;
                         int prev = hs[loop[ii]].PrevHalfedge;
-                        foreach (int h in vs.GetHalfedgesCirculator(v2, loop[ii]).Skip(1))
+                        // Find another boundary at this vertex to link 'next' and 'prev' into.
+                        try
                         {
-                            if (hs[h].AdjacentFace < 0)
-                            {
-                                hs.MakeAdjacent(loop[i], loop[ii]);
-                                hs.MakeAdjacent(hs[h].PrevHalfedge, next);
-                                hs.MakeAdjacent(prev, h);
-                                break;
-                            }
+                            int boundary = vs.GetHalfedgesCirculator(v2, loop[ii]).Skip(1)
+                                .First(h => hs[h].AdjacentFace < 0);
+                            hs.MakeAdjacent(loop[i], loop[ii]);
+                            hs.MakeAdjacent(hs[boundary].PrevHalfedge, next);
+                            hs.MakeAdjacent(prev, boundary);
+                        }
+                        // If no other boundary is found, something must be wrong...
+                        catch (InvalidOperationException)
+                        {
+                            throw new InvalidOperationException(string.Format(
+                                "Failed to relink halfedges around vertex #{0} during creation of face #{1}", v2, this.Count));
                         }
                     }
                 }
