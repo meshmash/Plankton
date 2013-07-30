@@ -175,6 +175,33 @@ namespace Plankton
             }
             while (he_current != he_first);
         }
+        
+        /// <summary>
+        /// Traverses the halfedge indices which originate from a vertex.
+        /// </summary>
+        /// <param name="v">A vertex index.</param>
+        /// <param name="first">A halfedge index. Halfedge must start at the specified vertex.</param>
+        /// <returns>An enumerable of halfedge indices incident to the specified vertex.
+        /// Ordered clockwise around the vertex.
+        /// The returned enumerable will start with the specified halfedge.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// The specified halfedge does not originate from the specified vertex.
+        /// </exception>
+        public IEnumerable<int> GetHalfedgesCirculator(int v, int first)
+        {
+            if (_mesh.Halfedges[first].StartVertex != v)
+                throw new ArgumentOutOfRangeException("Halfedge does not start at vertex.");
+            // TODO: The code below is the same as above.
+            // Can we refactor (without extra, unnecessary iterators)?
+            int h = first;
+            var hs = _mesh.Halfedges;
+            do
+            {
+                yield return h;
+                h = hs[hs.PairHalfedge(h)].NextHalfedge;
+            }
+            while (h != first);
+        }
         #endregion
         
         /// <summary>

@@ -104,7 +104,7 @@ namespace Plankton
                 else
                     loop[i] = h;
                 // NOTE: To PREVENT non-manifold vertices, uncomment the line below...
-                //if(is_new[i] && is_new[(i+n-1)%n] && vs[v2].OutgoingHalfedge > -1) return -1;
+                //if(is_new[i] && is_new[(i+n-1)%n] && vs[v1].OutgoingHalfedge > -1) return -1;
             }
             
             // Now create any missing halfedge pairs...
@@ -205,18 +205,23 @@ namespace Plankton
                             }
                         }
                     }
-                    // If inner loop exists, but for some reason it's not linked (non-manifold vertex)
-                    // make loop[i] adjacent to loop[ii].
-                    // TODO: In the current implementation (below) by making loop[i]->next and
-                    // loop[ii]->prev adjacent a face will be 'hidden' from vertex v2 until another face
-                    // is added which connects it with another face which is both incident to v2 and
-                    // 'known' to v2. Non-manifold vertices are tricky...
+                    // If inner loop exists, but for some reason it's not already linked
+                    // (non-manifold vertex) make loop[i] adjacent to loop[ii]. Tidy up other
+                    // halfedge links such that all outgoing halfedges remain visible to v2.
                     if (hs[loop[i]].NextHalfedge != loop[ii] || hs[loop[ii]].PrevHalfedge != loop[i])
                     {
-                        hs[hs[loop[i]].NextHalfedge].PrevHalfedge = hs[loop[ii]].PrevHalfedge;
-                        hs[hs[loop[ii]].PrevHalfedge].NextHalfedge = hs[loop[i]].NextHalfedge;
-                        hs[loop[i]].NextHalfedge = loop[ii];
-                        hs[loop[ii]].PrevHalfedge = loop[i];
+                        int next = hs[loop[i]].NextHalfedge;
+                        int prev = hs[loop[ii]].PrevHalfedge;
+                        foreach (int h in vs.GetHalfedgesCirculator(v2, loop[ii]).Skip(1))
+                        {
+                            if (hs[h].AdjacentFace < 0)
+                            {
+                                hs.MakeAdjacent(loop[i], loop[ii]);
+                                hs.MakeAdjacent(hs[h].PrevHalfedge, next);
+                                hs.MakeAdjacent(prev, h);
+                                break;
+                            }
+                        }
                     }
                 }
             }
