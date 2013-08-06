@@ -1,0 +1,4 @@
+Copyright (C) 2013 Plankton contributors.
+
+Daniel Piker
+Will Pearson
