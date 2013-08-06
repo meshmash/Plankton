@@ -5,7 +5,7 @@ using Grasshopper.Kernel;
 using Rhino.Geometry;
 using Plankton;
 
-namespace PlanktonComponents
+namespace PlanktonGh
 {
     public class DecomposePlankton : GH_Component
     {
@@ -34,12 +34,12 @@ namespace PlanktonComponents
         {
             pManager.Register_PointParam("Vertex_Points", "V", "Vertex point positions", GH_ParamAccess.list);
             pManager.Register_IntegerParam("Vertex_Outgoing_Halfedge", "V_He", "One of the outgoing halfedges for each vertex", GH_ParamAccess.list);
-            pManager.Register_IntegerParam("HalfEdge_StartVertex", "He_V", "The starting vertex of each halfedge", GH_ParamAccess.list);
-            pManager.Register_IntegerParam("HalfEdge_AdjacentFace", "He_F", "The face bordered by each halfedge (or -1 if it is adjacent to a boundary)", GH_ParamAccess.list);
-            pManager.Register_IntegerParam("HalfEdge_NextHalfEdge", "He_Nxt", "The next halfedge around the same face", GH_ParamAccess.list);
-            pManager.Register_IntegerParam("HalfEdge_PrevHalfEdge", "He_Prv", "The previous halfedge around the same face", GH_ParamAccess.list);
-            pManager.Register_IntegerParam("HalfEdge_Pair", "He_P", "The halfedge joining the same 2 vertices in the opposite direction", GH_ParamAccess.list);
-            pManager.Register_IntegerParam("Face_HalfEdge", "F_He", "The first halfedge of each face", GH_ParamAccess.list);              
+            pManager.Register_IntegerParam("Halfedge_StartVertex", "He_V", "The starting vertex of each halfedge", GH_ParamAccess.list);
+            pManager.Register_IntegerParam("Halfedge_AdjacentFace", "He_F", "The face bordered by each halfedge (or -1 if it is adjacent to a boundary)", GH_ParamAccess.list);
+            pManager.Register_IntegerParam("Halfedge_NextHalfedge", "He_Nxt", "The next halfedge around the same face", GH_ParamAccess.list);
+            pManager.Register_IntegerParam("Halfedge_PrevHalfedge", "He_Prv", "The previous halfedge around the same face", GH_ParamAccess.list);
+            pManager.Register_IntegerParam("Halfedge_Pair", "He_P", "The halfedge joining the same 2 vertices in the opposite direction", GH_ParamAccess.list);
+            pManager.Register_IntegerParam("Face_Halfedge", "F_He", "The first halfedge of each face", GH_ParamAccess.list);              
         }
 
         /// <summary>
@@ -48,8 +48,8 @@ namespace PlanktonComponents
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            P_mesh P = new P_mesh();
-            if (!DA.GetData<P_mesh>(0, ref P)) return;
+            PlanktonMesh P = new PlanktonMesh();
+            if (!DA.GetData<PlanktonMesh>(0, ref P)) return;
 
             List<Point3d> Positions = new List<Point3d>();
             List<int> OutHEdge = new List<int>();
@@ -57,7 +57,7 @@ namespace PlanktonComponents
             for (int i = 0; i < P.Vertices.Count; i++)
             {
                 Positions.Add(P.Vertices[i].Position);
-                OutHEdge.Add(P.Vertices[i].OutgoingHalfEdge);
+                OutHEdge.Add(P.Vertices[i].OutgoingHalfedge);
             }
            
             List<int> StartV = new List<int>();
@@ -66,19 +66,19 @@ namespace PlanktonComponents
             List<int> Prev = new List<int>();
             List<int> Pair = new List<int>();
 
-            for (int i = 0; i < P.HalfEdges.Count; i++)
+            for (int i = 0; i < P.Halfedges.Count; i++)
             {
-                StartV.Add(P.HalfEdges[i].StartVertex);
-                AdjF.Add(P.HalfEdges[i].AdjacentFace);
-                Next.Add(P.HalfEdges[i].NextHalfEdge);
-                Prev.Add(P.HalfEdges[i].PrevHalfEdge);
-                Pair.Add(P.PairHalfEdge(i));
+                StartV.Add(P.Halfedges[i].StartVertex);
+                AdjF.Add(P.Halfedges[i].AdjacentFace);
+                Next.Add(P.Halfedges[i].NextHalfedge);
+                Prev.Add(P.Halfedges[i].PrevHalfedge);
+                Pair.Add(P.Halfedges.PairHalfedge(i));
             }
      
             List<int> FaceEdge = new List<int>();
             for (int i = 0; i < P.Faces.Count; i++)
             {
-                FaceEdge.Add(P.Faces[i].FirstHalfEdge);
+                FaceEdge.Add(P.Faces[i].FirstHalfedge);
             }
 
             DA.SetDataList(0, Positions);
@@ -103,7 +103,7 @@ namespace PlanktonComponents
             {
                 //You can add image files to your project resources and access them like this:
                 // return Resources.IconForThisComponent;                
-                return PlanktonComponents.Properties.Resources.plankton_decon;
+                return PlanktonGh.Properties.Resources.plankton_decon;
             }
         }
 
