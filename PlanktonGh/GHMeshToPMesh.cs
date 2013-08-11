@@ -52,10 +52,9 @@ namespace PlanktonGh
             Mesh M = new Mesh();          
             if (!DA.GetData(0, ref M)) return;
 
-   // TODO: Re-add Rhino support      
-            //PlanktonMesh pMesh = new PlanktonMesh(M);
+            PlanktonMesh pMesh = M.ToPlanktonMesh();
 
-            //DA.SetData(0, pMesh);
+            DA.SetData(0, pMesh);
         }
 
         /// <summary>

@@ -33,3 +33,6 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("0.2.0")]
+
+// Make internal classes/members visible in other assemblies.
+[assembly: InternalsVisibleTo("PlanktonGh")]
