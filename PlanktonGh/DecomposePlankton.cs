@@ -54,10 +54,10 @@ namespace PlanktonGh
             List<Point3d> Positions = new List<Point3d>();
             List<int> OutHEdge = new List<int>();
 
-            for (int i = 0; i < P.Vertices.Count; i++)
+            foreach (PlanktonVertex v in P.Vertices)
             {
-                Positions.Add(P.Vertices[i].Position);
-                OutHEdge.Add(P.Vertices[i].OutgoingHalfedge);
+                Positions.Add(new Point3f(v.X, v.Y, v.Z));
+                OutHEdge.Add(v.OutgoingHalfedge);
             }
            
             List<int> StartV = new List<int>();

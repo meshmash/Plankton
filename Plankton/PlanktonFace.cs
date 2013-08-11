@@ -1,18 +1,13 @@
-﻿using Rhino.Geometry;
-using System;
+﻿using System;
 
 namespace Plankton
 {
     /// <summary>
-    /// Description of PlanktonFace.
+    /// Represents a face in Plankton's halfedge mesh data structure.
     /// </summary>
     public class PlanktonFace
     {
         public int FirstHalfedge;
-        //
-        public int EdgeCount;
-        public Vector3d Normal;
-        public double Area;
         
         public PlanktonFace()
         {

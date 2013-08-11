@@ -37,14 +37,14 @@ namespace Plankton.Test
             pMesh.Vertices.Add(0.5, 0.0, 0.0);   // 7
             pMesh.Vertices.Add(0.5, 0.5, 0.0);   // 8
             
-            pMesh.Faces.AddFace(new int[] { 4, 1, 0 }); // 0
-            pMesh.Faces.AddFace(new int[] { 4, 0, 3 }); // 1
-            pMesh.Faces.AddFace(new int[] { 4, 3, 6 }); // 2
-            pMesh.Faces.AddFace(new int[] { 4, 6, 7 }); // 3
-            pMesh.Faces.AddFace(new int[] { 4, 7, 8 }); // 4
-            pMesh.Faces.AddFace(new int[] { 4, 8, 5 }); // 5
-            pMesh.Faces.AddFace(new int[] { 4, 5, 2 }); // 6
-            pMesh.Faces.AddFace(new int[] { 4, 2, 1 }); // 7
+            pMesh.Faces.AddFace(4, 1, 0); // 0
+            pMesh.Faces.AddFace(4, 0, 3); // 1
+            pMesh.Faces.AddFace(4, 3, 6); // 2
+            pMesh.Faces.AddFace(4, 6, 7); // 3
+            pMesh.Faces.AddFace(4, 7, 8); // 4
+            pMesh.Faces.AddFace(4, 8, 5); // 5
+            pMesh.Faces.AddFace(4, 5, 2); // 6
+            pMesh.Faces.AddFace(4, 2, 1); // 7
             
             // Find the outgoing halfedge of Vertex #4 (center)
 
@@ -55,8 +55,8 @@ namespace Plankton.Test
             Assert.IsTrue(pMesh.Halfedges.FlipEdge(he));
             
             // Check vertices for each face
-            Assert.AreEqual(new int[]{ 1, 5, 2 }, pMesh.Faces.GetVertices(6));
-            Assert.AreEqual(new int[]{ 5, 1, 4 }, pMesh.Faces.GetVertices(7));
+            Assert.AreEqual(new int[]{ 1, 5, 2 }, pMesh.Faces.GetFaceVertices(6));
+            Assert.AreEqual(new int[]{ 5, 1, 4 }, pMesh.Faces.GetFaceVertices(7));
 
             // Check outgoing he of Vertex #4 has been updated
             he = pMesh.Vertices[4].OutgoingHalfedge;
