@@ -164,12 +164,6 @@ namespace Plankton
             int pair_next = this[pair].NextHalfedge;
             
             // to flip an edge
-            // update 2 start verts
-            this[index].StartVertex = EndVertex(pair_next);
-            this[pair].StartVertex = EndVertex(next);
-            // 2 adjacentfaces
-            this[next].AdjacentFace = this[pair].AdjacentFace;
-            this[pair_next].AdjacentFace = this[index].AdjacentFace;
             // 6 nexts
             // 6 prevs
             this.MakeAdjacent(this[pair].PrevHalfedge, next);
@@ -192,6 +186,12 @@ namespace Plankton
             f = this[pair].AdjacentFace;
             if (_mesh.Faces[f].FirstHalfedge == pair_next)
                 _mesh.Faces[f].FirstHalfedge = pair;
+            // update 2 start verts
+            this[index].StartVertex = EndVertex(pair_next);
+            this[pair].StartVertex = EndVertex(next);
+            // 2 adjacentfaces
+            this[next].AdjacentFace = this[pair].AdjacentFace;
+            this[pair_next].AdjacentFace = this[index].AdjacentFace;
             
             return true;
         }
