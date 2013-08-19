@@ -9,11 +9,16 @@ namespace PlanktonGh
     /// </summary>
     public static class RhinoSupport
     {
+        public static string HelloWorld()
+        {
+            return "Hello World!";
+        }
+        
         /// <summary>
         /// Creates a Plankton halfedge mesh from a Rhino mesh.
         /// Uses the topology of the Rhino mesh directly.
         /// </summary>
-        /// <returns>A <see cref="PlanktonMesh"/> which represents the topology of the source mesh.</returns>
+        /// <returns>A <see cref="PlanktonMesh"/> which represents the topology and geometry of the source mesh.</returns>
         /// <param name="source">A Rhino mesh to convert from.</param>
         public static PlanktonMesh ToPlanktonMesh(this Mesh source)
         {
@@ -211,7 +216,7 @@ namespace PlanktonGh
         /// Uses the face-vertex information available in the halfedge data structure.
         /// </summary>
         /// <returns>A <see cref="Mesh"/> which represents the source mesh (as best it can).</returns>
-        /// <param name="pMesh">A Plankton mesh to convert from.</param>
+        /// <param name="source">A Plankton mesh to convert from.</param>
         /// <remarks>Any faces with five sides or more will be triangulated.</remarks>
         public static Mesh ToRhinoMesh(this PlanktonMesh source)
         {
@@ -250,7 +255,7 @@ namespace PlanktonGh
         /// Converts each face to a closed polyline.
         /// </summary>
         /// <returns>A list of closed polylines representing the boundary edges of each face.</returns>
-        /// <param name="pMesh">A Plankton mesh.</param>
+        /// <param name="source">A Plankton mesh.</param>
         public static Polyline[] ToPolylines(this PlanktonMesh source)
         {
             int n = source.Faces.Count;
@@ -267,6 +272,36 @@ namespace PlanktonGh
                 polylines[i] = facePoly;
             }
             return polylines;
+        }
+        
+        /// <summary>
+        /// Creates a Rhino Point3f from a Plankton vertex.
+        /// </summary>
+        /// <param name="vertex">A Plankton vertex</param>
+        /// <returns>A Point3f with the same coordinates as the vertex.</returns>
+        public static Point3f ToPoint3f(this PlanktonVertex vertex)
+        {
+            return new Point3f(vertex.X, vertex.Y, vertex.Z);
+        }
+        
+        /// <summary>
+        /// Creates a Rhino Point3f from a Plankton vector.
+        /// </summary>
+        /// <param name="vector">A Plankton vector.</param>
+        /// <returns>A Point3f with the same XYZ components as the vector.</returns>
+        public static Point3f ToPoint3f(this PlanktonXYZ vector)
+        {
+            return new Point3f(vector.X, vector.Y, vector.Z);
+        }
+        
+        /// <summary>
+        /// Creates a Rhino Vector3f from a Plankton vector.
+        /// </summary>
+        /// <param name="vector">A Plankton vector.</param>
+        /// <returns>A Vector3f with the same XYZ components as the vector.</returns>
+        public static Vector3f ToVector3f(this PlanktonXYZ vector)
+        {
+            return new Vector3f(vector.X, vector.Y, vector.Z);
         }
     }
 }
