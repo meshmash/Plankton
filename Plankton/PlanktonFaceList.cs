@@ -330,6 +330,12 @@ namespace Plankton
                 .Select(h => _mesh.Halfedges[h].StartVertex).ToArray();
         }
         
+        [Obsolete("GetVertices is deprecated, please use GetFaceVertices instead.")]
+        public int[] GetVertices(int f)
+        {
+            return this.GetFaceVertices(f);
+        }
+        
         /// <summary>
         /// Gets the barycenter of a face's vertices.
         /// </summary>
@@ -346,6 +352,12 @@ namespace Plankton
             }
             centroid *= 1f / count;
             return centroid;
+        }
+        
+        [Obsolete("FaceCentroid is deprecated, please use GetFaceCenter instead.")]
+        public PlanktonXYZ FaceCentroid(int f)
+        {
+            return this.GetFaceCenter(f);
         }
         
         /// <summary>
