@@ -162,6 +162,10 @@ namespace Plankton
             int pair = this.PairHalfedge(index);
             int next = this[index].NextHalfedge;
             int pair_next = this[pair].NextHalfedge;
+
+            // Also don't allow if the edge that would be created by flipping already exists in the mesh
+            if (FindHalfedge(EndVertex(pair_next), EndVertex(next)) != -1)
+                return false;
             
             // to flip an edge
             // 6 nexts
@@ -195,11 +199,47 @@ namespace Plankton
             
             return true;
         }
-        
-        public void SplitEdge(int index)
+
+        /// <summary>
+        /// Creates a new vertex, and inserts it along an existing edge, splitting it in 2.
+        /// </summary>
+        /// <param name="index">The index of a halfedge in the edge to be split.</param>
+        /// <returns>The index of the newly created halfedge in the same direction as the input halfedge.</returns>
+        public int SplitEdge(int index)
         {
-            // add a new vertex
-            // add 2 new faces
+            // add a new vertex   
+            PlanktonVertex new_vertex = new PlanktonVertex();
+            _mesh.Vertices.Add(new_vertex);
+            int new_vertex_index = _mesh.Vertices.Count - 1;
+            // add a new halfedge pair
+            int new_halfedge1 = this.AddPair(this[index].StartVertex, this.EndVertex(index), this[index].AdjacentFace);
+            int new_halfedge2 = this.PairHalfedge(new_halfedge1);
+            // update :
+            // input he's next
+            this[index].NextHalfedge = new_halfedge1;
+            // input's pair's prev
+            this[this.PairHalfedge(index)].PrevHalfedge = new_halfedge2;
+            // new he's prev & next
+            this[new_halfedge1].PrevHalfedge = index;
+            this[new_halfedge1].NextHalfedge = this[index].NextHalfedge;
+            // new he's pair's prev, next, adjface
+            this[new_halfedge2].PrevHalfedge = this[this.PairHalfedge(index)].PrevHalfedge;
+            this[new_halfedge2].NextHalfedge = this.PairHalfedge(index);
+            this[new_halfedge2].AdjacentFace = this[this.PairHalfedge(index)].AdjacentFace;
+            // new vert's outgoing he
+            _mesh.Vertices[new_vertex_index].OutgoingHalfedge = new_halfedge1;
+            // end vert's outgoing 
+            if (_mesh.Vertices[this.EndVertex(index)].OutgoingHalfedge == this.PairHalfedge(index))
+            { _mesh.Vertices[this.EndVertex(index)].OutgoingHalfedge = new_halfedge2; }
+
+            return new_halfedge1;
+        }
+
+        public void SplitFace(int he_index, int around)
+        {
+            // split the adjacent face in 2
+            // by creating a new edge from the start of the given halfedge
+            // to another vertex around the face
             throw new NotImplementedException();
         }
         
