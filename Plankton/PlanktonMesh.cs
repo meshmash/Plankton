@@ -10,19 +10,40 @@ namespace Plankton
     /// </summary>
     public class PlanktonMesh
     {
+        private PlanktonVertexList _vertices;
+        private PlanktonHalfEdgeList _halfedges;
+        private PlanktonFaceList _faces;
+        
         #region "constructors"
         public PlanktonMesh() //blank constructor
         {
-            this.Faces = new PlanktonFaceList(this);
-            this.Halfedges = new PlanktonHalfEdgeList(this);
-            this.Vertices = new PlanktonVertexList(this);
         }
         #endregion
 
         #region "properties"
-        public PlanktonVertexList Vertices { get; private set; }
-        public PlanktonHalfEdgeList Halfedges { get; private set; }
-        public PlanktonFaceList Faces { get; private set; }
+        /// <summary>
+        /// Gets access to the vertices collection in this mesh.
+        /// </summary>
+        public PlanktonVertexList Vertices
+        {
+            get { return _vertices ?? (_vertices = new PlanktonVertexList(this)); }
+        }
+        
+        /// <summary>
+        /// Gets access to the halfedges collection in this mesh.
+        /// </summary>
+        public PlanktonHalfEdgeList Halfedges
+        {
+            get { return _halfedges ?? (_halfedges = new PlanktonHalfEdgeList(this)); }
+        }
+        
+        /// <summary>
+        /// Gets access to the faces collection in this mesh.
+        /// </summary>
+        public PlanktonFaceList Faces
+        {
+            get { return _faces ?? (_faces = new PlanktonFaceList(this)); }
+        }
         #endregion
 
         #region "general methods"
