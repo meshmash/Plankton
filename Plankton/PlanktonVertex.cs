@@ -1,41 +1,37 @@
-﻿using Rhino.Geometry;
-using System;
+﻿using System;
 
 namespace Plankton
 {
     /// <summary>
-    /// Description of PlanktonVertex.
+    /// Represents a vertex in Plankton's halfedge mesh data structure.
     /// </summary>
     public class PlanktonVertex
     {
-        public Point3d Position;
         public int OutgoingHalfedge;
-        //       
-        public bool Dead;
-        public Vector3d Normal;
+        
         public PlanktonVertex()
         {
             OutgoingHalfedge = -1;
         }
-        public PlanktonVertex(Point3f V)
-            : this()
-        {
-            Position = (Point3d)V;
-        }
-        public PlanktonVertex(Point3d V)
-            : this()
-        {
-            Position = V;
-        }
         public PlanktonVertex(double x, double y, double z)
-            : this()
-        {
-            Position = new Point3d(x, y, z);
-        }
+            : this((float) x, (float) y, (float) z)
+        {}
         public PlanktonVertex(float x, float y, float z)
             : this()
         {
-            Position = new Point3d(x, y, z);
+            X = x; Y = y; Z = z;
         }
+
+        public float X { get; set; }
+        
+        public float Y { get; set; }
+        
+        public float Z { get; set; }
+
+        public PlanktonXYZ ToXYZ()
+        {
+            return new PlanktonXYZ(X, Y, Z);
+        }
+
     }
 }

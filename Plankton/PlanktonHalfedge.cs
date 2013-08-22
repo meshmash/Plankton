@@ -1,10 +1,9 @@
-﻿using Rhino.Geometry;
-using System;
+﻿using System;
 
 namespace Plankton
 {
     /// <summary>
-    /// Description of PlanktonHalfedge.
+    /// Represents a halfdege in Plankton's halfedge mesh data structure.
     /// </summary>
     public class PlanktonHalfedge
     {
@@ -14,9 +13,6 @@ namespace Plankton
         public int NextHalfedge;
         //secondary properties - these should still be kept updated if you change the topology
         public int PrevHalfedge;
-        public int Index;
-        //tertiary properties - less vital, calculate or refresh only as needed
-        public Vector3d Normal;
 
         public PlanktonHalfedge()
         {
@@ -30,13 +26,6 @@ namespace Plankton
             StartVertex = Start;
             AdjacentFace = AdjFace;
             NextHalfedge = Next;
-        }
-        public int Pair()
-        {
-            if (Index % 2 == 0)
-            { return Index + 1; }
-            else
-            { return Index - 1; }
         }
     }
 }
