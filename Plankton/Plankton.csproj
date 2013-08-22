@@ -31,10 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="RhinoCommon">
-      <HintPath>..\..\..\..\..\..\..\Program Files\Rhinoceros 5.0 (64-bit)\System\RhinoCommon.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
@@ -50,6 +46,7 @@
     <Compile Include="PlanktonVertex.cs" />
     <Compile Include="PlanktonVertexList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PlanktonXYZ.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

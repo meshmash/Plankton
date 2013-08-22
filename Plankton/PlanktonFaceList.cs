@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-using Rhino.Geometry;
+//using Rhino.Geometry;
 
 namespace Plankton
 {
@@ -88,7 +88,7 @@ namespace Plankton
             // If it doesn't exist, mark for creation of a new halfedge pair
             int[] loop = new int[n];
             bool[] is_new = new bool[n];
-            List<int> newHalfedges = new List<int>();
+            
             for (int i = 0, ii = 1; i < n; i++, ii++, ii %= n)
             {
                 int v1 = array[i], v2 = array[ii];
@@ -127,7 +127,8 @@ namespace Plankton
             // Link halfedges
             for (int i = 0, ii = 1; i < n; i++, ii++, ii %= n)
             {
-                int v1 = array[i], v2 = array[ii];
+                //int v1 = array[i];
+                int v2 = array[ii];
                 int id = 0;
                 if (is_new[i])  id += 1; // first is new
                 if (is_new[ii]) id += 2; // second is new
@@ -236,6 +237,33 @@ namespace Plankton
             
             return this.Add(f);
         }
+
+        /// <summary>
+        /// Appends a new triangular face to the end of the mesh face list. Creates any halfedge pairs that are required.
+        /// </summary>
+        /// <returns>The index of the newly added face (-1 in the case that the face could not be added).</returns>
+        /// <param name="a">Index of first corner.</param>
+        /// <param name="b">Index of second corner.</param>
+        /// <param name="c">Index of third corner.</param>
+        /// <remarks>The mesh must remain 2-manifold and orientable at all times.</remarks>
+        public int AddFace(int a, int b, int c)
+        {
+            return this.AddFace(new int[] { a, b, c });
+        }
+
+        /// <summary>
+        /// Appends a new quadragular face to the end of the mesh face list. Creates any halfedge pairs that are required.
+        /// </summary>
+        /// <returns>The index of the newly added face (-1 in the case that the face could not be added).</returns>
+        /// <param name="a">Index of first corner.</param>
+        /// <param name="b">Index of second corner.</param>
+        /// <param name="c">Index of third corner.</param>
+        /// <param name="d">Index of fourth corner.</param> 
+        /// <remarks>The mesh must remain 2-manifold and orientable at all times.</remarks>
+        public int AddFace(int a, int b, int c, int d)
+        {
+            return this.AddFace(new int[] { a, b, c, d });
+        }
         
         /// <summary>
         /// Returns the face at the given index.
@@ -296,10 +324,16 @@ namespace Plankton
         /// <param name="f">A face index.</param>
         /// <returns>An array of vertex indices incident to the specified face.
         /// Ordered anticlockwise around the face.</returns>
-        public int[] GetVertices(int f)
+        public int[] GetFaceVertices(int f)
         {
             return this.GetHalfedgesCirculator(f)
                 .Select(h => _mesh.Halfedges[h].StartVertex).ToArray();
+        }
+        
+        [Obsolete("GetVertices is deprecated, please use GetFaceVertices instead.")]
+        public int[] GetVertices(int f)
+        {
+            return this.GetFaceVertices(f);
         }
         
         /// <summary>
@@ -307,16 +341,23 @@ namespace Plankton
         /// </summary>
         /// <param name="f">A face index.</param>
         /// <returns>The location of the specified face's barycenter.</returns>
-        public Point3d FaceCentroid(int f)
+        public PlanktonXYZ GetFaceCenter(int f)
         {
-            int[] fvs = this.GetVertices(f);
-            Point3d Centroid = new Point3d(0, 0, 0);
-            foreach (int i in fvs)
+            PlanktonXYZ centroid = PlanktonXYZ.Zero;
+            int count = 0;
+            foreach (int i in this.GetFaceVertices(f))
             {
-                Centroid += _mesh.Vertices[i].Position;
+                centroid += _mesh.Vertices[i].ToXYZ();
+                count++;
             }
-            Centroid *= 1.0 / fvs.Length;
-            return Centroid;
+            centroid *= 1f / count;
+            return centroid;
+        }
+        
+        [Obsolete("FaceCentroid is deprecated, please use GetFaceCenter instead.")]
+        public PlanktonXYZ FaceCentroid(int f)
+        {
+            return this.GetFaceCenter(f);
         }
         
         /// <summary>

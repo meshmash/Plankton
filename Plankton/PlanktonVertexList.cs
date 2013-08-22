@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-using Rhino.Geometry;
-
 namespace Plankton
 {
     /// <summary>
@@ -55,26 +53,6 @@ namespace Plankton
         /// <summary>
         /// Adds a new vertex to the end of the Vertex list.
         /// </summary>
-        /// <param name="vertex">Location of new vertex.</param>
-        /// <returns>The index of the newly added vertex.</returns>
-        public int Add(Point3d vertex)
-        {
-            return this.Add(vertex.X, vertex.Y, vertex.Z);
-        }
-        
-        /// <summary>
-        /// Adds a new vertex to the end of the Vertex list.
-        /// </summary>
-        /// <param name="vertex">Location of new vertex.</param>
-        /// <returns>The index of the newly added vertex.</returns>
-        public int Add(Point3f vertex)
-        {
-            return this.Add(vertex.X, vertex.Y, vertex.Z);
-        }
-        
-        /// <summary>
-        /// Adds a new vertex to the end of the Vertex list.
-        /// </summary>
         /// <param name="x">X component of new vertex coordinate.</param>
         /// <param name="y">Y component of new vertex coordinate.</param>
         /// <param name="z">Z component of new vertex coordinate.</param>
@@ -95,33 +73,7 @@ namespace Plankton
         {
             return this.Add(new PlanktonVertex(x, y, z));
         }
-        
-        /// <summary>
-        /// Adds a series of new vertices to the end of the vertex list.
-        /// This overload accepts double-precision points.
-        /// </summary>
-        /// <param name="vertices">A list, an array or any enumerable set of Point3d.</param>
-        public void AddVertices(IEnumerable<Point3d> vertices)
-        {
-            foreach (Point3d v in vertices)
-            {
-                this.Add(v);
-            }
-        }
         #endregion
-        
-        /// <summary>
-        /// Adds a series of new vertices to the end of the vertex list.
-        /// This overload accepts single-precision points.
-        /// </summary>
-        /// <param name="vertices">A list, an array or any enumerable set of Point3f.</param>
-        public void AddVertices(IEnumerable<Point3f> vertices)
-        {
-            foreach (Point3f v in vertices)
-            {
-                this.Add(v);
-            }
-        }
         
         /// <summary>
         /// Returns the vertex at the given index.

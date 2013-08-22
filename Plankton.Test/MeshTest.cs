@@ -8,7 +8,7 @@ namespace Plankton.Test
     public class MeshTest
     {
         [Test]
-        public void CanCreateFromFaceVertex()
+        public void CanCreateCubeFromFaceVertex()
         {
             // Create a simple cube
             
@@ -23,12 +23,12 @@ namespace Plankton.Test
             pMesh.Vertices.Add(0.5, 0.5, -0.5);
             pMesh.Vertices.Add(0.5, 0.5, 0.5);
             
-            pMesh.Faces.AddFace(new int[]{ 3, 2, 1, 0 });
-            pMesh.Faces.AddFace(new int[]{ 1, 5, 4, 0 });
-            pMesh.Faces.AddFace(new int[]{ 2, 6, 5, 1 });
-            pMesh.Faces.AddFace(new int[]{ 7, 6, 2, 3 });
-            pMesh.Faces.AddFace(new int[]{ 4, 7, 3, 0 });
-            pMesh.Faces.AddFace(new int[]{ 5, 6, 7, 4 });
+            pMesh.Faces.AddFace(3, 2, 1, 0);
+            pMesh.Faces.AddFace(1, 5, 4, 0);
+            pMesh.Faces.AddFace(2, 6, 5, 1);
+            pMesh.Faces.AddFace(7, 6, 2, 3);
+            pMesh.Faces.AddFace(4, 7, 3, 0);
+            pMesh.Faces.AddFace(5, 6, 7, 4);
             
             
             Assert.AreEqual(24, pMesh.Halfedges.Count);
@@ -59,7 +59,7 @@ namespace Plankton.Test
             Assert.AreEqual(0, pMesh.Faces.NakedEdgeCount(2));
             
             // Get all vertices from face #4 and compare against expected
-            int[] faceFourVertices = pMesh.Faces.GetVertices(4);
+            int[] faceFourVertices = pMesh.Faces.GetFaceVertices(4);
             int[] faceFourVerticesExpected = new int[]{ 4, 7, 3, 0 };
             Assert.AreEqual(faceFourVerticesExpected, faceFourVertices);
             
@@ -85,9 +85,37 @@ namespace Plankton.Test
             Assert.AreEqual(13, pMesh.Halfedges.FindHalfedge(0, 4)); // exists
             Assert.AreEqual(-1, pMesh.Halfedges.FindHalfedge(1, 3)); // doesn't exist
         }
+
+        [Test]
+        public void CanDualCube()
+        {
+            // Create a simple cube
+
+            PlanktonMesh pMesh = new PlanktonMesh();
+
+            pMesh.Vertices.Add(-0.5, -0.5, 0.5);
+            pMesh.Vertices.Add(-0.5, -0.5, -0.5);
+            pMesh.Vertices.Add(-0.5, 0.5, -0.5);
+            pMesh.Vertices.Add(-0.5, 0.5, 0.5);
+            pMesh.Vertices.Add(0.5, -0.5, 0.5);
+            pMesh.Vertices.Add(0.5, -0.5, -0.5);
+            pMesh.Vertices.Add(0.5, 0.5, -0.5);
+            pMesh.Vertices.Add(0.5, 0.5, 0.5);
+
+            pMesh.Faces.AddFace(3, 2, 1, 0);
+            pMesh.Faces.AddFace(1, 5, 4, 0);
+            pMesh.Faces.AddFace(2, 6, 5, 1);
+            pMesh.Faces.AddFace(7, 6, 2, 3);
+            pMesh.Faces.AddFace(4, 7, 3, 0);
+            pMesh.Faces.AddFace(5, 6, 7, 4);
+
+            var dual = pMesh.Dual();
+
+            Assert.AreEqual(new int[] { 2, 3, 0, 1 }, dual.Vertices.GetVertexFaces(0));
+        }
         
         [Test]
-        public void CanAddFacesNonManifoldVertex()
+        public void CanAddFacesAroundNonManifoldVertex()
         {
             // a.k.a. the pizza slice test...
             
@@ -103,13 +131,13 @@ namespace Plankton.Test
             
             
             // Add the first face
-            pMesh.Faces.AddFace(new int[]{ 2, 1, 0 });
+            pMesh.Faces.AddFace(2, 1, 0);
             
             // Check vertex #0 outgoing halfedge index
             Assert.AreEqual(3, pMesh.Vertices[0].OutgoingHalfedge);
             
             // Add a face which would create a non-manifold condition at vertex #1
-            pMesh.Faces.AddFace(new int[]{ 0, 4, 3 });
+            pMesh.Faces.AddFace(0, 4, 3);
             
             //Assert.AreEqual(12, pMesh.Halfedges.Count);
             
@@ -121,26 +149,26 @@ namespace Plankton.Test
             
             
             // Add another face and check again
-            pMesh.Faces.AddFace(new int[]{ 6, 5, 0 });
+            pMesh.Faces.AddFace(6, 5, 0);
             Assert.AreEqual(6, pMesh.Vertices.NakedEdgeCount(0));
             Assert.AreEqual(15, pMesh.Vertices[0].OutgoingHalfedge);
             Assert.AreEqual(6, pMesh.Vertices.GetHalfedges(0).Length);
             
             
             // Plug a gap - vertex #0 ->outgoing should move
-            pMesh.Faces.AddFace(new int[]{ 5, 4, 0 });
+            pMesh.Faces.AddFace(5, 4, 0);
             Assert.AreEqual(4, pMesh.Vertices.NakedEdgeCount(0));
             Assert.IsTrue(pMesh.Halfedges[pMesh.Vertices[0].OutgoingHalfedge].AdjacentFace < 0);
             Assert.AreEqual(6, pMesh.Vertices.GetHalfedges(0).Length);
             
             
             // Plug another gap which should make vertex #0 manifold again
-            int f = pMesh.Faces.AddFace(new int[]{ 0, 3, 2 });
+            int f = pMesh.Faces.AddFace(0, 3, 2);
             Assert.AreEqual(6, pMesh.Vertices.GetHalfedges(0).Length);
             Assert.AreEqual(2, pMesh.Vertices.NakedEdgeCount(0));
             
             // Try adding a face which already exits
-            f = pMesh.Faces.AddFace(new int[]{ 0, 5, 4 });
+            f = pMesh.Faces.AddFace(0, 5, 4);
             Assert.AreEqual(-1, f, "Face not added.");
         }
     }

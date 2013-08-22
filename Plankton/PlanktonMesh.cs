@@ -1,4 +1,4 @@
-﻿using Rhino.Geometry;
+﻿//using Rhino.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,268 +10,43 @@ namespace Plankton
     /// </summary>
     public class PlanktonMesh
     {
-        #region "members"
-        public PlanktonVertexList Vertices;
-        public PlanktonHalfEdgeList Halfedges;
-        public PlanktonFaceList Faces;
-        #endregion
-
+        private PlanktonVertexList _vertices;
+        private PlanktonHalfEdgeList _halfedges;
+        private PlanktonFaceList _faces;
+        
         #region "constructors"
         public PlanktonMesh() //blank constructor
         {
-            this.Faces = new PlanktonFaceList(this);
-            this.Halfedges = new PlanktonHalfEdgeList(this);
-            this.Vertices = new PlanktonVertexList(this);
         }
-        public PlanktonMesh(Mesh M) //Create a Plankton Mesh from a Rhino Mesh
-            : this()
+        #endregion
+
+        #region "properties"
+        /// <summary>
+        /// Gets access to the vertices collection in this mesh.
+        /// </summary>
+        public PlanktonVertexList Vertices
         {
-
-            M.Vertices.CombineIdentical(true, true);
-            M.Vertices.CullUnused();
-            M.UnifyNormals();
-            M.Weld(Math.PI);
-
-            for (int i = 0; i < M.Vertices.Count; i++)
-            {
-                Vertices.Add(new PlanktonVertex(M.TopologyVertices[i]));
-            }
-            
-            for (int i = 0; i < M.Faces.Count; i++)
-            {Faces.Add(new PlanktonFace()); }
-
-            for (int i = 0; i < M.TopologyEdges.Count; i++)
-            {
-                PlanktonHalfedge HalfA = new PlanktonHalfedge();
-
-                HalfA.StartVertex = M.TopologyEdges.GetTopologyVertices(i).I;
-
-                if (Vertices[HalfA.StartVertex].OutgoingHalfedge == -1)
-                { Vertices[HalfA.StartVertex].OutgoingHalfedge = Halfedges.Count; }
-
-                PlanktonHalfedge HalfB = new PlanktonHalfedge();
-
-                HalfB.StartVertex = M.TopologyEdges.GetTopologyVertices(i).J;
-
-                if (Vertices[HalfB.StartVertex].OutgoingHalfedge == -1)
-                { Vertices[HalfB.StartVertex].OutgoingHalfedge = Halfedges.Count + 1; }
-
-                bool[] Match;
-                int[] ConnectedFaces = M.TopologyEdges.GetConnectedFaces(i, out Match);
-
-                //Note for Steve Baer : This Match bool doesn't seem to work on triangulated meshes - it often returns true
-                //for both faces, even for a properly oriented manifold mesh, which can't be right
-                //So - making our own check for matching:
-                //(I suspect the problem is related to C being the same as D for triangles, so best to
-                //deal with them separately just to make sure)
-                //loop through the vertices of the face until finding the one which is the same as the start of the edge
-                //iff the next vertex around the face is the end of the edge then it matches.
-
-                Match[0] = false;
-                if (Match.Length > 1)
-                {Match[1] = true;}
-
-                int VertA = M.TopologyVertices.TopologyVertexIndex(M.Faces[ConnectedFaces[0]].A);
-                int VertB = M.TopologyVertices.TopologyVertexIndex(M.Faces[ConnectedFaces[0]].B);
-                int VertC = M.TopologyVertices.TopologyVertexIndex(M.Faces[ConnectedFaces[0]].C);
-                int VertD = M.TopologyVertices.TopologyVertexIndex(M.Faces[ConnectedFaces[0]].D);
-
-                if ((VertA == M.TopologyEdges.GetTopologyVertices(i).I)
-                    && (VertB == M.TopologyEdges.GetTopologyVertices(i).J))
-                { Match[0] = true;
-                }
-                if ((VertB == M.TopologyEdges.GetTopologyVertices(i).I)
-                    && (VertC == M.TopologyEdges.GetTopologyVertices(i).J))
-                {
-                    Match[0] = true;
-                }
-                if ((VertC == M.TopologyEdges.GetTopologyVertices(i).I)
-                    && (VertD == M.TopologyEdges.GetTopologyVertices(i).J))
-                {
-                    Match[0] = true;
-                }
-                if ((VertD == M.TopologyEdges.GetTopologyVertices(i).I)
-                    && (VertA == M.TopologyEdges.GetTopologyVertices(i).J))
-                {
-                    Match[0] = true;
-                }
-                //I don't think these next 2 should ever be needed, but just in case:
-                if ((VertC == M.TopologyEdges.GetTopologyVertices(i).I)
-                    && (VertA == M.TopologyEdges.GetTopologyVertices(i).J))
-                {
-                    Match[0] = true;
-                }
-                if ((VertB == M.TopologyEdges.GetTopologyVertices(i).I)
-                    && (VertD == M.TopologyEdges.GetTopologyVertices(i).J))
-                {
-                    Match[0] = true;
-                }
-                
-                if (Match[0] == true)
-                {
-                    HalfA.AdjacentFace = ConnectedFaces[0];
-                    if (Faces[HalfA.AdjacentFace].FirstHalfedge == -1)
-                    { Faces[HalfA.AdjacentFace].FirstHalfedge = Halfedges.Count; }
-                    if (ConnectedFaces.Length > 1)
-                    {
-                        HalfB.AdjacentFace = ConnectedFaces[1];
-                        if (Faces[HalfB.AdjacentFace].FirstHalfedge == -1)
-                        { Faces[HalfB.AdjacentFace].FirstHalfedge = Halfedges.Count + 1; }
-                    }
-                    else
-                    {
-                        HalfB.AdjacentFace = -1;
-                    }
-                }
-                else
-                {
-                    HalfB.AdjacentFace = ConnectedFaces[0];
-
-                    if (Faces[HalfB.AdjacentFace].FirstHalfedge == -1)
-                    { Faces[HalfB.AdjacentFace].FirstHalfedge = Halfedges.Count + 1; }
-
-                    if (ConnectedFaces.Length > 1)
-                    {
-                        HalfA.AdjacentFace = ConnectedFaces[1];
-
-                        if (Faces[HalfA.AdjacentFace].FirstHalfedge == -1)
-                        { Faces[HalfA.AdjacentFace].FirstHalfedge = Halfedges.Count; }
-                    }
-                    else
-                    {
-                        HalfA.AdjacentFace = -1;
-                    }
-                }
-                Halfedges.Add(HalfA);
-                Halfedges[2 * i].Index = 2 * i; //
-                Halfedges.Add(HalfB);
-                Halfedges[2 * i + 1].Index = 2 * i + 1; //
-            }
-
-            for (int i = 0; i < (Halfedges.Count); i += 2)
-            {
-                int[] EndNeighbours = M.TopologyVertices.ConnectedTopologyVertices(Halfedges[i + 1].StartVertex, true);
-                for (int j = 0; j < EndNeighbours.Length; j++)
-                {
-                    if(EndNeighbours[j]==Halfedges[i].StartVertex)
-                    {
-                        int EndOfNextHalfedge = EndNeighbours[(j - 1 + EndNeighbours.Length) % EndNeighbours.Length];
-                        int StartOfPrevOfPairHalfedge = EndNeighbours[(j + 1) % EndNeighbours.Length];
-                        
-                        int NextEdge = M.TopologyEdges.GetEdgeIndex(Halfedges[i + 1].StartVertex,EndOfNextHalfedge);
-                        int PrevPairEdge = M.TopologyEdges.GetEdgeIndex(Halfedges[i + 1].StartVertex,StartOfPrevOfPairHalfedge);
-
-                        if (M.TopologyEdges.GetTopologyVertices(NextEdge).I == Halfedges[i + 1].StartVertex)
-                        { Halfedges[i].NextHalfedge = NextEdge * 2; }
-                        else
-                        { Halfedges[i].NextHalfedge = NextEdge * 2 + 1; }
-
-                        if (M.TopologyEdges.GetTopologyVertices(PrevPairEdge).J == Halfedges[i + 1].StartVertex)
-                        { Halfedges[i + 1].PrevHalfedge = PrevPairEdge * 2; }
-                        else
-                        { Halfedges[i + 1].PrevHalfedge = PrevPairEdge * 2+1; }
-                        break;
-                    }
-                }
-
-                int[] StartNeighbours = M.TopologyVertices.ConnectedTopologyVertices(Halfedges[i].StartVertex, true);
-                for (int j = 0; j < StartNeighbours.Length; j++)
-                {
-                    if (StartNeighbours[j] == Halfedges[i+1].StartVertex)
-                    {
-                        int EndOfNextOfPairHalfedge = StartNeighbours[(j - 1 + StartNeighbours.Length) % StartNeighbours.Length];
-                        int StartOfPrevHalfedge = StartNeighbours[(j + 1) % StartNeighbours.Length];
-
-                        int NextPairEdge = M.TopologyEdges.GetEdgeIndex(Halfedges[i].StartVertex, EndOfNextOfPairHalfedge);
-                        int PrevEdge = M.TopologyEdges.GetEdgeIndex(Halfedges[i].StartVertex, StartOfPrevHalfedge);
-
-                        if (M.TopologyEdges.GetTopologyVertices(NextPairEdge).I == Halfedges[i].StartVertex)
-                        { Halfedges[i + 1].NextHalfedge = NextPairEdge * 2; }
-                        else
-                        { Halfedges[i + 1].NextHalfedge = NextPairEdge * 2 + 1; }
-
-                        if (M.TopologyEdges.GetTopologyVertices(PrevEdge).J == Halfedges[i].StartVertex)
-                        { Halfedges[i].PrevHalfedge = PrevEdge * 2; }
-                        else
-                        { Halfedges[i].PrevHalfedge = PrevEdge * 2 + 1; }
-                        break;
-                    }
-                }
-            }
+            get { return _vertices ?? (_vertices = new PlanktonVertexList(this)); }
         }
         
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlanktonMesh"/> class.
-        /// Constructs a new halfedge mesh using the face-vertex representation of another mesh.
+        /// Gets access to the halfedges collection in this mesh.
         /// </summary>
-        /// <param name="pts">A list of cartesian coordinates.</param>
-        /// <param name="faces">A list faces, described by the indices of their vertices
-        /// (ordered anticlockwise around the face).</param>
-        public PlanktonMesh(IEnumerable<Point3d> pts, IEnumerable<IEnumerable<int>> faces)
-            : this()
+        public PlanktonHalfEdgeList Halfedges
         {
-            // TODO: Should we remove this constructor? I doesn't exactly do much...
-            
-            // Add vertices
-            this.Vertices.AddVertices(pts);
-            
-            // Add faces (and half-edges)
-            foreach (IEnumerable<int> face in faces)
-            {
-                this.Faces.AddFace(face);
-            }
+            get { return _halfedges ?? (_halfedges = new PlanktonHalfEdgeList(this)); }
+        }
+        
+        /// <summary>
+        /// Gets access to the faces collection in this mesh.
+        /// </summary>
+        public PlanktonFaceList Faces
+        {
+            get { return _faces ?? (_faces = new PlanktonFaceList(this)); }
         }
         #endregion
 
         #region "general methods"
-        public Mesh ToRhinoMesh()
-        {
-            // could add different options for triangulating ngons later
-            PlanktonMesh P = this;
-            Mesh M = new Mesh();
-            for (int i = 0; i < P.Vertices.Count; i++)
-            {
-                M.Vertices.Add(P.Vertices[i].Position);
-            }
-            for (int i = 0; i < P.Faces.Count; i++)
-            {
-                int[] FaceVs = P.Faces.GetVertices(i);
-                if (FaceVs.Length == 3)
-                {
-                    M.Faces.AddFace(FaceVs[0], FaceVs[1], FaceVs[2]);
-                }
-                if (FaceVs.Length == 4)
-                {
-                    M.Faces.AddFace(FaceVs[0], FaceVs[1], FaceVs[2], FaceVs[3]);
-                }
-                if (FaceVs.Length > 4)
-                {
-                    M.Vertices.Add(P.Faces.FaceCentroid(i));
-                    for (int j = 0; j < FaceVs.Length; j++)
-                    {
-                        M.Faces.AddFace(FaceVs[j], FaceVs[(j + 1) % FaceVs.Length], M.Vertices.Count - 1);
-                    }
-                }
-            }
-            return M;
-        }
-
-        public List<Polyline> ToPolylines()
-        {
-            List<Polyline> Polylines = new List<Polyline>();
-            for (int i = 0; i < Faces.Count; i++)
-            {
-                Polyline FacePoly = new Polyline();
-                int[] VertIndexes = this.Faces.GetVertices(i);
-                for (int j = 0; j <= VertIndexes.Length; j++)
-                {
-                    FacePoly.Add(Vertices[VertIndexes[j % VertIndexes.Length]].Position);
-                }
-                Polylines.Add(FacePoly);
-            }
-            return Polylines;
-        }
-
         // public void ReIndex() //clear away all the dead elements to save space
         // //maybe it is better to just create a fresh one rather than trying to shuffle the existing
         // {
@@ -292,7 +67,8 @@ namespace Plankton
 
             for (int i = 0; i < P.Faces.Count; i++)
             {
-                D.Vertices.Add(new PlanktonVertex(P.Faces.FaceCentroid(i)));
+                var fc = P.Faces.GetFaceCenter(i);
+                D.Vertices.Add(new PlanktonVertex(fc.X, fc.Y, fc.Z));
                 int[] FaceHalfedges = P.Faces.GetHalfedges(i);
                 for (int j = 0; j < FaceHalfedges.Length; j++)
                 {
@@ -321,8 +97,6 @@ namespace Plankton
             // dual prevHE is primal's next's pair
 
             // halfedge pairs stay the same
-
-            int newIndex = 0;
 
             for (int i = 0; i < P.Halfedges.Count; i++)
             {
@@ -353,10 +127,7 @@ namespace Plankton
                     //DualHE.PrevHalfedge = P.PairHalfedge(PrimalHE.NextHalfedge);
                     DualHE.PrevHalfedge = P.Halfedges[P.Halfedges.PairHalfedge(i)].NextHalfedge;
 
-                    DualHE.Index = newIndex;
-
                     D.Halfedges.Add(DualHE);
-                    newIndex += 1;
                 }
             }
             return D;
