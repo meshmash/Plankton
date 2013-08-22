@@ -217,9 +217,9 @@ namespace Plankton
                         {
                             int boundary = vs.GetHalfedgesCirculator(v2, loop[ii]).Skip(1)
                                 .First(h => hs[h].AdjacentFace < 0);
-                            hs.MakeAdjacent(loop[i], loop[ii]);
-                            hs.MakeAdjacent(hs[boundary].PrevHalfedge, next);
-                            hs.MakeAdjacent(prev, boundary);
+                            hs.MakeConsecutive(loop[i], loop[ii]);
+                            hs.MakeConsecutive(hs[boundary].PrevHalfedge, next);
+                            hs.MakeConsecutive(prev, boundary);
                         }
                         // If no other boundary is found, something must be wrong...
                         catch (InvalidOperationException)

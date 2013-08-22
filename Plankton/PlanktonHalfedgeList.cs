@@ -133,13 +133,30 @@ namespace Plankton
             }
             return -1;
         }
+
+        /// <summary>
+        /// Gets the halfedge a given number of 'next's around a face from a starting halfedge
+        /// </summary>        
+        /// <param name="start_he">The halfedge to start from</param>
+        /// <param name="around">How many steps around the face. 0 returns the start_he</param>
+        /// <returns>The resulting halfedge</returns>
+        /// 
+        public int He_AroundFace(int start_he,  int around)
+        {
+            int he_around = start_he;
+            for (int i = 0; i < around; i++)
+            {
+                he_around = this[he_around].NextHalfedge;                
+            }
+            return he_around;
+        }
         
         internal int EndVertex(int index)
         {
             return this[PairHalfedge(index)].StartVertex;
         }
         
-        internal void MakeAdjacent(int prev, int next)
+        internal void MakeConsecutive(int prev, int next)
         {
             this[prev].NextHalfedge = next;
             this[next].PrevHalfedge = prev;
@@ -170,12 +187,12 @@ namespace Plankton
             // to flip an edge
             // 6 nexts
             // 6 prevs
-            this.MakeAdjacent(this[pair].PrevHalfedge, next);
-            this.MakeAdjacent(index, this[next].NextHalfedge);
-            this.MakeAdjacent(next, pair);
-            this.MakeAdjacent(this[index].PrevHalfedge, pair_next);
-            this.MakeAdjacent(pair, this[pair_next].NextHalfedge);
-            this.MakeAdjacent(pair_next, index);
+            this.MakeConsecutive(this[pair].PrevHalfedge, next);
+            this.MakeConsecutive(index, this[next].NextHalfedge);
+            this.MakeConsecutive(next, pair);
+            this.MakeConsecutive(this[index].PrevHalfedge, pair_next);
+            this.MakeConsecutive(pair, this[pair_next].NextHalfedge);
+            this.MakeConsecutive(pair_next, index);
             // for each vert, check if need to update outgoing
             int v = this[index].StartVertex;
             if (_mesh.Vertices[v].OutgoingHalfedge == index)
@@ -209,8 +226,7 @@ namespace Plankton
         {
             // add a new vertex   
             PlanktonVertex new_vertex = new PlanktonVertex();
-            _mesh.Vertices.Add(new_vertex);
-            int new_vertex_index = _mesh.Vertices.Count - 1;
+            int new_vertex_index = _mesh.Vertices.Add(new_vertex);
             // add a new halfedge pair
             int new_halfedge1 = this.AddPair(this[index].StartVertex, this.EndVertex(index), this[index].AdjacentFace);
             int new_halfedge2 = this.PairHalfedge(new_halfedge1);
@@ -235,12 +251,66 @@ namespace Plankton
             return new_halfedge1;
         }
 
-        public void SplitFace(int he_index, int around)
+        /// <summary>
+        /// Split a face into 2 faces by inserting a new edge
+        /// </summary>
+        /// <param name="index">The index of a halfedge adjacent to the face to split. The new edge will connect the start of this halfedge with another vertex on the face</param>
+        /// <param name="around">How far in halfedges around the face to connect to - set to 2 for a triangle </param>
+        /// <returns>The index of the newly created face, or -1 on failure.</returns>
+        public int SplitFace(int index, int around)
         {
             // split the adjacent face in 2
             // by creating a new edge from the start of the given halfedge
             // to another vertex around the face
-            throw new NotImplementedException();
+           
+            int thisFace = this[index].AdjacentFace;
+            if (thisFace < 0)
+                return -1;
+
+            // add the new halfedge pair
+            int he_around = this.He_AroundFace(index, around); //the halfedge whose start will become the end of the new edge
+            int endVertex = this[he_around].StartVertex;            
+            int new_halfedge1 = this.AddPair(this[index].StartVertex, endVertex, thisFace);
+            int new_halfedge2 = this.PairHalfedge(new_halfedge1);
+
+            // add a new face   
+            PlanktonFace new_face = new PlanktonFace();
+            int new_face_index = _mesh.Faces.Add(new_face);
+
+            //link everything up
+
+            //prev of input he becomes prev of new_he1
+            this.MakeConsecutive(this[index].PrevHalfedge , new_halfedge1);
+
+            //next of new_he1 becomes he_around
+            this.MakeConsecutive(new_halfedge1, he_around);
+
+            //next of new_he2 becomes index
+            this.MakeConsecutive(new_halfedge2, index);
+
+            //prev of he_around becomes prev of new_he2
+            this.MakeConsecutive(this[he_around].PrevHalfedge, new_halfedge2);
+
+            //adjface of new_he1 is already the original face
+
+            //adjface of index is new face
+            this[index].AdjacentFace = new_face_index;
+            //go around the new face, starting at index, assigning adjacency
+            int next_he_around = this[index].NextHalfedge;
+            while(next_he_around != index)
+            {
+                this[next_he_around].AdjacentFace = new_face_index;
+                next_he_around = this[next_he_around].NextHalfedge;
+            }                        
+
+            //set the original face's first halfedge to new_he1
+            _mesh.Faces[thisFace].FirstHalfedge = new_halfedge1;
+            //set the new face's first halfedge to new_he2
+            _mesh.Faces[new_face_index].FirstHalfedge = new_halfedge2;
+
+            //think thats all of it!           
+
+            return new_face_index;
         }
         
         public void CollapseEdge(int index)
