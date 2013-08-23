@@ -83,5 +83,45 @@ namespace Plankton.Test
             Assert.Contains(28, pMesh.Vertices.GetHalfedges(1),
                             "Vertex #1 should now be linked to Halfedge #28");
         }
+        
+        [Test]
+        public void CanSplitEdge()
+        {
+            PlanktonMesh pMesh = new PlanktonMesh();
+            var hs = pMesh.Halfedges;
+            
+            // Create one vertex for each corner of a square
+            pMesh.Vertices.Add(0, 0, 0); // 0
+            pMesh.Vertices.Add(1, 0, 0); // 1
+            pMesh.Vertices.Add(1, 1, 0); // 2
+            pMesh.Vertices.Add(0, 1, 0); // 3
+            
+            // Create two triangular faces
+            pMesh.Faces.AddFace(0, 1, 2);
+            pMesh.Faces.AddFace(2, 3, 0);
+            
+            // Split the diagonal edge
+            int split_he = hs.FindHalfedge(0, 2);
+            int new_he = hs.SplitEdge(split_he);
+            
+            // Returned halfedge should start at the new vertex
+            Assert.AreEqual(4, hs[new_he].StartVertex);
+            
+            // Check that the 4 halfedges are all in the right places...
+            // New ones are between new vertex and second vertex
+            Assert.AreEqual(new_he, hs.FindHalfedge(4, 2));
+            Assert.AreEqual(hs.PairHalfedge(new_he), hs.FindHalfedge(2, 4));
+            // Existing ones are now between first vertex and new vertex
+            Assert.AreEqual(split_he, hs.FindHalfedge(0, 4));
+            Assert.AreEqual(hs.PairHalfedge(split_he), hs.FindHalfedge(4, 0));
+            
+            // New halfedges should have the same faces as the existing ones next to them
+            Assert.AreEqual(hs[split_he].AdjacentFace, hs[new_he].AdjacentFace);
+            Assert.AreEqual(hs[hs.PairHalfedge(split_he)].AdjacentFace,
+                            hs[hs.PairHalfedge(new_he)].AdjacentFace);
+            
+            // New vertex's outgoing should be returned halfedge
+            Assert.AreEqual(new_he, pMesh.Vertices[4].OutgoingHalfedge);
+        }
     }
 }
