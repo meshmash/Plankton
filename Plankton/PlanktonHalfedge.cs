@@ -11,6 +11,7 @@ namespace Plankton
         public int StartVertex;
         public int AdjacentFace;
         public int NextHalfedge;
+        public bool Dead;
         //secondary properties - these should still be kept updated if you change the topology
         public int PrevHalfedge;
 

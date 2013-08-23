@@ -137,13 +137,13 @@ namespace Plankton
         /// <summary>
         /// Gets the halfedge a given number of 'next's around a face from a starting halfedge
         /// </summary>        
-        /// <param name="start_he">The halfedge to start from</param>
+        /// <param name="startHalfEdge">The halfedge to start from</param>
         /// <param name="around">How many steps around the face. 0 returns the start_he</param>
         /// <returns>The resulting halfedge</returns>
         /// 
-        public int He_AroundFace(int start_he,  int around)
+        public int GetNextHalfEdge(int startHalfEdge,  int around)
         {
-            int he_around = start_he;
+            int he_around = startHalfEdge;
             for (int i = 0; i < around; i++)
             {
                 he_around = this[he_around].NextHalfedge;                
@@ -249,73 +249,105 @@ namespace Plankton
             { _mesh.Vertices[this.EndVertex(index)].OutgoingHalfedge = new_halfedge2; }
 
             return new_halfedge1;
+        }        
+
+        /// <summary>
+        /// Remove an edge and combine its 2 adjacent faces into 1
+        /// </summary>
+        /// <param name="index">The index of a halfedge in the edge to remove</param>        
+        /// <returns>The index of the removed face, or -1 on failure</returns>
+        public int RemoveEdge(int index)
+        {
+            //TODO : add special treatment for boundary halfedges
+            //TODO : deal with case where the 2 faces share more than one edge
+            this[index].Dead = true;
+            this[this.PairHalfedge(index)].Dead = true;
+            //Keep the adjacent face, but remove the pair's adjacent face
+            int Pair_HE = this.PairHalfedge(index);
+            int PairFace = this[Pair_HE].AdjacentFace;
+            int KeptFace = this[index].AdjacentFace;
+            _mesh.Faces[PairFace].Dead = true;
+
+            //go around the dead face, reassigning adjacency
+            int next_he_around = this[Pair_HE].NextHalfedge;
+            while (next_he_around != Pair_HE)
+            {
+                this[next_he_around].AdjacentFace = KeptFace;
+                next_he_around = this[next_he_around].NextHalfedge;
+            }
+
+            //make combined face halfedges consecutive
+            this.MakeConsecutive(this[Pair_HE].PrevHalfedge, this[index].NextHalfedge);
+            this.MakeConsecutive(this[index].PrevHalfedge, this[Pair_HE].NextHalfedge);
+
+            //reassign the start and end vert's outgoing halfedges and the face's first halfedge,
+            //in case they were one of the ones we've just removed
+            _mesh.Vertices[this.EndVertex(index)].OutgoingHalfedge = this[index].NextHalfedge;
+            _mesh.Vertices[this[index].StartVertex].OutgoingHalfedge = this[this.PairHalfedge(index)].NextHalfedge;
+            _mesh.Faces[KeptFace].FirstHalfedge = this[index].NextHalfedge;
+
+            return PairFace;
         }
 
         /// <summary>
-        /// Split a face into 2 faces by inserting a new edge
+        /// Collapse an edge by combining 2 vertices
         /// </summary>
-        /// <param name="index">The index of a halfedge adjacent to the face to split. The new edge will connect the start of this halfedge with another vertex on the face</param>
-        /// <param name="around">How far in halfedges around the face to connect to - set to 2 for a triangle </param>
-        /// <returns>The index of the newly created face, or -1 on failure.</returns>
-        public int SplitFace(int index, int around)
+        /// <param name="index">The index of a halfedge in the edge to collapse. The end vertex will be removed</param>        
+        /// <returns>True on success, otherwise False.</returns>
+        public bool CollapseEdge(int index)
         {
-            // split the adjacent face in 2
-            // by creating a new edge from the start of the given halfedge
-            // to another vertex around the face
-           
-            int thisFace = this[index].AdjacentFace;
-            if (thisFace < 0)
-                return -1;
+            // TODO : Add some more checks in here to prevent creating non-manifold meshes, such as if the edge is not naked but its ends are
+            // TODO : Add treatment for boundary edges
 
-            // add the new halfedge pair
-            int he_around = this.He_AroundFace(index, around); //the halfedge whose start will become the end of the new edge
-            int endVertex = this[he_around].StartVertex;            
-            int new_halfedge1 = this.AddPair(this[index].StartVertex, endVertex, thisFace);
-            int new_halfedge2 = this.PairHalfedge(new_halfedge1);
+            //Find the halfedges starting at the vertex we are about to remove
+            //and reconnect them to the one we are keeping
+            int[] Outgoing = _mesh.Vertices.GetHalfedges(this.EndVertex(index));            
 
-            // add a new face   
-            PlanktonFace new_face = new PlanktonFace();
-            int new_face_index = _mesh.Faces.Add(new_face);
-
-            //link everything up
-
-            //prev of input he becomes prev of new_he1
-            this.MakeConsecutive(this[index].PrevHalfedge , new_halfedge1);
-
-            //next of new_he1 becomes he_around
-            this.MakeConsecutive(new_halfedge1, he_around);
-
-            //next of new_he2 becomes index
-            this.MakeConsecutive(new_halfedge2, index);
-
-            //prev of he_around becomes prev of new_he2
-            this.MakeConsecutive(this[he_around].PrevHalfedge, new_halfedge2);
-
-            //adjface of new_he1 is already the original face
-
-            //adjface of index is new face
-            this[index].AdjacentFace = new_face_index;
-            //go around the new face, starting at index, assigning adjacency
-            int next_he_around = this[index].NextHalfedge;
-            while(next_he_around != index)
+            for (int i = 0; i < Outgoing.Length ; i++)
             {
-                this[next_he_around].AdjacentFace = new_face_index;
-                next_he_around = this[next_he_around].NextHalfedge;
-            }                        
+                this[Outgoing[i]].StartVertex = this[index].StartVertex;                
+            }
 
-            //set the original face's first halfedge to new_he1
-            _mesh.Faces[thisFace].FirstHalfedge = new_halfedge1;
-            //set the new face's first halfedge to new_he2
-            _mesh.Faces[new_face_index].FirstHalfedge = new_halfedge2;
+            //Kill the edge pair and its end
+            this[index].Dead = true;
+            this[this.PairHalfedge(index)].Dead = true;
+            _mesh.Vertices[this.EndVertex(index)].Dead = true;           
 
-            //think thats all of it!           
+            //Make sure the OutgoingHalfEdge is one that still exists
+            _mesh.Vertices[this[index].StartVertex].OutgoingHalfedge = this.PairHalfedge(this[index].PrevHalfedge);
 
-            return new_face_index;
-        }
-        
-        public void CollapseEdge(int index)
-        {
-            throw new NotImplementedException();
+            int pair_he = this.PairHalfedge(index);
+            int next_he = this[index].NextHalfedge;
+            int next_pair = this.PairHalfedge(next_he);
+
+            if (this.GetNextHalfEdge(index, 3) == index)  // if adjacent face is a triangle, we need to get rid of another edge
+            {                                
+                this.RemoveEdge(next_pair);
+                //remake the prevs and nexts:
+                int prev_he = this[index].PrevHalfedge;
+                this.MakeConsecutive(prev_he, this[next_pair].NextHalfedge);
+                _mesh.Faces[this[next_pair].AdjacentFace].FirstHalfedge = this[index].PrevHalfedge;                
+            }
+            else
+            {
+                this.MakeConsecutive(this[index].PrevHalfedge, this[index].NextHalfedge);
+            }
+            //same for the other side:            
+            if (this.GetNextHalfEdge(pair_he, 3) == pair_he)
+            {
+                this.RemoveEdge(this.PairHalfedge(this[pair_he].PrevHalfedge));
+                //remake the prevs and nexts:
+                int pair_next_he = this[pair_he].NextHalfedge;
+                int pair_prev_he = this[pair_he].PrevHalfedge;
+                this.MakeConsecutive(this[this.PairHalfedge(pair_prev_he)].PrevHalfedge, pair_next_he);
+                _mesh.Faces[this[this.PairHalfedge(pair_prev_he)].AdjacentFace].FirstHalfedge = pair_next_he;
+            }
+            else
+            {
+                this.MakeConsecutive(this[pair_he].PrevHalfedge, this[pair_he].NextHalfedge);
+            }
+
+            return true;
         }
         #endregion
         

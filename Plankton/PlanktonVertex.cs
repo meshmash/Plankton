@@ -8,6 +8,7 @@ namespace Plankton
     public class PlanktonVertex
     {
         public int OutgoingHalfedge;
+        public bool Dead;
         
         public PlanktonVertex()
         {

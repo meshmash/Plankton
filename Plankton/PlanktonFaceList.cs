@@ -317,6 +317,68 @@ namespace Plankton
             while (he_current != he_first);
         }
         #endregion
+
+        /// <summary>
+        /// Split a face into 2 faces by inserting a new edge
+        /// </summary>
+        /// <param name="index">The index of a halfedge adjacent to the face to split. The new edge will connect the start of this halfedge with another vertex on the face</param>
+        /// <param name="around">How far in halfedges around the face to connect to - set to 2 for a triangle </param>
+        /// <returns>The index of the newly created face, or -1 on failure.</returns>
+        public int SplitFace(int index, int around)
+        {
+            // split the adjacent face in 2
+            // by creating a new edge from the start of the given halfedge
+            // to another vertex around the face
+
+            int thisFace = _mesh.Halfedges[index].AdjacentFace;
+            if (thisFace < 0)
+                return -1;
+
+            // add the new halfedge pair
+            int he_around = _mesh.Halfedges.GetNextHalfEdge(index, around); //the halfedge whose start will become the end of the new edge
+            int endVertex = _mesh.Halfedges[he_around].StartVertex;
+            int new_halfedge1 = _mesh.Halfedges.AddPair(_mesh.Halfedges[index].StartVertex, endVertex, thisFace);
+            int new_halfedge2 = _mesh.Halfedges.PairHalfedge(new_halfedge1);
+
+            // add a new face   
+            PlanktonFace new_face = new PlanktonFace();
+            int new_face_index = this.Add(new_face);
+
+            //link everything up
+
+            //prev of input he becomes prev of new_he1
+            _mesh.Halfedges.MakeConsecutive(_mesh.Halfedges[index].PrevHalfedge, new_halfedge1);
+
+            //next of new_he1 becomes he_around
+            _mesh.Halfedges.MakeConsecutive(new_halfedge1, he_around);
+
+            //next of new_he2 becomes index
+            _mesh.Halfedges.MakeConsecutive(new_halfedge2, index);
+
+            //prev of he_around becomes prev of new_he2
+            _mesh.Halfedges.MakeConsecutive(_mesh.Halfedges[he_around].PrevHalfedge, new_halfedge2);
+
+            //adjface of new_he1 is already the original face
+
+            //adjface of index is new face
+            _mesh.Halfedges[index].AdjacentFace = new_face_index;
+            //go around the new face, starting at index, assigning adjacency
+            int next_he_around = _mesh.Halfedges[index].NextHalfedge;
+            while (next_he_around != index)
+            {
+                _mesh.Halfedges[next_he_around].AdjacentFace = new_face_index;
+                next_he_around = _mesh.Halfedges[next_he_around].NextHalfedge;
+            }
+
+            //set the original face's first halfedge to new_he1
+            this[thisFace].FirstHalfedge = new_halfedge1;
+            //set the new face's first halfedge to new_he2
+            this[new_face_index].FirstHalfedge = new_halfedge2;
+
+            //think thats all of it!           
+
+            return new_face_index;
+        }
         
         /// <summary>
         /// Gets vertex indices of a face.
