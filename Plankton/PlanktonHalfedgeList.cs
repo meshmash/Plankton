@@ -228,7 +228,7 @@ namespace Plankton
             PlanktonVertex new_vertex = new PlanktonVertex();
             int new_vertex_index = _mesh.Vertices.Add(new_vertex);
             // add a new halfedge pair
-            int new_halfedge1 = this.AddPair(this[index].StartVertex, this.EndVertex(index), this[index].AdjacentFace);
+            int new_halfedge1 = this.AddPair(new_vertex_index, this.EndVertex(index), this[index].AdjacentFace);
             int new_halfedge2 = this.PairHalfedge(new_halfedge1);
             // update :
             // input he's next
