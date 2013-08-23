@@ -230,20 +230,30 @@ namespace Plankton
             // add a new halfedge pair
             int new_halfedge1 = this.AddPair(new_vertex_index, this.EndVertex(index), this[index].AdjacentFace);
             int new_halfedge2 = this.PairHalfedge(new_halfedge1);
-            // update :
-            // input he's next
-            this[index].NextHalfedge = new_halfedge1;
-            // input's pair's prev
-            this[this.PairHalfedge(index)].PrevHalfedge = new_halfedge2;
-            // new he's prev & next
-            this[new_halfedge1].PrevHalfedge = index;
-            this[new_halfedge1].NextHalfedge = this[index].NextHalfedge;
-            // new he's pair's prev, next, adjface
-            this[new_halfedge2].PrevHalfedge = this[this.PairHalfedge(index)].PrevHalfedge;
+
+            // link back up:
+
+            // new he's prev & next            
+            this[new_halfedge1].PrevHalfedge = index;  //don't link back yet
+            this.MakeConsecutive(new_halfedge1, this[index].NextHalfedge);            
+
+            // new he's pair's prev, next, adjface           
+            this.MakeConsecutive(this[this.PairHalfedge(index)].PrevHalfedge, new_halfedge2);
             this[new_halfedge2].NextHalfedge = this.PairHalfedge(index);
             this[new_halfedge2].AdjacentFace = this[this.PairHalfedge(index)].AdjacentFace;
+
             // new vert's outgoing he
             _mesh.Vertices[new_vertex_index].OutgoingHalfedge = new_halfedge1;
+
+            // input he's next
+            this[index].NextHalfedge = new_halfedge1;
+
+            // input's pair's prev
+            this[this.PairHalfedge(index)].PrevHalfedge = new_halfedge2;
+
+            // change the start of the pair of the input halfedge to the new vertex
+            this[this.PairHalfedge(index)].StartVertex = new_vertex_index;
+
             // end vert's outgoing 
             if (_mesh.Vertices[this.EndVertex(index)].OutgoingHalfedge == this.PairHalfedge(index))
             { _mesh.Vertices[this.EndVertex(index)].OutgoingHalfedge = new_halfedge2; }
