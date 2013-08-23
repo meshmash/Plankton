@@ -300,6 +300,27 @@ namespace Plankton
         }
 
         /// <summary>
+        /// Split 2 adjacent triangles into 4 by inserting a new vertex along the edge
+        /// </summary>
+        /// <param name="index">The index of the halfedge to split. Must be between 2 triangles.</param>        
+        /// <returns>The index of the halfedge going from the new vertex to the end of the input halfedge, or -1 on failure</returns>
+        public int TriangleSplitEdge(int index)
+        {
+            //split the edge
+            // (I guess we could include a parameter for where along the edge to split)
+            int new_halfedge = this.SplitEdge(index);
+            int point_on_edge = this[new_halfedge].StartVertex;
+            _mesh.Vertices[point_on_edge].X = 0.5F * (_mesh.Vertices[this[index].StartVertex].X + _mesh.Vertices[this.EndVertex(new_halfedge)].X);
+            _mesh.Vertices[point_on_edge].Y = 0.5F * (_mesh.Vertices[this[index].StartVertex].Y + _mesh.Vertices[this.EndVertex(new_halfedge)].Y);
+            _mesh.Vertices[point_on_edge].Z = 0.5F * (_mesh.Vertices[this[index].StartVertex].Z + _mesh.Vertices[this.EndVertex(new_halfedge)].Z);
+
+            int new_face1 = _mesh.Faces.SplitFace(new_halfedge, 2);
+            int new_face2 = _mesh.Faces.SplitFace(this.PairHalfedge(index), 2);
+
+            return new_halfedge;
+        }
+
+        /// <summary>
         /// Collapse an edge by combining 2 vertices
         /// </summary>
         /// <param name="index">The index of a halfedge in the edge to collapse. The end vertex will be removed</param>        
