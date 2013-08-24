@@ -349,31 +349,25 @@ namespace Plankton
             //prev of input he becomes prev of new_he1
             _mesh.Halfedges.MakeConsecutive(_mesh.Halfedges[index].PrevHalfedge, new_halfedge1);
 
+            //prev of he_around becomes prev of new_he2
+            _mesh.Halfedges.MakeConsecutive(_mesh.Halfedges[he_around].PrevHalfedge, new_halfedge2);
+            
             //next of new_he1 becomes he_around
             _mesh.Halfedges.MakeConsecutive(new_halfedge1, he_around);
 
             //next of new_he2 becomes index
             _mesh.Halfedges.MakeConsecutive(new_halfedge2, index);
 
-            //prev of he_around becomes prev of new_he2
-            _mesh.Halfedges.MakeConsecutive(_mesh.Halfedges[he_around].PrevHalfedge, new_halfedge2);
-
-            //adjface of new_he1 is already the original face
-
-            //adjface of index is new face
-            _mesh.Halfedges[index].AdjacentFace = new_face_index;
-            //go around the new face, starting at index, assigning adjacency
-            int next_he_around = _mesh.Halfedges[index].NextHalfedge;
-            while (next_he_around != index)
-            {
-                _mesh.Halfedges[next_he_around].AdjacentFace = new_face_index;
-                next_he_around = _mesh.Halfedges[next_he_around].NextHalfedge;
-            }
-
             //set the original face's first halfedge to new_he1
             this[thisFace].FirstHalfedge = new_halfedge1;
             //set the new face's first halfedge to new_he2
             this[new_face_index].FirstHalfedge = new_halfedge2;
+            
+            //set adjface of new face loop
+            foreach (int h in _mesh.Faces.GetHalfedgesCirculator(new_face_index))
+            {
+                _mesh.Halfedges[h].AdjacentFace = new_face_index;
+            }
 
             //think thats all of it!           
 
