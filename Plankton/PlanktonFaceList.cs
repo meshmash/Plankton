@@ -321,24 +321,29 @@ namespace Plankton
         /// <summary>
         /// Split a face into 2 faces by inserting a new edge
         /// </summary>
-        /// <param name="index">The index of a halfedge adjacent to the face to split. The new edge will connect the start of this halfedge with another vertex on the face</param>
-        /// <param name="around">How far in halfedges around the face to connect to - set to 2 for a triangle </param>
-        /// <returns>The index of the newly created face, or -1 on failure.</returns>
-        public int SplitFace(int index, int around)
+        /// <param name="from">The index of a halfedge adjacent to the face to split.
+        /// The new edge will begin at the start of this halfedge.</param>
+        /// <param name="to">The index of a second halfedge adjacent to the face to split.
+        /// The new edge will end at the start of this halfedge.</param>
+        /// <returns>The index of one of the newly created halfedges, or -1 on failure.
+        /// The returned halfedge will be adjacent to the pre-existing face.</returns>
+        public int SplitFace(int from, int to)
         {
             // split the adjacent face in 2
             // by creating a new edge from the start of the given halfedge
             // to another vertex around the face
 
-            int thisFace = _mesh.Halfedges[index].AdjacentFace;
-            if (thisFace < 0)
-                return -1;
+            var hs = _mesh.Halfedges;
+
+            // check preconditions
+            int existing_face = hs[from].AdjacentFace;
+            if (existing_face == -1 || existing_face != hs[to].AdjacentFace) { return -1; }
+            if (from == to || hs[from].NextHalfedge == to || hs[to].NextHalfedge == from) { return -1; }
+
 
             // add the new halfedge pair
-            int he_around = _mesh.Halfedges.GetNextHalfEdge(index, around); //the halfedge whose start will become the end of the new edge
-            int endVertex = _mesh.Halfedges[he_around].StartVertex;
-            int new_halfedge1 = _mesh.Halfedges.AddPair(_mesh.Halfedges[index].StartVertex, endVertex, thisFace);
-            int new_halfedge2 = _mesh.Halfedges.PairHalfedge(new_halfedge1);
+            int new_halfedge1 = hs.AddPair(hs[from].StartVertex, hs[to].StartVertex, existing_face);
+            int new_halfedge2 = hs.PairHalfedge(new_halfedge1);
 
             // add a new face   
             PlanktonFace new_face = new PlanktonFace();
@@ -347,31 +352,31 @@ namespace Plankton
             //link everything up
 
             //prev of input he becomes prev of new_he1
-            _mesh.Halfedges.MakeConsecutive(_mesh.Halfedges[index].PrevHalfedge, new_halfedge1);
+            hs.MakeConsecutive(hs[from].PrevHalfedge, new_halfedge1);
 
             //prev of he_around becomes prev of new_he2
-            _mesh.Halfedges.MakeConsecutive(_mesh.Halfedges[he_around].PrevHalfedge, new_halfedge2);
+            hs.MakeConsecutive(hs[to].PrevHalfedge, new_halfedge2);
             
             //next of new_he1 becomes he_around
-            _mesh.Halfedges.MakeConsecutive(new_halfedge1, he_around);
+            hs.MakeConsecutive(new_halfedge1, to);
 
             //next of new_he2 becomes index
-            _mesh.Halfedges.MakeConsecutive(new_halfedge2, index);
+            hs.MakeConsecutive(new_halfedge2, from);
 
             //set the original face's first halfedge to new_he1
-            this[thisFace].FirstHalfedge = new_halfedge1;
+            this[existing_face].FirstHalfedge = new_halfedge1;
             //set the new face's first halfedge to new_he2
             this[new_face_index].FirstHalfedge = new_halfedge2;
             
             //set adjface of new face loop
             foreach (int h in _mesh.Faces.GetHalfedgesCirculator(new_face_index))
             {
-                _mesh.Halfedges[h].AdjacentFace = new_face_index;
+                hs[h].AdjacentFace = new_face_index;
             }
 
             //think thats all of it!           
 
-            return new_face_index;
+            return new_halfedge1;
         }
         
         /// <summary>

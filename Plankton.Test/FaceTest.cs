@@ -21,22 +21,24 @@ namespace Plankton.Test
             pMesh.Faces.AddFace(0, 1, 2, 3);
             
             // Split face into two triangles
-            int new_face = pMesh.Faces.SplitFace(0, 2);
+            int new_he = pMesh.Faces.SplitFace(0, 4);
+
+            // Returned halfedge should be adjacent to old face (#0)
+            Assert.AreEqual(0, pMesh.Halfedges[new_he].AdjacentFace);
+
+            // Traverse from returned halfedge to new face
+            int new_he_pair = pMesh.Halfedges.PairHalfedge(new_he);
+            int new_face = pMesh.Halfedges[new_he_pair].AdjacentFace;
             
-            // Traverse from new face to old face, via new halfedges
-            int new_he_pair = pMesh.Faces[new_face].FirstHalfedge;
-            int new_he = pMesh.Halfedges.PairHalfedge(new_he_pair);
-            int old_face = pMesh.Halfedges[new_he].AdjacentFace;
-            
-            Assert.AreEqual(0, old_face);
+            Assert.AreEqual(1, new_face);
             
             // Check that both faces are now triangular
             Assert.AreEqual(3, pMesh.Faces.GetFaceVertices(0).Length);
             Assert.AreEqual(3, pMesh.Faces.GetFaceVertices(1).Length);
             
             // Check the halfedges of each face
-            Assert.AreEqual(new int[] { 8, 4, 6 }, pMesh.Faces.GetHalfedges(old_face));
-            Assert.AreEqual(new int[] { 9, 0, 2 }, pMesh.Faces.GetHalfedges(new_face));
+            Assert.AreEqual(new int[] { 8, 4, 6 }, pMesh.Faces.GetHalfedges(0));
+            Assert.AreEqual(new int[] { 9, 0, 2 }, pMesh.Faces.GetHalfedges(1));
         }
     }
 }
