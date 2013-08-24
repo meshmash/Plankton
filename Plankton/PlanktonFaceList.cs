@@ -319,15 +319,16 @@ namespace Plankton
         #endregion
 
         /// <summary>
-        /// Split a face into 2 faces by inserting a new edge
+        /// <para>Split a face into two faces by inserting a new edge</para>
+        /// <seealso cref="MergeFaces"/>
         /// </summary>
-        /// <param name="from">The index of a halfedge adjacent to the face to split.
-        /// The new edge will begin at the start of this halfedge.</param>
         /// <param name="to">The index of a second halfedge adjacent to the face to split.
         /// The new edge will end at the start of this halfedge.</param>
+        /// <param name="from">The index of a halfedge adjacent to the face to split.
+        /// The new edge will begin at the start of this halfedge.</param>
         /// <returns>The index of one of the newly created halfedges, or -1 on failure.
         /// The returned halfedge will be adjacent to the pre-existing face.</returns>
-        public int SplitFace(int from, int to)
+        public int SplitFace(int to, int from)
         {
             // split the adjacent face in 2
             // by creating a new edge from the start of the given halfedge
@@ -340,12 +341,11 @@ namespace Plankton
             if (existing_face == -1 || existing_face != hs[to].AdjacentFace) { return -1; }
             if (from == to || hs[from].NextHalfedge == to || hs[to].NextHalfedge == from) { return -1; }
 
-
             // add the new halfedge pair
             int new_halfedge1 = hs.AddPair(hs[from].StartVertex, hs[to].StartVertex, existing_face);
             int new_halfedge2 = hs.PairHalfedge(new_halfedge1);
 
-            // add a new face   
+            // add a new face
             PlanktonFace new_face = new PlanktonFace();
             int new_face_index = this.Add(new_face);
 
@@ -377,6 +377,63 @@ namespace Plankton
             //think thats all of it!           
 
             return new_halfedge1;
+        }
+
+        /// <summary>
+        /// <para>Merges the two faces incident to the specified halfedge pair.</para>
+        /// <seealso cref="SplitFace"/>
+        /// </summary>
+        /// <param name="index">The index of a halfedge inbetween the two faces to merge.
+        /// The face adjacent to this halfedge will be retained.</param>        
+        /// <returns>The successor of <paramref name="index"/> around the face, or -1 on failure.</returns>
+        /// <remarks>
+        /// The invariant <c>mesh.Faces.MergeFaces(mesh.Faces.SplitFace(a, b))</c> will return a,
+        /// leaving the mesh unchanged.</remarks>
+        public int MergeFaces(int index)
+        {
+            var hs = _mesh.Halfedges;
+            int pair = hs.PairHalfedge(index);
+            int face = hs[index].AdjacentFace;
+            int pair_face = hs[pair].AdjacentFace;
+
+            // Check for a face on both sides
+            if (face == -1 || pair_face == -1) { return -1; }
+
+            // Both vertices incident to given halfedge must have valence > 2
+            if (3 > _mesh.Vertices.GetHalfedges(hs[index].StartVertex).Length) { return -1; }
+            if (3 > _mesh.Vertices.GetHalfedges(hs[pair].StartVertex).Length) { return -1; }
+
+            // Make combined face halfedges consecutive
+            int index_prev = hs[index].PrevHalfedge;
+            int index_next = hs[index].NextHalfedge;
+            hs.MakeConsecutive(hs[pair].PrevHalfedge, index_next);
+            hs.MakeConsecutive(index_prev, hs[pair].NextHalfedge);
+
+            // Update retained face's first halfedge, if necessary
+            if (this[face].FirstHalfedge == index)
+                this[face].FirstHalfedge = index_prev;
+
+            // Go around the dead face, reassigning adjacency
+            foreach (int h in this.GetHalfedgesCirculator(face))
+            {
+                hs[h].AdjacentFace = face;
+            }
+
+            // Reassign the start and end vert's outgoing halfedges and the face's first halfedge,
+            // if they were one of the ones we've just removed
+            var v1 = _mesh.Vertices[hs[index].StartVertex];
+            var v2 = _mesh.Vertices[hs[pair].StartVertex];
+            if (v1.OutgoingHalfedge == index) { v1.OutgoingHalfedge = hs[pair].NextHalfedge; }
+            if (v2.OutgoingHalfedge == pair) { v2.OutgoingHalfedge = hs[index].NextHalfedge; }
+
+            // Remove halfedges
+            hs[index].Dead = true;
+            hs[pair].Dead = true;
+
+            // Keep the adjacent face, but remove the pair's adjacent face
+            this[pair_face].Dead = true;
+
+            return index_next;
         }
         
         /// <summary>
