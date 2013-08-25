@@ -308,18 +308,29 @@ namespace Plankton
                 this[h].StartVertex = v_keep;
             }
 
-            // Kill the halfedge pair and its end vertex
+            // Store return halfedge index (next around start vertex)
             int h_rtn = this[pair].NextHalfedge;
+
+            // Kill the halfedge pair and its end vertex
             this[index].Dead = true;
             this[pair].Dead = true;
             _mesh.Vertices[v_kill].Dead = true;
 
             // Make sure the OutgoingHalfedge is one that still exists
             if (_mesh.Vertices[v_keep].OutgoingHalfedge == index)
-                _mesh.Vertices[v_keep].OutgoingHalfedge = this[pair].NextHalfedge;
+                _mesh.Vertices[v_keep].OutgoingHalfedge = h_rtn; // Next around vertex
 
             this.MakeConsecutive(this[index].PrevHalfedge, this[index].NextHalfedge);
             this.MakeConsecutive(this[pair].PrevHalfedge, this[pair].NextHalfedge);
+
+            // Update faces' first halfedges, if necessary
+            int face;
+            face = this[index].AdjacentFace;
+            if (face != -1 && _mesh.Faces[face].FirstHalfedge == index)
+                _mesh.Faces[face].FirstHalfedge = this[index].NextHalfedge;
+            face = this[pair].AdjacentFace;
+            if (face != -1 && _mesh.Faces[face].FirstHalfedge == pair)
+                _mesh.Faces[face].FirstHalfedge = this[pair].NextHalfedge;
 
             return h_rtn;
         }
