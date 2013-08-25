@@ -211,5 +211,30 @@ namespace Plankton.Test
                 Assert.AreNotEqual(3, pMesh.Halfedges[h].StartVertex);
             }
         }
+
+        [Test]
+        public void CannotCollapseNonManifoldVertex()
+        {
+            PlanktonMesh pMesh = new PlanktonMesh();
+
+            // Create one vertex for each corner of a square
+            pMesh.Vertices.Add(0, 0, 0); // 0
+            pMesh.Vertices.Add(1, 0, 0); // 1
+            pMesh.Vertices.Add(1, 1, 0); // 2
+            pMesh.Vertices.Add(0, 1, 0); // 3
+            pMesh.Vertices.Add(2, 0, 0); // 4
+            pMesh.Vertices.Add(2, 1, 0); // 5
+
+            // Create two quadrangular faces
+            pMesh.Faces.AddFace(0, 1, 2, 3);
+            pMesh.Faces.AddFace(1, 4, 5, 2);
+
+            // Try to collapse edge between vertices #1 and #2
+            // (which would make vertex #1 non-manifold)
+            int h = pMesh.Halfedges.FindHalfedge(1, 2);
+            Assert.AreEqual(-1, pMesh.Halfedges.CollapseEdge(h));
+
+            // That's right, you can't!
+        }
     }
 }

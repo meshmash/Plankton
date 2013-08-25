@@ -289,20 +289,45 @@ namespace Plankton
         /// <returns>The successor to <paramref name="index"/> around its vertex, or -1 on failure.</returns>
         public int CollapseEdge(int index)
         {
-            // TODO : Add some more checks in here to prevent creating non-manifold meshes, such as if the edge is not naked but its ends are
+            // TODO: Requires face removal to be implemented (see below)
 
+            var fs = _mesh.Faces;
             int pair = this.PairHalfedge(index);
+            int v_keep = this[index].StartVertex;
+            int v_kill = this[pair].StartVertex;
+            int f = this[index].AdjacentFace;
+            int f_pair = this[pair].AdjacentFace;
+
+            // Don't allow the creation of non-manifold vertices
+            // This would happen if the edge is internal (face on both sides) and
+            // both incident vertices lie on a boundary
+            if (f > -1 && f_pair > -1)
+            {
+                if (this[_mesh.Vertices[v_keep].OutgoingHalfedge].AdjacentFace < 0 && 
+                    this[_mesh.Vertices[v_kill].OutgoingHalfedge].AdjacentFace < 0)
+                {
+                    return -1;
+                }
+            }
 
             // Both faces on either side of given halfedge must have four or more sides
-            if (this[index].AdjacentFace > -1 &&
-                _mesh.Faces.GetHalfedges(this[index].AdjacentFace).Length < 4) { return -1; }
-            if (this[pair].AdjacentFace > -1 &&
-                _mesh.Faces.GetHalfedges(this[pair].AdjacentFace).Length < 4) { return -1; }
+            // otherwise they will get absorbed by the face which is incident to both them
+            // and the vertex to be removed (at the end of the specified halfedge)
+            // If the face can't be merged, remove it (not yet implemented)
+            int ret_val;
+            if (f > -1 && fs.GetHalfedges(f).Length < 4)
+            {
+                ret_val = fs.MergeFaces(this.PairHalfedge(this[index].NextHalfedge));
+                if (ret_val < 0) {} // remove face #f
+            }
+            if (f_pair > -1 && fs.GetHalfedges(f_pair).Length < 4)
+            {
+                ret_val = fs.MergeFaces(this.PairHalfedge(this[pair].PrevHalfedge));
+                if (ret_val < 0) {} // remove face #f_pair
+            }
 
             // Find the halfedges starting at the vertex we are about to remove
             // and reconnect them to the one we are keeping
-            int v_keep = this[index].StartVertex;
-            int v_kill = this[pair].StartVertex;
             foreach (int h in _mesh.Vertices.GetHalfedgesCirculator(v_kill))
             {
                 this[h].StartVertex = v_keep;
@@ -326,11 +351,11 @@ namespace Plankton
             // Update faces' first halfedges, if necessary
             int face;
             face = this[index].AdjacentFace;
-            if (face != -1 && _mesh.Faces[face].FirstHalfedge == index)
-                _mesh.Faces[face].FirstHalfedge = this[index].NextHalfedge;
+            if (face != -1 && fs[face].FirstHalfedge == index)
+                fs[face].FirstHalfedge = this[index].NextHalfedge;
             face = this[pair].AdjacentFace;
-            if (face != -1 && _mesh.Faces[face].FirstHalfedge == pair)
-                _mesh.Faces[face].FirstHalfedge = this[pair].NextHalfedge;
+            if (face != -1 && fs[face].FirstHalfedge == pair)
+                fs[face].FirstHalfedge = this[pair].NextHalfedge;
 
             return h_rtn;
         }
