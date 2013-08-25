@@ -236,5 +236,57 @@ namespace Plankton.Test
 
             // That's right, you can't!
         }
+
+        [Test]
+        public void CanCollapseAdjacentTriangles()
+        {
+            // TODO: draw mesh here...
+
+            PlanktonMesh pMesh = new PlanktonMesh();
+
+            // Create one vertex for each corner of a square
+            pMesh.Vertices.Add(0, 3, 0); // 0
+            pMesh.Vertices.Add(0, 2, 0); // 1
+            pMesh.Vertices.Add(0, 1, 0); // 2
+            pMesh.Vertices.Add(1, 3, 0); // 3
+            pMesh.Vertices.Add(1, 2, 0); // 4
+            pMesh.Vertices.Add(1, 1, 0); // 5
+            pMesh.Vertices.Add(1, 0, 0); // 6
+            pMesh.Vertices.Add(2, 2, 0); // 7
+            pMesh.Vertices.Add(2, 1, 0); // 8
+
+            // Create several faces
+            pMesh.Faces.AddFace(0, 1, 4, 3); // 0
+            pMesh.Faces.AddFace(1, 2, 5, 4); // 1
+            pMesh.Faces.AddFace(3, 4, 7);    // 2
+            pMesh.Faces.AddFace(4, 5, 7);    // 3
+            pMesh.Faces.AddFace(5, 6, 8, 7); // 4
+
+            // Try to collapse edge between vertices #4 and #7
+            int h_clps = pMesh.Halfedges.FindHalfedge(4, 7);
+            int v_keep = pMesh.Halfedges[h_clps].StartVertex;
+            int h_succ = pMesh.Vertices.GetHalfedgesCirculator(v_keep, h_clps).ElementAt(1);
+            Assert.AreEqual(h_succ, pMesh.Halfedges.CollapseEdge(h_clps));
+
+            // Successor to h (around h's start vertex) should now be adjacent to face #4
+            Assert.AreEqual(4, pMesh.Halfedges[h_succ].AdjacentFace);
+
+            // Check new vertices of face #4
+            Assert.AreEqual(new int[] { 5, 6, 8, 4 }, pMesh.Faces.GetFaceVertices(4));
+
+            // Traverse around mesh boundary and count halfedges
+            int count, he_first, he_current;
+            count = 0;
+            he_first = 1;
+            he_current = he_first;
+            do
+            {
+                count++;
+                he_current = pMesh.Halfedges[he_current].NextHalfedge;
+            }
+            while (he_current != he_first);
+
+            Assert.AreEqual(8, count);
+        }
     }
 }

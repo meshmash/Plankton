@@ -164,5 +164,53 @@ namespace Plankton.Test
             // We should be back where we started...
             Assert.AreEqual(start_he, old_he);
         }
+
+        [Test]
+        public void CanRemoveFace()
+        {
+            PlanktonMesh pMesh = new PlanktonMesh();
+
+            // Create one vertex for each corner of a square
+            pMesh.Vertices.Add(0, 0, 0); // 0
+            pMesh.Vertices.Add(1, 0, 0); // 1
+            pMesh.Vertices.Add(1, 1, 0); // 2
+            pMesh.Vertices.Add(0, 1, 0); // 3
+            pMesh.Vertices.Add(2, 0, 0); // 4
+            pMesh.Vertices.Add(2, 1, 0); // 5
+
+            // Create two quadrangular faces
+            pMesh.Faces.AddFace(0, 1, 2, 3);
+            pMesh.Faces.AddFace(1, 4, 5, 2);
+
+            // Traverse around mesh boundary and count halfedges
+            int count, he_first, he_current;
+            count = 0;
+            he_first = 1;
+            he_current = he_first;
+            do
+            {
+                count++;
+                he_current = pMesh.Halfedges[he_current].NextHalfedge;
+            }
+            while (he_current != he_first);
+
+            Assert.AreEqual(6, count);
+
+            // Remove the second face
+            pMesh.Faces.RemoveFace(1);
+
+            // Count again...
+            count = 0;
+            he_first = 1;
+            he_current = he_first;
+            do
+            {
+                count++;
+                he_current = pMesh.Halfedges[he_current].NextHalfedge;
+            }
+            while (he_current != he_first);
+
+            Assert.AreEqual(4, count);
+        }
     }
 }

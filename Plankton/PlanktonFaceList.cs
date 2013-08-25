@@ -264,6 +264,22 @@ namespace Plankton
         {
             return this.AddFace(new int[] { a, b, c, d });
         }
+
+        /// <summary>
+        /// <para>Removes a face from the mesh without affecting the remaining geometry.</para>
+        /// <para>Ensures that the topology of the halfedge mesh remains fully intact.</para>
+        /// </summary>
+        /// <param name="index">The index of the face to be removed.</param>
+        public void RemoveFace(int index)
+        {
+            int[] fhs = this.GetHalfedges(index);
+            foreach (int h in fhs)
+            {
+                if (_mesh.Halfedges.IsBoundary(h)) { _mesh.Halfedges.RemovePair(h); }
+                else { _mesh.Halfedges[h].AdjacentFace = -1; }
+            }
+            this[index].Dead = true;
+        }
         
         /// <summary>
         /// Returns the face at the given index.

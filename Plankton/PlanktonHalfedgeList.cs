@@ -56,7 +56,7 @@ namespace Plankton
         /// <param name="end">A vertex index (from which the second halfedge originates).</param>
         /// <param name="face">A face index (adjacent to the first halfedge).</param>
         /// <returns>The index of the first halfedge in the pair.</returns>
-        public int AddPair(int start, int end, int face)
+        internal int AddPair(int start, int end, int face)
         {
             // he->next = he->pair
             int i = this.Count;
@@ -64,7 +64,21 @@ namespace Plankton
             this.Add(new PlanktonHalfedge(end, -1, i));
             return i;
         }
-        
+
+        /// <summary>
+        /// Removes a pair of halfedges from the mesh.
+        /// </summary>
+        /// <param name="index">The index of a halfedge in the pair to remove.</param>
+        /// <remarks>The halfedges are topologically disconnected from the mesh and marked for deletion.</remarks>
+        internal void RemovePair(int index)
+        {
+            int pair = this.PairHalfedge(index);
+            this.MakeConsecutive(this[pair].PrevHalfedge, this[index].NextHalfedge);
+            this.MakeConsecutive(this[index].PrevHalfedge, this[pair].NextHalfedge);
+            this[index].Dead = true;
+            this[pair].Dead = true;
+        }
+
         /// <summary>
         /// Returns the halfedge at the given index.
         /// </summary>
@@ -149,6 +163,19 @@ namespace Plankton
                 he_around = this[he_around].NextHalfedge;                
             }
             return he_around;
+        }
+
+        /// <summary>
+        /// A halfedge is a boundary if it only has a face on one side.
+        /// </summary>
+        /// <param name="index">The index of a halfedge.</param>
+        /// <returns><c>true</c> if the specified halfedge is a boundary; otherwise, <c>false</c>.</returns>
+        public bool IsBoundary(int index)
+        {
+            int pair = this.PairHalfedge(index);
+
+            // Check for a face on both sides
+            return (this[index].AdjacentFace == -1 || this[pair].AdjacentFace == -1);
         }
         
         internal int EndVertex(int index)
@@ -289,8 +316,6 @@ namespace Plankton
         /// <returns>The successor to <paramref name="index"/> around its vertex, or -1 on failure.</returns>
         public int CollapseEdge(int index)
         {
-            // TODO: Requires face removal to be implemented (see below)
-
             var fs = _mesh.Faces;
             int pair = this.PairHalfedge(index);
             int v_keep = this[index].StartVertex;
@@ -313,17 +338,17 @@ namespace Plankton
             // Both faces on either side of given halfedge must have four or more sides
             // otherwise they will get absorbed by the face which is incident to both them
             // and the vertex to be removed (at the end of the specified halfedge)
-            // If the face can't be merged, remove it (not yet implemented)
+            // If the face can't be merged, remove it
             int ret_val;
             if (f > -1 && fs.GetHalfedges(f).Length < 4)
             {
                 ret_val = fs.MergeFaces(this.PairHalfedge(this[index].NextHalfedge));
-                if (ret_val < 0) {} // remove face #f
+                if (ret_val < 0) { fs.RemoveFace(f); } // remove face #f
             }
             if (f_pair > -1 && fs.GetHalfedges(f_pair).Length < 4)
             {
                 ret_val = fs.MergeFaces(this.PairHalfedge(this[pair].PrevHalfedge));
-                if (ret_val < 0) {} // remove face #f_pair
+                if (ret_val < 0) { fs.RemoveFace(f_pair); } // remove face #f_pair
             }
 
             // Find the halfedges starting at the vertex we are about to remove
@@ -336,15 +361,11 @@ namespace Plankton
             // Store return halfedge index (next around start vertex)
             int h_rtn = this[pair].NextHalfedge;
 
-            // Kill the halfedge pair and its end vertex
-            this[index].Dead = true;
-            this[pair].Dead = true;
-            _mesh.Vertices[v_kill].Dead = true;
-
             // Make sure the OutgoingHalfedge is one that still exists
             if (_mesh.Vertices[v_keep].OutgoingHalfedge == index)
                 _mesh.Vertices[v_keep].OutgoingHalfedge = h_rtn; // Next around vertex
 
+            // Bypass both halfedges by linking prev directly to next for each
             this.MakeConsecutive(this[index].PrevHalfedge, this[index].NextHalfedge);
             this.MakeConsecutive(this[pair].PrevHalfedge, this[pair].NextHalfedge);
 
@@ -356,6 +377,11 @@ namespace Plankton
             face = this[pair].AdjacentFace;
             if (face != -1 && fs[face].FirstHalfedge == pair)
                 fs[face].FirstHalfedge = this[pair].NextHalfedge;
+
+            // Kill the halfedge pair and its end vertex
+            this[index].Dead = true;
+            this[pair].Dead = true;
+            _mesh.Vertices[v_kill].Dead = true;
 
             return h_rtn;
         }
