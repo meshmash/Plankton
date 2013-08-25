@@ -42,6 +42,104 @@ namespace Plankton.Test
         }
 
         [Test]
+        public void CannotSplitFaceBadArguments()
+        {
+            PlanktonMesh pMesh = new PlanktonMesh();
+
+            // Create one vertex for each corner of a square
+            pMesh.Vertices.Add(0, 0, 0); // 0
+            pMesh.Vertices.Add(1, 0, 0); // 1
+            pMesh.Vertices.Add(1, 1, 0); // 2
+            pMesh.Vertices.Add(0, 1, 0); // 3
+
+            // Create one quadrangular face
+            pMesh.Faces.AddFace(0, 1, 2, 3);
+
+            // First halfedge is a boundary
+            Assert.AreEqual(-1, pMesh.Faces.SplitFace(1, 4));
+
+            // Second halfedge is a boundary
+            Assert.AreEqual(-1, pMesh.Faces.SplitFace(4, 1));
+
+            // Same halfedge used for both arguments
+            Assert.AreEqual(-1, pMesh.Faces.SplitFace(0, 0));
+
+            // Second halfedge is successor to first
+            Assert.AreEqual(-1, pMesh.Faces.SplitFace(0, 2));
+
+            // Second halfedge is predecessor to first
+            Assert.AreEqual(-1, pMesh.Faces.SplitFace(0, 6));
+        }
+
+        [Test]
+        public void CanMergeFaces()
+        {
+            PlanktonMesh pMesh = new PlanktonMesh();
+
+            // Create one vertex for each corner of a square
+            pMesh.Vertices.Add(0, 0, 0); // 0
+            pMesh.Vertices.Add(1, 0, 0); // 1
+            pMesh.Vertices.Add(1, 1, 0); // 2
+            pMesh.Vertices.Add(0, 1, 0); // 3
+
+            // Create two triangular faces
+            pMesh.Faces.AddFace(0, 1, 2);
+            pMesh.Faces.AddFace(2, 3, 0);
+
+            // Merge faces
+            int h_rtn = pMesh.Faces.MergeFaces(4);
+
+            // Check that the correct face was retained
+            int f = pMesh.Halfedges[h_rtn].AdjacentFace;
+            Assert.AreEqual(0, f);
+
+            // Check face halfedges
+            int[] fhs = pMesh.Faces.GetHalfedges(f);
+            Assert.AreEqual(new int[] { 0, 2, 6, 8 }, fhs);
+            foreach (int h in fhs)
+            {
+                Assert.AreEqual(f, pMesh.Halfedges[h].AdjacentFace);
+            }
+        }
+
+        [Test]
+        public void CannotMergeFacesBoundary()
+        {
+            PlanktonMesh pMesh = new PlanktonMesh();
+
+            // Create one vertex for each corner of a square
+            pMesh.Vertices.Add(0, 0, 0); // 0
+            pMesh.Vertices.Add(1, 0, 0); // 1
+            pMesh.Vertices.Add(1, 1, 0); // 2
+            pMesh.Vertices.Add(0, 1, 0); // 3
+
+            // Create one quadrangular face
+            pMesh.Faces.AddFace(0, 1, 2, 3);
+
+            Assert.AreEqual(-1, pMesh.Faces.MergeFaces(0));
+        }
+
+        [Test]
+        public void CannotMergeFacesAntenna()
+        {
+            PlanktonMesh pMesh = new PlanktonMesh();
+
+            // Create one vertex for each corner of a square
+            pMesh.Vertices.Add(0, 0, 0); // 0
+            pMesh.Vertices.Add(1, 0, 0); // 1
+            pMesh.Vertices.Add(1, 1, 0); // 2
+            pMesh.Vertices.Add(0, 1, 0); // 3
+            pMesh.Vertices.Add(0.5, 0.5, 0); // 4
+
+            // Create two quadrangular faces
+            pMesh.Faces.AddFace(0, 1, 2, 4);
+            pMesh.Faces.AddFace(2, 3, 0, 4);
+
+            // Merge should fail (faces are joined by two edges)
+            Assert.AreEqual(-1, pMesh.Faces.MergeFaces(4));
+        }
+
+        [Test]
         public void CanSplitMergeInvariant()
         {
             PlanktonMesh pMesh = new PlanktonMesh();
@@ -55,14 +153,16 @@ namespace Plankton.Test
             // Create one quadrangular face
             pMesh.Faces.AddFace(0, 1, 2, 3);
 
+            int start_he = 0;
+
             // Split face into two triangles
-            int new_he = pMesh.Faces.SplitFace(0, 4);
+            int new_he = pMesh.Faces.SplitFace(start_he, 4);
 
             // Merge them back again
             int old_he = pMesh.Faces.MergeFaces(new_he);
 
             // We should be back where we started...
-            Assert.AreEqual(0, old_he);
+            Assert.AreEqual(start_he, old_he);
         }
     }
 }
