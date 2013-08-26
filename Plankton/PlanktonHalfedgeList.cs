@@ -178,7 +178,7 @@ namespace Plankton
             return (this[index].AdjacentFace == -1 || this[pair].AdjacentFace == -1);
         }
         
-        internal int EndVertex(int index)
+        public int EndVertex(int index)
         {
             return this[PairHalfedge(index)].StartVertex;
         }

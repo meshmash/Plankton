@@ -292,6 +292,16 @@ namespace PlanktonGh
         {
             return new Point3f(vertex.X, vertex.Y, vertex.Z);
         }
+
+        /// <summary>
+        /// Creates a Rhino Point3d from a Plankton vertex.
+        /// </summary>
+        /// <param name="vertex">A Plankton vertex</param>
+        /// <returns>A Point3d with the same coordinates as the vertex.</returns>
+        public static Point3d ToPoint3d(this PlanktonVertex vertex)
+        {
+            return new Point3d(vertex.X, vertex.Y, vertex.Z);
+        }
         
         /// <summary>
         /// Creates a Rhino Point3f from a Plankton vector.
@@ -301,6 +311,16 @@ namespace PlanktonGh
         public static Point3f ToPoint3f(this PlanktonXYZ vector)
         {
             return new Point3f(vector.X, vector.Y, vector.Z);
+        }
+
+        /// <summary>
+        /// Creates a Rhino Point3d from a Plankton vector.
+        /// </summary>
+        /// <param name="vector">A Plankton vector.</param>
+        /// <returns>A Point3d with the same XYZ components as the vector.</returns>
+        public static Point3d ToPoint3d(this PlanktonXYZ vector)
+        {
+            return new Point3d(vector.X, vector.Y, vector.Z);
         }
         
         /// <summary>

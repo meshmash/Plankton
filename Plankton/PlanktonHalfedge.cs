@@ -3,7 +3,7 @@
 namespace Plankton
 {
     /// <summary>
-    /// Represents a halfdege in Plankton's halfedge mesh data structure.
+    /// Represents a halfedge in Plankton's halfedge mesh data structure.
     /// </summary>
     public class PlanktonHalfedge
     {
