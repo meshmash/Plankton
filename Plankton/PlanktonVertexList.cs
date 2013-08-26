@@ -41,12 +41,23 @@ namespace Plankton
         /// <summary>
         /// Adds a new vertex to the end of the Vertex list.
         /// </summary>
-        /// <param name="halfEdge">Vertex to add.</param>
+        /// <param name="vertex">Vertex to add.</param>
         /// <returns>The index of the newly added vertex.</returns>
         internal int Add(PlanktonVertex vertex)
         {
             if (vertex == null) return -1;
             this._list.Add(vertex);
+            return this.Count - 1;
+        }
+
+        /// <summary>
+        /// Adds a new vertex to the end of the Vertex list.
+        /// </summary>
+        /// <param name="vertex">Vertex to add.</param>
+        /// <returns>The index of the newly added vertex.</returns>
+        internal int Add(PlanktonXYZ vertex)
+        {            
+            this._list.Add(new PlanktonVertex(vertex.X,vertex.Y,vertex.Z));
             return this.Count - 1;
         }
         

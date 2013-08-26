@@ -451,6 +451,49 @@ namespace Plankton
 
             return index_next;
         }
+
+        /// <summary>
+        /// Divides an n-sided face into n triangles, adding a new vertex in the center of the face.
+        /// </summary>
+        /// <param name="index">The index of the face to stellate</param>        
+        /// <returns>The index of the central vertex</returns>
+        public int Stellate(int f)
+        {
+            int central_vertex = _mesh.Vertices.Add(this.GetFaceCenter(f));
+            int CountBefore = _mesh.Halfedges.Count();
+            int[] FaceHalfEdges = this.GetHalfedges(f);
+            for (int i = 0; i < FaceHalfEdges.Length; i++)
+            {    
+                int ThisHalfEdge = FaceHalfEdges[i];
+                int TriangleFace;
+                if (i == 0) {TriangleFace = f;}
+                else {TriangleFace = this.Add(new PlanktonFace());}                
+                this[TriangleFace].FirstHalfedge = ThisHalfEdge;
+                _mesh.Halfedges[ThisHalfEdge].AdjacentFace = TriangleFace;
+                int OutSpoke = _mesh.Halfedges.AddPair(central_vertex, _mesh.Halfedges[ThisHalfEdge].StartVertex, TriangleFace);
+                if (i == 0) { _mesh.Vertices[central_vertex].OutgoingHalfedge = OutSpoke; }
+                _mesh.Halfedges.MakeConsecutive(OutSpoke,ThisHalfEdge);
+            }
+            for (int i = 0; i < FaceHalfEdges.Length; i++)
+            {
+                int ThisHalfEdge = FaceHalfEdges[i];
+                if(i<FaceHalfEdges.Length-1)
+                {
+                    //link the edge to the ingoing spoke, and the ingoing spoke to the outgoing one
+                    _mesh.Halfedges.MakeConsecutive(ThisHalfEdge, CountBefore + i*2 + 3);
+                    _mesh.Halfedges.MakeConsecutive(CountBefore + (i*2) + 3, CountBefore + (i*2));
+                    //set the AdjacentFace of the ingoing spoke                
+                    _mesh.Halfedges[CountBefore + (i * 2) + 3].AdjacentFace = _mesh.Halfedges[ThisHalfEdge].AdjacentFace;
+                }
+                else
+                {
+                    _mesh.Halfedges.MakeConsecutive(ThisHalfEdge, CountBefore + 1);
+                    _mesh.Halfedges.MakeConsecutive(CountBefore + 1, CountBefore + (i*2));
+                    _mesh.Halfedges[CountBefore + 1].AdjacentFace = _mesh.Halfedges[ThisHalfEdge].AdjacentFace;
+                }
+            }            
+            return central_vertex;
+        }
         
         /// <summary>
         /// Gets vertex indices of a face.
