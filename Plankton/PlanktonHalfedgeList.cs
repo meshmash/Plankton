@@ -251,39 +251,34 @@ namespace Plankton
         /// <returns>The index of the newly created halfedge in the same direction as the input halfedge.</returns>
         public int SplitEdge(int index)
         {
-            // add a new vertex   
-            PlanktonVertex new_vertex = new PlanktonVertex();
-            int new_vertex_index = _mesh.Vertices.Add(new_vertex);
-            // add a new halfedge pair
+            int pair = this.PairHalfedge(index);
+
+            // Create a copy of the existing vertex (user can move it afterwards if needs be)
+            int end_vertex = this[pair].StartVertex;
+            int new_vertex_index = _mesh.Vertices.Add(_mesh.Vertices[end_vertex].ToXYZ()); // use XYZ to copy
+
+            // Add a new halfedge pair
             int new_halfedge1 = this.AddPair(new_vertex_index, this.EndVertex(index), this[index].AdjacentFace);
             int new_halfedge2 = this.PairHalfedge(new_halfedge1);
+            this[new_halfedge2].AdjacentFace = this[pair].AdjacentFace;
 
-            // link back up:
+            // Link new pair into mesh
+            this.MakeConsecutive(new_halfedge1, this[index].NextHalfedge);
+            this.MakeConsecutive(index, new_halfedge1);
+            this.MakeConsecutive(this[pair].PrevHalfedge, new_halfedge2);
+            this.MakeConsecutive(new_halfedge2, pair);
 
-            // new he's prev & next            
-            this[new_halfedge1].PrevHalfedge = index;  //don't link back yet
-            this.MakeConsecutive(new_halfedge1, this[index].NextHalfedge);            
-
-            // new he's pair's prev, next, adjface           
-            this.MakeConsecutive(this[this.PairHalfedge(index)].PrevHalfedge, new_halfedge2);
-            this[new_halfedge2].NextHalfedge = this.PairHalfedge(index);
-            this[new_halfedge2].AdjacentFace = this[this.PairHalfedge(index)].AdjacentFace;
-
-            // new vert's outgoing he
+            // Set new vertex's outgoing halfedge
             _mesh.Vertices[new_vertex_index].OutgoingHalfedge = new_halfedge1;
 
-            // input he's next
-            this[index].NextHalfedge = new_halfedge1;
+            // Change the start of the pair of the input halfedge to the new vertex
+            this[pair].StartVertex = new_vertex_index;
 
-            // input's pair's prev
-            this[this.PairHalfedge(index)].PrevHalfedge = new_halfedge2;
-
-            // change the start of the pair of the input halfedge to the new vertex
-            this[this.PairHalfedge(index)].StartVertex = new_vertex_index;
-
-            // end vert's outgoing 
-            if (_mesh.Vertices[this.EndVertex(index)].OutgoingHalfedge == this.PairHalfedge(index))
-            { _mesh.Vertices[this.EndVertex(index)].OutgoingHalfedge = new_halfedge2; }
+            // Update end vertex's outgoing halfedge, if necessary 
+            if (_mesh.Vertices[end_vertex].OutgoingHalfedge == pair)
+            {
+                _mesh.Vertices[end_vertex].OutgoingHalfedge = new_halfedge2;
+            }
 
             return new_halfedge1;
         }

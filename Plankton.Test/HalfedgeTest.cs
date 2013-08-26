@@ -99,9 +99,12 @@ namespace Plankton.Test
             // Create two triangular faces
             pMesh.Faces.AddFace(0, 1, 2);
             pMesh.Faces.AddFace(2, 3, 0);
+
+            // Change outgoing of vert #2 so that we can check it updates
+            pMesh.Vertices[2].OutgoingHalfedge = 4;
             
             // Split the diagonal edge
-            int split_he = hs.FindHalfedge(0, 2);
+            int split_he = 5; // he from v #0 to #2
             int new_he = hs.SplitEdge(split_he);
             
             // Returned halfedge should start at the new vertex
@@ -122,6 +125,13 @@ namespace Plankton.Test
             
             // New vertex's outgoing should be returned halfedge
             Assert.AreEqual(new_he, pMesh.Vertices[4].OutgoingHalfedge);
+
+            // New vertex should be 2-valent
+            Assert.AreEqual(2, pMesh.Vertices.GetHalfedges(4).Length);
+
+            // Check existing vertices...
+            Assert.AreEqual(new int[] {9, 5, 0}, pMesh.Vertices.GetHalfedges(0));
+            Assert.AreEqual(new int[] {11, 6, 3}, pMesh.Vertices.GetHalfedges(2));
         }
 
         [Test]
