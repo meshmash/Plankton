@@ -253,9 +253,13 @@ namespace Plankton
         {
             int pair = this.PairHalfedge(index);
 
-            // Create a copy of the existing vertex (user can move it afterwards if needs be)
+            // Create a copy of the existing vertex and place it at the midpt
             int end_vertex = this[pair].StartVertex;
-            int new_vertex_index = _mesh.Vertices.Add(_mesh.Vertices[end_vertex].ToXYZ()); // use XYZ to copy
+
+            int new_vertex_index = _mesh.Vertices.Add(
+                (_mesh.Vertices[end_vertex].X + _mesh.Vertices[this[index].StartVertex].X) * 0.5,
+                (_mesh.Vertices[end_vertex].Y + _mesh.Vertices[this[index].StartVertex].Y) * 0.5,
+                (_mesh.Vertices[end_vertex].Z + _mesh.Vertices[this[index].StartVertex].Z) * 0.5);
 
             // Add a new halfedge pair
             int new_halfedge1 = this.AddPair(new_vertex_index, this.EndVertex(index), this[index].AdjacentFace);
