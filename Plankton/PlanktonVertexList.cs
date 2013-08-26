@@ -166,7 +166,8 @@ namespace Plankton
             while (h != first);
         }
         #endregion
-        
+
+        #region adjacency queries
         /// <summary>
         /// Gets the halfedges which end at a vertex.
         /// </summary>
@@ -203,7 +204,18 @@ namespace Plankton
             return this.GetHalfedgesCirculator(v)
                 .Select(h => _mesh.Halfedges[h].AdjacentFace).ToArray();
         }
-        
+
+        /// <summary>
+        /// Gets the first <b>incoming</b> halfedge for a vertex.
+        /// </summary>
+        /// <param name="v">A vertex index.</param>
+        /// <returns>The index of the halfedge paired with the specified vertex's .</returns>
+        public int GetIncomingHalfedge(int v)
+        {
+            return _mesh.Halfedges.PairHalfedge(this[v].OutgoingHalfedge);
+        }
+        #endregion
+
         /// <summary>
         /// Gets the number of naked edges incident to this vertex.
         /// </summary>
@@ -220,16 +232,93 @@ namespace Plankton
             }
             return nakedCount;
         }
-        
+
         /// <summary>
-        /// Gets the first <b>incoming</b> halfedge for a vertex.
+        /// A vertex is on a boundary if its outgoing halfedge has no adjacent face.
         /// </summary>
-        /// <param name="v">A vertex index.</param>
-        /// <returns>The index of the halfedge paired with the specified vertex's .</returns>
-        public int GetIncomingHalfedge(int v)
+        /// <param name="index">The index of a vertex.</param>
+        /// <returns><c>true</c> if the specified vertex is on a boundary; otherwise, <c>false</c>.
+        /// Also returns <c>true</c> if the vertex is unused (i.e. no outgoing halfedge).</returns>
+        public bool IsBoundary(int index)
         {
-            return _mesh.Halfedges.PairHalfedge(this[v].OutgoingHalfedge);
+            int h = this[index].OutgoingHalfedge;
+            return (h < -1 || _mesh.Halfedges[h].AdjacentFace == -1);
         }
+
+        #region Euler operators
+        /// <summary>
+        /// <para>Merges two vertices by collapsing the pair of halfedges between them.</para>
+        /// <seealso cref="PlanktonHalfedgeList.CollapseEdge"/>
+        /// </summary>
+        /// <param name="halfedge">The index of a halfedge between the two vertices to be merged.
+        /// The starting vertex of this halfedge will be retained.</param>
+        /// <returns>The successor of <paramref name="index"/> around its vertex, or -1 on failure.</returns>
+        /// <remarks>The invariant <c>mesh.Vertices.MergeVertices(mesh.Vertices.SplitVertex(a, b))</c> will return a,
+        /// leaving the mesh unchanged.</remarks>
+        public int MergeVertices(int halfedge)
+        {
+            return _mesh.Halfedges.CollapseEdge(halfedge);
+
+        }
+
+        /// <summary>
+        /// Splits the vertex into two, joined by a new pair of halfedges.
+        /// </summary>
+        /// <param name="first">The index of a halfedge which starts at the vertex to split.</param>
+        /// <param name="second">The index of a second halfedge which starts at the vertex to split.</param>
+        /// <returns>The new halfedge which starts at the existing vertex.</returns>
+        /// <remarks>After the split, the <paramref name="second"/> halfedge will be starting at the newly added vertex.</remarks>
+        public int SplitVertex(int first, int second)
+        {
+            var hs = _mesh.Halfedges;
+            // Check that both halfedges start at the same vertex
+            int v_old = hs[first].StartVertex;
+            if (v_old != hs[second].StartVertex) { return -1; } // TODO: return ArgumentException instead?
+
+            // Create a copy of the existing vertex (user can move it afterwards if needs be)
+            int v_new = this.Add(this[v_old].ToXYZ()); // copy vertex by converting to XYZ and back
+
+            // Go around outgoing halfedges, from 'second' to just before 'first'
+            // Set start vertex to new vertex
+            bool reset_v_old = false;
+            foreach (int h in this.GetHalfedgesCirculator(v_old, second))
+            {
+                if (h == first) { break; }
+                hs[h].StartVertex = v_new;
+                // If new vertex has no outgoing yet and current he is naked...
+                if (this[v_new].OutgoingHalfedge == -1 && hs[h].AdjacentFace == -1)
+                    this[v_new].OutgoingHalfedge = h;
+                // Also check whether existing vert's he is now incident to new one
+                if (h == this[v_old].OutgoingHalfedge) { reset_v_old = true; }
+            }
+            // If no naked halfedges, just use 'second'
+            if (this[v_new].OutgoingHalfedge == -1) { this[v_new].OutgoingHalfedge = second; }
+
+            // Add the new pair of halfedges from old vertex to new
+            int h_new = hs.AddPair(v_old, v_new, hs[second].AdjacentFace);
+            int h_new_pair = hs.PairHalfedge(h_new);
+            hs[h_new_pair].AdjacentFace = hs[first].AdjacentFace;
+
+            // Link new pair into mesh
+            hs.MakeConsecutive(hs[first].PrevHalfedge, h_new_pair);
+            hs.MakeConsecutive(h_new_pair, first);
+            hs.MakeConsecutive(hs[second].PrevHalfedge, h_new);
+            hs.MakeConsecutive(h_new, second);
+
+            // Re-set existing vertex's outgoing halfedge, if necessary
+            if (reset_v_old)
+            {
+                this[v_old].OutgoingHalfedge = h_new;
+                foreach (int h in this.GetHalfedgesCirculator(v_old))
+                {
+                    if (hs[h].AdjacentFace == -1) { this[v_old].OutgoingHalfedge = h; }
+                }
+            }
+
+            // return the new vertex which starts at the existing vertex
+            return h_new;
+        }
+        #endregion
         #endregion
         
         #region IEnumerable implementation

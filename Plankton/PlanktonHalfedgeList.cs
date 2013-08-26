@@ -166,10 +166,10 @@ namespace Plankton
         }
 
         /// <summary>
-        /// A halfedge is a boundary if it only has a face on one side.
+        /// A halfedge is on a boundary if it only has a face on one side.
         /// </summary>
         /// <param name="index">The index of a halfedge.</param>
-        /// <returns><c>true</c> if the specified halfedge is a boundary; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if the specified halfedge is on a boundary; otherwise, <c>false</c>.</returns>
         public bool IsBoundary(int index)
         {
             int pair = this.PairHalfedge(index);
