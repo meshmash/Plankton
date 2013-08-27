@@ -129,7 +129,53 @@ namespace Plankton
             return new int[]{ I, J };
         }
         #endregion
-        
+
+        #region traversals
+        /// <summary>
+        /// Traverses clockwise around the starting vertex of a halfedge.
+        /// </summary>
+        /// <param name="halfedgeIndex">The index of a halfedge.</param>
+        /// <returns>
+        /// An enumerable of halfedge indices incident to the starting vertex of
+        /// <paramref name="halfedgeIndex"/>. Ordered clockwise around the vertex.
+        /// The returned enumerable will start with the specified halfedge.
+        /// </returns>
+        /// <remarks>Lazily evaluated so if you change the mesh topology whilst using
+        /// this circulator, you'll know about it!</remarks>
+        public IEnumerable<int> GetVertexCirculator(int halfedgeIndex)
+        {
+            int h = halfedgeIndex;
+            do
+            {
+                yield return h;
+                h = this[this.PairHalfedge(h)].NextHalfedge;
+            }
+            while (h != halfedgeIndex);
+        }
+
+        /// <summary>
+        /// Traverses anticlockwise around the adjacent face of a halfedge.
+        /// </summary>
+        /// <param name="halfedgeIndex">The index of a halfedge.</param>
+        /// <returns>
+        /// An enumerable of halfedge indices incident to the adjacent face of
+        /// <paramref name="halfedgeIndex"/>. Ordered anticlockwise around the face.
+        /// </returns>
+        /// <remarks>Lazily evaluated so if you change the mesh topology whilst using
+        /// this circulator, you'll know about it!</remarks>
+        public IEnumerable<int> GetFaceCirculator(int halfedgeIndex)
+        {
+            int h = halfedgeIndex;
+            do
+            {
+                yield return h;
+                h = this[h].NextHalfedge;
+            }
+            while (h != halfedgeIndex);
+        }
+        #endregion
+
+        #region public helpers
         /// <summary>
         /// Gets the halfedge index between two vertices.
         /// </summary>
@@ -154,13 +200,14 @@ namespace Plankton
         /// <param name="startHalfEdge">The halfedge to start from</param>
         /// <param name="around">How many steps around the face. 0 returns the start_he</param>
         /// <returns>The resulting halfedge</returns>
-        /// 
+        [Obsolete("GetNextHalfedge(int,int) is deprecated, please use" +
+            "GetFaceCirculator(int).ElementAt(int) instead (LINQ).")]
         public int GetNextHalfEdge(int startHalfEdge,  int around)
         {
             int he_around = startHalfEdge;
             for (int i = 0; i < around; i++)
             {
-                he_around = this[he_around].NextHalfedge;                
+                he_around = this[he_around].NextHalfedge;
             }
             return he_around;
         }
@@ -177,18 +224,28 @@ namespace Plankton
             // Check for a face on both sides
             return (this[index].AdjacentFace == -1 || this[pair].AdjacentFace == -1);
         }
-        
-        public int EndVertex(int index)
+
+        /// <summary>
+        /// Gets the index of the vertex at the <b>end</b> of a halfedge.
+        /// </summary>
+        /// <param name="index">The index of a halfedge.</param>
+        /// <returns>The index of vertex at the end of the specified halfedge.</returns>
+        /// <remarks>This helper actually returns the start vertex of the other halfedge in the pair.</remarks>
+        public int EndVertex(int halfedgeIndex)
         {
-            return this[PairHalfedge(index)].StartVertex;
+            return this[PairHalfedge(halfedgeIndex)].StartVertex;
         }
-        
+        #endregion
+
+        #region internal helpers
         internal void MakeConsecutive(int prev, int next)
         {
             this[prev].NextHalfedge = next;
             this[next].PrevHalfedge = prev;
         }
-        
+        #endregion
+
+        #region Euler operators
         /// <summary>
         /// Performs an edge flip. This works by shifting the start/end vertices of the edge
         /// anticlockwise around their faces (by one vertex) and as such can be applied to any
@@ -381,6 +438,7 @@ namespace Plankton
 
             return h_rtn;
         }
+        #endregion
         #endregion
         
         #region IEnumerable implementation
