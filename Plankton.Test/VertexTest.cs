@@ -84,7 +84,7 @@ namespace Plankton.Test
 
             PlanktonMesh pMesh = new PlanktonMesh();
 
-            // Create 'X' of vertices
+            // Create 3x3 grid of vertices
             pMesh.Vertices.Add(0, 2, 0); // 0
             pMesh.Vertices.Add(0, 1, 0); // 1
             pMesh.Vertices.Add(0, 0, 0); // 2
@@ -112,6 +112,43 @@ namespace Plankton.Test
 
             // We should be back where we started...
             Assert.AreEqual(start_he, old_he);
+        }
+
+        [Test]
+        public void CanEraseCenterVertex()
+        {
+            // TODO: draw figure here...
+
+            PlanktonMesh pMesh = new PlanktonMesh();
+
+            // Create 3x3 grid of vertices
+            pMesh.Vertices.Add(0, 2, 0); // 0
+            pMesh.Vertices.Add(0, 1, 0); // 1
+            pMesh.Vertices.Add(0, 0, 0); // 2
+            pMesh.Vertices.Add(1, 2, 0); // 3
+            pMesh.Vertices.Add(1, 1, 0); // 4 (center)
+            pMesh.Vertices.Add(1, 0, 0); // 5
+            pMesh.Vertices.Add(2, 2, 0); // 6
+            pMesh.Vertices.Add(2, 1, 0); // 7
+            pMesh.Vertices.Add(2, 0, 0); // 8
+
+            // Create four quadrangular faces
+            pMesh.Faces.AddFace(0, 1, 4, 3);
+            pMesh.Faces.AddFace(3, 4, 7, 6);
+            pMesh.Faces.AddFace(1, 2, 5, 4);
+            pMesh.Faces.AddFace(4, 5, 8, 7);
+
+            Assert.AreEqual(4, pMesh.Halfedges[4].StartVertex);
+            Assert.AreEqual(0, pMesh.Halfedges[4].AdjacentFace);
+
+            // Erase center vertex
+            pMesh.Vertices.EraseCenterVertex(4);
+
+            Assert.IsFalse(pMesh.Faces[0].Dead);
+            int[] faceHalfedges = pMesh.Faces.GetHalfedges(0);
+            int[] expected = new int[] { 6, 0, 14, 16, 20, 22, 10, 12 };
+            Assert.AreEqual(8, faceHalfedges.Length);
+            Assert.AreEqual(expected, faceHalfedges);
         }
     }
 }

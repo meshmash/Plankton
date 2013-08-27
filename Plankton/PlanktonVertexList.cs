@@ -318,6 +318,56 @@ namespace Plankton
             // return the new vertex which starts at the existing vertex
             return h_new;
         }
+
+        /// <summary>
+        /// Erases a vertex and all incident halfedges by merging its incident faces.
+        /// </summary>
+        /// <param name="halfedgeIndex">The index of a halfedge which starts at the vertex to erase.
+        /// The retained face will be the one adjacent to this halfedge.</param>
+        /// <returns>The successor of <paramref name="halfedgeIndex"/> around its original face.</returns>
+        public int EraseCenterVertex(int halfedgeIndex)
+        {
+            int vertexIndex = _mesh.Halfedges[halfedgeIndex].StartVertex;
+
+            // Check that the vertex is completely surrounded by faces
+            if (this.IsBoundary(vertexIndex))
+                throw new ArgumentException("Center vertex must not be on a boundary");
+
+            // Get outgoing halfedges around vertex, starting with specified halfedge
+            int[] vertexHalfedges = this.GetHalfedgesCirculator(vertexIndex, halfedgeIndex).ToArray();
+
+            // Check for 2-valent vertices in the 1-ring (no antennas)
+            int v;
+            foreach (int h in vertexHalfedges)
+            {
+                v = _mesh.Halfedges.EndVertex(h);
+                if (this.GetHalfedges(v).Length < 3)
+                    throw new ArgumentException("Vertex in 1-ring is 2-valent");
+            }
+
+            // Store face to keep and set its first halfedge
+            int faceIndex = _mesh.Halfedges[halfedgeIndex].AdjacentFace;
+            _mesh.Faces[faceIndex].FirstHalfedge = _mesh.Halfedges[halfedgeIndex].NextHalfedge;
+
+            // Remove incident halfedges and mark faces for deletion (except first face)
+            _mesh.Halfedges.RemovePair(vertexHalfedges[0]);
+            for (int i = 1; i < vertexHalfedges.Length; i++)
+            {
+                _mesh.Faces[_mesh.Halfedges[vertexHalfedges[i]].AdjacentFace].Dead = true;
+                _mesh.Halfedges.RemovePair(vertexHalfedges[i]);
+            }
+
+            // Set adjacent face for all halfedges in hole
+            foreach (int h in _mesh.Faces.GetHalfedgesCirculator(faceIndex))
+            {
+                _mesh.Halfedges[h].AdjacentFace = faceIndex;
+            }
+
+            // Mark center vertex for deletion
+            this[vertexIndex].Dead = true;
+
+            return _mesh.Faces[faceIndex].FirstHalfedge;
+        }
         #endregion
         #endregion
         
