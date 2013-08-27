@@ -100,7 +100,7 @@ namespace Plankton
             {
                 return this._list[index];
             }
-            private set
+            internal set
             {
                 this._list[index] = value;
             }
@@ -242,9 +242,10 @@ namespace Plankton
         /// </summary>
         /// <param name="v">A vertex index.</param>
         /// <returns>The number of incident edges.</returns>
-        public int Valence(int v)
+        public int GetValence(int v)
         {
-            return this.GetHalfedgesCirculator(v).Count();
+            int h = this[v].OutgoingHalfedge;
+            return _mesh.Halfedges.GetVertexCirculator(h).Count();
         }
 
         /// <summary>

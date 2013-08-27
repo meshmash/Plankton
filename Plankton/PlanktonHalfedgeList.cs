@@ -93,7 +93,7 @@ namespace Plankton
             {
                 return this._list[index];
             }
-            private set
+            internal set
             {
                 this._list[index] = value;
             }

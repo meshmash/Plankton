@@ -186,7 +186,9 @@ namespace Plankton
                     
                     // ensure vertex->outgoing is boundary if vertex is boundary
                     if (is_new[i]) // first is new
+                    {
                         vs[v2].OutgoingHalfedge = loop[i] + 1;
+                    }
                 }
                 else // both old (non-manifold vertex trickery below)
                 {
@@ -295,7 +297,7 @@ namespace Plankton
             {
                 return this._list[index];
             }
-            private set
+            internal set
             {
                 this._list[index] = value;
             }
