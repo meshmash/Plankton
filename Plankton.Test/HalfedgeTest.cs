@@ -197,12 +197,13 @@ namespace Plankton.Test
 
             int h_clps = pMesh.Vertices[4].OutgoingHalfedge;
             int v_suc = pMesh.Vertices.GetHalfedges(4)[1];
+            int h_boundary = pMesh.Vertices[3].OutgoingHalfedge;
 
             // Collapse center vertex's outgoing halfedge
             int h_rtn = pMesh.Halfedges.CollapseEdge(h_clps);
 
             // Check that center vertex's outgoing halfedge has been updated
-            Assert.AreEqual(h_rtn, pMesh.Vertices[4].OutgoingHalfedge);
+            Assert.AreEqual(h_boundary, pMesh.Vertices[4].OutgoingHalfedge);
 
             // Edge collapse should return successor around start vertex
             Assert.AreEqual(v_suc, h_rtn);

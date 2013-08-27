@@ -100,7 +100,7 @@ namespace Plankton
             {
                 return this._list[index];
             }
-            private set
+            internal set
             {
                 this._list[index] = value;
             }
@@ -109,22 +109,13 @@ namespace Plankton
         
         #region traversals
         /// <summary>
-        /// Gets the halfedges which originate from a vertex.
-        /// </summary>
-        /// <param name="v">A vertex index.</param>
-        /// <returns>The indices of halfedges incident to a particular vertex.
-        /// Ordered clockwise around the vertex.</returns>
-        public int[] GetHalfedges(int v)
-        {
-            return this.GetHalfedgesCirculator(v).ToArray();
-        }
-        
-        /// <summary>
         /// Traverses the halfedge indices which originate from a vertex.
         /// </summary>
         /// <param name="v">A vertex index.</param>
         /// <returns>An enumerable of halfedge indices incident to the specified vertex.
         /// Ordered clockwise around the vertex.</returns>
+        [Obsolete("GetHalfedgesCirculator(int) is deprecated, please use" +
+                  "Halfedges.GetVertexCirculator(int) instead.")]
         public IEnumerable<int> GetHalfedgesCirculator(int v)
         {
             int he_first = this[v].OutgoingHalfedge;
@@ -150,6 +141,8 @@ namespace Plankton
         /// <exception cref="ArgumentOutOfRangeException">
         /// The specified halfedge does not originate from the specified vertex.
         /// </exception>
+        [Obsolete("GetHalfedgesCirculator(int,int) is deprecated, please use" +
+            "Halfedges.GetVertexCirculator(int) instead.")]
         public IEnumerable<int> GetHalfedgesCirculator(int v, int first)
         {
             if (_mesh.Halfedges[first].StartVertex != v)
@@ -168,6 +161,17 @@ namespace Plankton
         #endregion
 
         #region adjacency queries
+        /// <summary>
+        /// Gets the halfedges which originate from a vertex.
+        /// </summary>
+        /// <param name="v">A vertex index.</param>
+        /// <returns>The indices of halfedges incident to a particular vertex.
+        /// Ordered clockwise around the vertex.</returns>
+        public int[] GetHalfedges(int v)
+        {
+            return this.GetHalfedgesCirculator(v).ToArray();
+        }
+
         /// <summary>
         /// Gets the halfedges which end at a vertex.
         /// </summary>
@@ -238,9 +242,10 @@ namespace Plankton
         /// </summary>
         /// <param name="v">A vertex index.</param>
         /// <returns>The number of incident edges.</returns>
-        public int Valence(int v)
+        public int GetValence(int v)
         {
-            return this.GetHalfedgesCirculator(v).Count();
+            int h = this[v].OutgoingHalfedge;
+            return _mesh.Halfedges.GetVertexCirculator(h).Count();
         }
 
         /// <summary>
