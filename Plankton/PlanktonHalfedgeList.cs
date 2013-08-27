@@ -255,7 +255,7 @@ namespace Plankton
 
             // Create a copy of the existing vertex (user can move it afterwards if needs be)
             int end_vertex = this[pair].StartVertex;
-            int new_vertex_index = _mesh.Vertices.Add(_mesh.Vertices[end_vertex].ToXYZ()); // use XYZ to copy
+            int new_vertex_index = _mesh.Vertices.Add(_mesh.Vertices[end_vertex].ToXYZ()); // use XYZ to copy            
 
             // Add a new halfedge pair
             int new_halfedge1 = this.AddPair(new_vertex_index, this.EndVertex(index), this[index].AdjacentFace);
@@ -294,12 +294,13 @@ namespace Plankton
             // (I guess we could include a parameter for where along the edge to split)
             int new_halfedge = this.SplitEdge(index);
             int point_on_edge = this[new_halfedge].StartVertex;
+             
             _mesh.Vertices[point_on_edge].X = 0.5F * (_mesh.Vertices[this[index].StartVertex].X + _mesh.Vertices[this.EndVertex(new_halfedge)].X);
             _mesh.Vertices[point_on_edge].Y = 0.5F * (_mesh.Vertices[this[index].StartVertex].Y + _mesh.Vertices[this.EndVertex(new_halfedge)].Y);
             _mesh.Vertices[point_on_edge].Z = 0.5F * (_mesh.Vertices[this[index].StartVertex].Z + _mesh.Vertices[this.EndVertex(new_halfedge)].Z);
 
-            int new_face1 = _mesh.Faces.SplitFace(new_halfedge, 2);
-            int new_face2 = _mesh.Faces.SplitFace(this.PairHalfedge(index), 2);
+            int new_face1 = _mesh.Faces.SplitFace(new_halfedge, this[this[new_halfedge].NextHalfedge].NextHalfedge);
+            int new_face2 = _mesh.Faces.SplitFace(this.PairHalfedge(index), this[this[this.PairHalfedge(index)].NextHalfedge].NextHalfedge);
 
             return new_halfedge;
         }
