@@ -414,8 +414,11 @@ namespace Plankton
             // Store return halfedge index (next around start vertex)
             int h_rtn = this[pair].NextHalfedge;
 
-            // Make sure the OutgoingHalfedge is one that still exists
-            if (_mesh.Vertices[v_keep].OutgoingHalfedge == index)
+            // Set outgoing halfedge
+            int v_kill_outgoing = _mesh.Vertices[v_kill].OutgoingHalfedge;
+            if (this[v_kill_outgoing].AdjacentFace < 0 && v_kill_outgoing != pair)
+                _mesh.Vertices[v_keep].OutgoingHalfedge = v_kill_outgoing;
+            else if (_mesh.Vertices[v_keep].OutgoingHalfedge == index)
                 _mesh.Vertices[v_keep].OutgoingHalfedge = h_rtn; // Next around vertex
 
             // Bypass both halfedges by linking prev directly to next for each
