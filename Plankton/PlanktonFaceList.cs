@@ -186,7 +186,9 @@ namespace Plankton
                     
                     // ensure vertex->outgoing is boundary if vertex is boundary
                     if (is_new[i]) // first is new
+                    {
                         vs[v2].OutgoingHalfedge = loop[i] + 1;
+                    }
                 }
                 else // both old (non-manifold vertex trickery below)
                 {
@@ -295,7 +297,7 @@ namespace Plankton
             {
                 return this._list[index];
             }
-            private set
+            internal set
             {
                 this._list[index] = value;
             }
@@ -304,22 +306,13 @@ namespace Plankton
         
         #region traversals
         /// <summary>
-        /// Gets the halfedges which bound a face.
-        /// </summary>
-        /// <param name="f">A face index.</param>
-        /// <returns>The indices of halfedges incident to a particular face.
-        /// Ordered anticlockwise around the face.</returns>
-        public int[] GetHalfedges(int f)
-        {
-            return this.GetHalfedgesCirculator(f).ToArray();
-        }
-        
-        /// <summary>
         /// Traverses the halfedge indices which bound a face.
         /// </summary>
         /// <param name="f">A face index.</param>
         /// <returns>An enumerable of halfedge indices incident to the specified face.
         /// Ordered anticlockwise around the face.</returns>
+        [Obsolete("GetHalfedgesCirculator(int) is deprecated, please use" +
+            "Halfedges.GetFaceCirculator(int) instead.")]
         public IEnumerable<int> GetHalfedgesCirculator(int f)
         {
             int he_first = this[f].FirstHalfedge;
@@ -334,6 +327,38 @@ namespace Plankton
         }
         #endregion
 
+        #region adjacency queries
+        /// <summary>
+        /// Gets the halfedges which bound a face.
+        /// </summary>
+        /// <param name="f">A face index.</param>
+        /// <returns>The indices of halfedges incident to a particular face.
+        /// Ordered anticlockwise around the face.</returns>
+        public int[] GetHalfedges(int f)
+        {
+            return this.GetHalfedgesCirculator(f).ToArray();
+        }
+
+        /// <summary>
+        /// Gets vertex indices of a face.
+        /// </summary>
+        /// <param name="f">A face index.</param>
+        /// <returns>An array of vertex indices incident to the specified face.
+        /// Ordered anticlockwise around the face.</returns>
+        public int[] GetFaceVertices(int f)
+        {
+            return this.GetHalfedgesCirculator(f)
+                .Select(h => _mesh.Halfedges[h].StartVertex).ToArray();
+        }
+
+        [Obsolete("GetVertices is deprecated, please use GetFaceVertices instead.")]
+        public int[] GetVertices(int f)
+        {
+            return this.GetFaceVertices(f);
+        }
+        #endregion
+
+        #region Euler operators
         /// <summary>
         /// <para>Split a face into two faces by inserting a new edge</para>
         /// <seealso cref="MergeFaces"/>
@@ -494,25 +519,8 @@ namespace Plankton
             }            
             return central_vertex;
         }
-        
-        /// <summary>
-        /// Gets vertex indices of a face.
-        /// </summary>
-        /// <param name="f">A face index.</param>
-        /// <returns>An array of vertex indices incident to the specified face.
-        /// Ordered anticlockwise around the face.</returns>
-        public int[] GetFaceVertices(int f)
-        {
-            return this.GetHalfedgesCirculator(f)
-                .Select(h => _mesh.Halfedges[h].StartVertex).ToArray();
-        }
-        
-        [Obsolete("GetVertices is deprecated, please use GetFaceVertices instead.")]
-        public int[] GetVertices(int f)
-        {
-            return this.GetFaceVertices(f);
-        }
-        
+        #endregion
+
         /// <summary>
         /// Gets the barycenter of a face's vertices.
         /// </summary>
