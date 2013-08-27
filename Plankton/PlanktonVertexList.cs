@@ -234,6 +234,16 @@ namespace Plankton
         }
 
         /// <summary>
+        /// Gets the number of edges incident to this vertex.
+        /// </summary>
+        /// <param name="v">A vertex index.</param>
+        /// <returns>The number of incident edges.</returns>
+        public int Valence(int v)
+        {
+            return this.GetHalfedgesCirculator(v).Count();
+        }
+
+        /// <summary>
         /// A vertex is on a boundary if its outgoing halfedge has no adjacent face.
         /// </summary>
         /// <param name="index">The index of a vertex.</param>
