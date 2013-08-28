@@ -72,10 +72,22 @@ namespace Plankton
         /// <remarks>The halfedges are topologically disconnected from the mesh and marked for deletion.</remarks>
         internal void RemovePair(int index)
         {
-            // TODO: update vertices' outgoing halfedges, if necessary
             int pair = this.PairHalfedge(index);
+            
+            // Reconnect adjacent halfedges
             this.MakeConsecutive(this[pair].PrevHalfedge, this[index].NextHalfedge);
             this.MakeConsecutive(this[index].PrevHalfedge, this[pair].NextHalfedge);
+            
+            // Update vertices' outgoing halfedges, if necessary
+            var vs = this.GetVertices(index);
+            if (_mesh.Vertices[vs[0]].OutgoingHalfedge == index) {
+                _mesh.Vertices[vs[0]].OutgoingHalfedge = this[pair].NextHalfedge;
+            }
+            if (_mesh.Vertices[vs[1]].OutgoingHalfedge == pair) {
+                _mesh.Vertices[vs[1]].OutgoingHalfedge = this[index].NextHalfedge;
+            }
+            
+            // Mark halfedges for deletion
             this[index].Dead = true;
             this[pair].Dead = true;
         }
