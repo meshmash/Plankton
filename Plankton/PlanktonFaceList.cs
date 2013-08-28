@@ -277,7 +277,7 @@ namespace Plankton
             int[] fhs = this.GetHalfedges(index);
             foreach (int h in fhs)
             {
-                if (_mesh.Halfedges.IsBoundary(h)) { _mesh.Halfedges.RemovePair(h); }
+                if (_mesh.Halfedges.IsBoundary(h)) { _mesh.Halfedges.RemovePairHelper(h); }
                 else { _mesh.Halfedges[h].AdjacentFace = -1; }
             }
             this[index].Dead = true;

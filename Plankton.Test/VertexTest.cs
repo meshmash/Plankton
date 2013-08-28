@@ -149,6 +149,7 @@ namespace Plankton.Test
             int[] expected = new int[] { 6, 0, 14, 16, 20, 22, 10, 12 };
             Assert.AreEqual(8, faceHalfedges.Length);
             Assert.AreEqual(expected, faceHalfedges);
+            Assert.AreEqual(-1, pMesh.Vertices[4].OutgoingHalfedge);
         }
         
         [Test]

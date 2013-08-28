@@ -399,11 +399,11 @@ namespace Plankton
             _mesh.Faces[faceIndex].FirstHalfedge = firstHalfedge;
 
             // Remove incident halfedges and mark faces for deletion (except first face)
-            _mesh.Halfedges.RemovePair(vertexHalfedges[0]);
+            _mesh.Halfedges.RemovePairHelper(vertexHalfedges[0]);
             for (int i = 1; i < vertexHalfedges.Length; i++)
             {
                 _mesh.Faces[_mesh.Halfedges[vertexHalfedges[i]].AdjacentFace].Dead = true;
-                _mesh.Halfedges.RemovePair(vertexHalfedges[i]);
+                _mesh.Halfedges.RemovePairHelper(vertexHalfedges[i]);
             }
 
             // Set adjacent face for all halfedges in hole

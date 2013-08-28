@@ -70,7 +70,7 @@ namespace Plankton
         /// </summary>
         /// <param name="index">The index of a halfedge in the pair to remove.</param>
         /// <remarks>The halfedges are topologically disconnected from the mesh and marked for deletion.</remarks>
-        internal void RemovePair(int index)
+        internal void RemovePairHelper(int index)
         {
             int pair = this.PairHalfedge(index);
             
@@ -78,12 +78,21 @@ namespace Plankton
             this.MakeConsecutive(this[pair].PrevHalfedge, this[index].NextHalfedge);
             this.MakeConsecutive(this[index].PrevHalfedge, this[pair].NextHalfedge);
             
-            // Update vertices' outgoing halfedges, if necessary
+            // Update vertices' outgoing halfedges, if necessary. If last halfedge
+            // set unused (outgoing == -1), otherwise set to next around vertex.
             var vs = this.GetVertices(index);
-            if (_mesh.Vertices[vs[0]].OutgoingHalfedge == index) {
-                _mesh.Vertices[vs[0]].OutgoingHalfedge = this[pair].NextHalfedge;
+            if (_mesh.Vertices[vs[0]].OutgoingHalfedge == index)
+            {
+                if (this[pair].NextHalfedge == index)
+                    _mesh.Vertices[vs[0]].OutgoingHalfedge = -1; // unused
+                else
+                    _mesh.Vertices[vs[0]].OutgoingHalfedge = this[pair].NextHalfedge;
             }
-            if (_mesh.Vertices[vs[1]].OutgoingHalfedge == pair) {
+            if (_mesh.Vertices[vs[1]].OutgoingHalfedge == pair)
+            {
+                if (this[index].NextHalfedge == pair)
+                    _mesh.Vertices[vs[1]].OutgoingHalfedge = -1; // unused
+                else
                 _mesh.Vertices[vs[1]].OutgoingHalfedge = this[index].NextHalfedge;
             }
             
