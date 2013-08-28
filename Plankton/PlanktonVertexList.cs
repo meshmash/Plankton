@@ -105,6 +105,39 @@ namespace Plankton
                 this._list[index] = value;
             }
         }
+        
+        /// <summary>
+        /// Helper method to remove dead vertices from the list, re-index and compact.
+        /// </summary>
+        internal void CompactHelper()
+        {
+            int marker = 0; // Location where the current vertex should be moved to
+            
+            // Run through all the vertices
+            for (int iter = 0; iter < this.Count; iter++)
+            {
+                // If vertex is alive, check if we need to shuffle it down the list
+                if (!_list[iter].Dead)
+                {
+                    if (marker < iter)
+                    {
+                        // Room to shuffle. Copy current vertex to marked slot.
+                        _list[marker] = _list[iter];
+                        
+                        // Update all halfedges which start here
+                        int first = _list[marker].OutgoingHalfedge;
+                        foreach (int h in _mesh.Halfedges.GetVertexCirculator(first))
+                        {
+                            _mesh.Halfedges[h].StartVertex = marker;
+                        }
+                    }
+                    marker++; // That spot's filled. Advance the marker.
+                }
+            }
+            
+            // Trim list down to new size
+            if (marker < this.Count) { _list.RemoveRange(marker, this.Count - marker); }
+        }
         #endregion
         
         #region traversals

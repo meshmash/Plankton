@@ -150,5 +150,43 @@ namespace Plankton.Test
             Assert.AreEqual(8, faceHalfedges.Length);
             Assert.AreEqual(expected, faceHalfedges);
         }
+        
+        [Test]
+        public void CanCompact()
+        {
+            PlanktonMesh pMesh = new PlanktonMesh();
+
+            // Create 3x3 grid of vertices
+            pMesh.Vertices.Add(0, 2, 0); // 0
+            pMesh.Vertices.Add(0, 1, 0); // 1
+            pMesh.Vertices.Add(0, 0, 0); // 2
+            pMesh.Vertices.Add(1, 2, 0); // 3
+            pMesh.Vertices.Add(1, 1, 0); // 4 (center)
+            pMesh.Vertices.Add(1, 0, 0); // 5
+            pMesh.Vertices.Add(2, 2, 0); // 6
+            pMesh.Vertices.Add(2, 1, 0); // 7
+            pMesh.Vertices.Add(2, 0, 0); // 8
+
+            // Create four quadrangular faces
+            pMesh.Faces.AddFace(0, 1, 4, 3);
+            pMesh.Faces.AddFace(3, 4, 7, 6);
+            pMesh.Faces.AddFace(1, 2, 5, 4);
+            pMesh.Faces.AddFace(4, 5, 8, 7);
+            
+            int vertexCount = pMesh.Vertices.Count;
+            
+            // Collapse a couple of edges, thus removing two vertices (0 and 2)
+            pMesh.Halfedges.CollapseEdge(1);
+            pMesh.Halfedges.CollapseEdge(14);
+            
+            // Compact vertex list
+            pMesh.Vertices.CompactHelper();
+            
+            // Check new size of vertex list
+            Assert.AreEqual(vertexCount - 2, pMesh.Vertices.Count);
+            
+            // Check we can still traverse from vertices correctly (5 used to be 7)
+            Assert.AreEqual(new int[] { -1, 3, 1 }, pMesh.Vertices.GetVertexFaces(5));
+        }
     }
 }
