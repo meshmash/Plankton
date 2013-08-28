@@ -217,14 +217,15 @@ namespace PlanktonGh
         /// </summary>
         /// <returns>A <see cref="Mesh"/> which represents the source mesh (as best it can).</returns>
         /// <param name="source">A Plankton mesh to convert from.</param>
+        /// <param name="CullUnusedVertices">Whether to remove 'dead' vertices from the Rhino mesh</param>
         /// <remarks>Any faces with five sides or more will be triangulated.</remarks>
-        public static Mesh ToRhinoMesh(this PlanktonMesh source)
+        public static Mesh ToRhinoMesh(this PlanktonMesh source, bool CullUnusedVertices)
         {
             // could add different options for triangulating ngons later
             Mesh rMesh = new Mesh();
             foreach (PlanktonVertex v in source.Vertices)
             {
-                if (v.Dead == false)
+               // if (v.Dead == false)
                 {
                     rMesh.Vertices.Add(v.X, v.Y, v.Z);
                 }                
@@ -254,6 +255,8 @@ namespace PlanktonGh
                     }
                 }                
             }
+            if (CullUnusedVertices)
+            { rMesh.Vertices.CullUnused(); }            
             return rMesh;
         }
 
