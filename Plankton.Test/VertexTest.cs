@@ -13,7 +13,7 @@ namespace Plankton.Test
             PlanktonMesh pMesh = new PlanktonMesh();
             pMesh.Vertices.Add(0, 0, 0);
             pMesh.Vertices.Add(1, 1, 1);
-            Assert.AreEqual(0, pMesh.Vertices.GetHalfedgesCirculator(0).Count());
+            Assert.AreEqual(0, pMesh.Vertices.GetHalfedges(0).Length);
         }
 
         [Test]

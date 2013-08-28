@@ -169,7 +169,7 @@ namespace Plankton
         /// Ordered clockwise around the vertex.</returns>
         public int[] GetHalfedges(int v)
         {
-            return this.GetHalfedgesCirculator(v).ToArray();
+            return _mesh.Halfedges.GetVertexCirculator(this[v].OutgoingHalfedge).ToArray();
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace Plankton
         /// Ordered clockwise around the vertex.</returns>
         public int[] GetIncomingHalfedges(int v)
         {
-            return this.GetHalfedgesCirculator(v)
+            return _mesh.Halfedges.GetVertexCirculator(this[v].OutgoingHalfedge)
                 .Select(h => _mesh.Halfedges.PairHalfedge(h)).ToArray();
         }
         
@@ -193,7 +193,7 @@ namespace Plankton
         public int[] GetVertexNeighbours(int v)
         {
             var hs = _mesh.Halfedges;
-            return this.GetHalfedgesCirculator(v)
+            return _mesh.Halfedges.GetVertexCirculator(this[v].OutgoingHalfedge)
                 .Select(h => hs[hs.PairHalfedge(h)].StartVertex).ToArray();
         }
         
@@ -205,7 +205,7 @@ namespace Plankton
         /// Ordered clockwise around the vertex</returns>
         public int[] GetVertexFaces(int v)
         {
-            return this.GetHalfedgesCirculator(v)
+            return _mesh.Halfedges.GetVertexCirculator(this[v].OutgoingHalfedge)
                 .Select(h => _mesh.Halfedges[h].AdjacentFace).ToArray();
         }
 
@@ -229,7 +229,7 @@ namespace Plankton
         {
             int nakedCount = 0;
             var hs = _mesh.Halfedges;
-            foreach (int i in this.GetHalfedgesCirculator(v))
+            foreach (int i in _mesh.Halfedges.GetVertexCirculator(this[v].OutgoingHalfedge))
             {
                 if (hs[i].AdjacentFace == -1 || hs[hs.PairHalfedge(i)].AdjacentFace == -1)
                     nakedCount++;
@@ -296,7 +296,7 @@ namespace Plankton
             // Go around outgoing halfedges, from 'second' to just before 'first'
             // Set start vertex to new vertex
             bool reset_v_old = false;
-            foreach (int h in this.GetHalfedgesCirculator(v_old, second))
+            foreach (int h in hs.GetVertexCirculator(second))
             {
                 if (h == first) { break; }
                 hs[h].StartVertex = v_new;
@@ -324,7 +324,7 @@ namespace Plankton
             if (reset_v_old)
             {
                 this[v_old].OutgoingHalfedge = h_new;
-                foreach (int h in this.GetHalfedgesCirculator(v_old))
+                foreach (int h in hs.GetVertexCirculator(h_new))
                 {
                     if (hs[h].AdjacentFace == -1) { this[v_old].OutgoingHalfedge = h; }
                 }
@@ -349,7 +349,7 @@ namespace Plankton
                 throw new ArgumentException("Center vertex must not be on a boundary");
 
             // Get outgoing halfedges around vertex, starting with specified halfedge
-            int[] vertexHalfedges = this.GetHalfedgesCirculator(vertexIndex, halfedgeIndex).ToArray();
+            int[] vertexHalfedges = _mesh.Halfedges.GetVertexCirculator(halfedgeIndex).ToArray();
 
             // Check for 2-valent vertices in the 1-ring (no antennas)
             int v;
@@ -362,7 +362,8 @@ namespace Plankton
 
             // Store face to keep and set its first halfedge
             int faceIndex = _mesh.Halfedges[halfedgeIndex].AdjacentFace;
-            _mesh.Faces[faceIndex].FirstHalfedge = _mesh.Halfedges[halfedgeIndex].NextHalfedge;
+            int firstHalfedge = _mesh.Halfedges[halfedgeIndex].NextHalfedge;
+            _mesh.Faces[faceIndex].FirstHalfedge = firstHalfedge;
 
             // Remove incident halfedges and mark faces for deletion (except first face)
             _mesh.Halfedges.RemovePair(vertexHalfedges[0]);
@@ -373,7 +374,7 @@ namespace Plankton
             }
 
             // Set adjacent face for all halfedges in hole
-            foreach (int h in _mesh.Faces.GetHalfedgesCirculator(faceIndex))
+            foreach (int h in _mesh.Halfedges.GetFaceCirculator(firstHalfedge))
             {
                 _mesh.Halfedges[h].AdjacentFace = faceIndex;
             }

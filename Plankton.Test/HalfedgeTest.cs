@@ -64,11 +64,11 @@ namespace Plankton.Test
             Assert.AreEqual(25, he);
             
             // Check adjacent face in each interior halfedge is correct
-            foreach (int h in pMesh.Faces.GetHalfedgesCirculator(0))
+            foreach (int h in pMesh.Faces.GetHalfedges(0))
             {
                 Assert.AreEqual(0, pMesh.Halfedges[h].AdjacentFace);
             }
-            foreach (int h in pMesh.Faces.GetHalfedgesCirculator(1))
+            foreach (int h in pMesh.Faces.GetHalfedges(1))
             {
                 Assert.AreEqual(1, pMesh.Halfedges[h].AdjacentFace);
             }
@@ -276,7 +276,7 @@ namespace Plankton.Test
             // Try to collapse edge between vertices #4 and #7
             int h_clps = pMesh.Halfedges.FindHalfedge(4, 7);
             int v_keep = pMesh.Halfedges[h_clps].StartVertex;
-            int h_succ = pMesh.Vertices.GetHalfedgesCirculator(v_keep, h_clps).ElementAt(1);
+            int h_succ = pMesh.Halfedges.GetVertexCirculator(h_clps).ElementAt(1);
             Assert.AreEqual(h_succ, pMesh.Halfedges.CollapseEdge(h_clps));
 
             // Successor to h (around h's start vertex) should now be adjacent to face #4

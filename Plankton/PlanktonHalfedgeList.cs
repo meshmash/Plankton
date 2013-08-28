@@ -72,6 +72,7 @@ namespace Plankton
         /// <remarks>The halfedges are topologically disconnected from the mesh and marked for deletion.</remarks>
         internal void RemovePair(int index)
         {
+            // TODO: update vertices' outgoing halfedges, if necessary
             int pair = this.PairHalfedge(index);
             this.MakeConsecutive(this[pair].PrevHalfedge, this[index].NextHalfedge);
             this.MakeConsecutive(this[index].PrevHalfedge, this[pair].NextHalfedge);
@@ -144,6 +145,7 @@ namespace Plankton
         /// this circulator, you'll know about it!</remarks>
         public IEnumerable<int> GetVertexCirculator(int halfedgeIndex)
         {
+            if (halfedgeIndex < 0 || halfedgeIndex > this.Count) { yield break; }
             int h = halfedgeIndex;
             do
             {
@@ -165,6 +167,7 @@ namespace Plankton
         /// this circulator, you'll know about it!</remarks>
         public IEnumerable<int> GetFaceCirculator(int halfedgeIndex)
         {
+            if (halfedgeIndex < 0 || halfedgeIndex > this.Count) { yield break; }
             int h = halfedgeIndex;
             do
             {
@@ -186,7 +189,8 @@ namespace Plankton
         /// Otherwise -1 is returned.</returns>
         public int FindHalfedge(int start, int end)
         {
-            foreach (int h in _mesh.Vertices.GetHalfedgesCirculator(start))
+            int halfedgeIndex = _mesh.Vertices[start].OutgoingHalfedge;
+            foreach (int h in this.GetVertexCirculator(halfedgeIndex))
             {
                 if (end == this[this.PairHalfedge(h)].StartVertex)
                     return h;
@@ -387,26 +391,14 @@ namespace Plankton
                     return -1;
                 }
             }
-
-            // Both faces on either side of given halfedge must have four or more sides
-            // otherwise they will get absorbed by the face which is incident to both them
-            // and the vertex to be removed (at the end of the specified halfedge)
-            // If the face can't be merged, remove it
-            int ret_val;
-            if (f > -1 && fs.GetHalfedges(f).Length < 4)
-            {
-                ret_val = fs.MergeFaces(this.PairHalfedge(this[index].NextHalfedge));
-                if (ret_val < 0) { fs.RemoveFace(f); } // remove face #f
-            }
-            if (f_pair > -1 && fs.GetHalfedges(f_pair).Length < 4)
-            {
-                ret_val = fs.MergeFaces(this.PairHalfedge(this[pair].PrevHalfedge));
-                if (ret_val < 0) { fs.RemoveFace(f_pair); } // remove face #f_pair
-            }
+            
+            // Save a couple of halfedges for later
+            int next = this[index].NextHalfedge;
+            int pair_prev = this[pair].PrevHalfedge;
 
             // Find the halfedges starting at the vertex we are about to remove
             // and reconnect them to the one we are keeping
-            foreach (int h in _mesh.Vertices.GetHalfedgesCirculator(v_kill))
+            foreach (int h in this.GetVertexCirculator(next))
             {
                 this[h].StartVertex = v_keep;
             }
@@ -433,6 +425,21 @@ namespace Plankton
             face = this[pair].AdjacentFace;
             if (face != -1 && fs[face].FirstHalfedge == pair)
                 fs[face].FirstHalfedge = this[pair].NextHalfedge;
+            
+            // If either adjacent face was triangular it will now only have two sides
+            // Merge (or delete) these degenerate faces.
+            // (Maybe this could just be done manually...)
+            int ret_val;
+            if (f > -1 && fs.GetHalfedges(f).Length < 3)
+            {
+                ret_val = fs.MergeFaces(this.PairHalfedge(next));
+                if (ret_val < 0) { fs.RemoveFace(f); } // remove face #f
+            }
+            if (f_pair > -1 && fs.GetHalfedges(f_pair).Length < 3)
+            {
+                ret_val = fs.MergeFaces(this.PairHalfedge(pair_prev));
+                if (ret_val < 0) { fs.RemoveFace(f_pair); } // remove face #f_pair
+            }
 
             // Kill the halfedge pair and its end vertex
             this[index].Dead = true;

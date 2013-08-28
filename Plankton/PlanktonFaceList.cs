@@ -198,7 +198,7 @@ namespace Plankton
                     // (as will be the case if v2 was non-manifold).
                     if (vs[v2].OutgoingHalfedge == loop[ii])
                     {
-                        foreach (int h in vs.GetHalfedgesCirculator(v2).Skip(1))
+                        foreach (int h in hs.GetVertexCirculator(loop[ii]).Skip(1))
                         {
                             if (hs[h].AdjacentFace < 0)
                             {
@@ -217,7 +217,7 @@ namespace Plankton
                         // Find another boundary at this vertex to link 'next' and 'prev' into.
                         try
                         {
-                            int boundary = vs.GetHalfedgesCirculator(v2, loop[ii]).Skip(1)
+                            int boundary = hs.GetVertexCirculator(loop[ii]).Skip(1)
                                 .First(h => hs[h].AdjacentFace < 0);
                             hs.MakeConsecutive(loop[i], loop[ii]);
                             hs.MakeConsecutive(hs[boundary].PrevHalfedge, next);
@@ -336,7 +336,7 @@ namespace Plankton
         /// Ordered anticlockwise around the face.</returns>
         public int[] GetHalfedges(int f)
         {
-            return this.GetHalfedgesCirculator(f).ToArray();
+            return _mesh.Halfedges.GetFaceCirculator(this[f].FirstHalfedge).ToArray();
         }
 
         /// <summary>
@@ -347,7 +347,7 @@ namespace Plankton
         /// Ordered anticlockwise around the face.</returns>
         public int[] GetFaceVertices(int f)
         {
-            return this.GetHalfedgesCirculator(f)
+            return _mesh.Halfedges.GetFaceCirculator(this[f].FirstHalfedge)
                 .Select(h => _mesh.Halfedges[h].StartVertex).ToArray();
         }
 
@@ -410,7 +410,7 @@ namespace Plankton
             this[new_face_index].FirstHalfedge = new_halfedge2;
             
             //set adjface of new face loop
-            foreach (int h in _mesh.Faces.GetHalfedgesCirculator(new_face_index))
+            foreach (int h in _mesh.Halfedges.GetFaceCirculator(new_halfedge2))
             {
                 hs[h].AdjacentFace = new_face_index;
             }
@@ -455,7 +455,7 @@ namespace Plankton
                 this[face].FirstHalfedge = index_prev;
 
             // Go around the dead face, reassigning adjacency
-            foreach (int h in this.GetHalfedgesCirculator(face))
+            foreach (int h in hs.GetFaceCirculator(this[face].FirstHalfedge))
             {
                 hs[h].AdjacentFace = face;
             }
@@ -553,7 +553,7 @@ namespace Plankton
         public int NakedEdgeCount(int f)
         {
             int nakedCount = 0;
-            foreach (int i in this.GetHalfedgesCirculator(f))
+            foreach (int i in _mesh.Halfedges.GetFaceCirculator(this[f].FirstHalfedge))
             {
                 if (_mesh.Halfedges[_mesh.Halfedges.PairHalfedge(i)].AdjacentFace == -1) nakedCount++;
             }
