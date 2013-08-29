@@ -345,38 +345,53 @@ namespace Plankton.Test
 
             PlanktonMesh pMesh = new PlanktonMesh();
 
-            // Create 3x3 grid of vertices
-            pMesh.Vertices.Add(0, 2, 0); // 0
-            pMesh.Vertices.Add(0, 1, 0); // 1
-            pMesh.Vertices.Add(0, 0, 0); // 2
-            pMesh.Vertices.Add(1, 2, 0); // 3
-            pMesh.Vertices.Add(1, 1, 0); // 4 (center)
-            pMesh.Vertices.Add(1, 0, 0); // 5
-            pMesh.Vertices.Add(2, 2, 0); // 6
-            pMesh.Vertices.Add(2, 1, 0); // 7
-            pMesh.Vertices.Add(2, 0, 0); // 8
+            // Create mesh with one triangular face
+            pMesh.Vertices.Add(0, 0, 0); // 0
+            pMesh.Vertices.Add(2, 0, 0); // 1
+            pMesh.Vertices.Add(1, 1.4, 0); // 2
+            pMesh.Faces.AddFace(0, 1, 2);
+            
+            pMesh.Faces.Stellate(0);
+            int h = pMesh.Vertices.GetIncomingHalfedge(3);
+            
+            Assert.AreEqual(3, pMesh.Faces.Count);
+            
+            Assert.GreaterOrEqual(0, pMesh.Halfedges.CollapseEdge(h));
+            
+            pMesh.Compact();
+            
+            Assert.AreEqual(1, pMesh.Faces.Count);
+        }
+        
+        [Test]
+        public void CannotCollapseNonManifoldEdge()
+        {
+            PlanktonMesh pMesh = new PlanktonMesh();
 
-            // Create five faces
-            pMesh.Faces.AddFace(0, 1, 4, 3);
-            pMesh.Faces.AddFace(3, 4, 7, 6);
-            pMesh.Faces.AddFace(1, 2, 5, 4);
-            pMesh.Faces.AddFace(4, 5, 8);
-            pMesh.Faces.AddFace(8, 7, 4);
+            // Create vertices in 3x2 grid
+            pMesh.Vertices.Add(-1, 0, 0); // 0
+            pMesh.Vertices.Add(0, -1, 0); // 1
+            pMesh.Vertices.Add(1, 0, 0);  // 2
+            pMesh.Vertices.Add(0, 1, 0);  // 3
+            pMesh.Vertices.Add(-1, -2, 0); // 4
+            pMesh.Vertices.Add(0, -3, 0);  // 5
+            pMesh.Vertices.Add(1, -2, 0);  // 6
 
-            int h = pMesh.Vertices[4].OutgoingHalfedge;
-            int pair = pMesh.Halfedges.GetPairHalfedge(h);
-
-            // Confirm valence of vertices and sixe of adj faces before collapse
-            Assert.AreEqual(5, pMesh.Vertices.GetValence(4));
-            Assert.AreEqual(3, pMesh.Vertices.GetValence(8));
-            Assert.AreEqual(3, pMesh.Halfedges.GetFaceCirculator(h).Count());
-            Assert.AreEqual(3, pMesh.Halfedges.GetFaceCirculator(pair).Count());
-
-            // Collapse center vertex's outgoing halfedge
-            h = pMesh.Halfedges.CollapseEdge(h);
-
-            // Valence of start vertex should have decreased by one
-            Assert.AreEqual(4, pMesh.Vertices.GetValence(4));
+            // Create several triangular faces
+            pMesh.Faces.AddFace(0, 1, 3);
+            pMesh.Faces.AddFace(1, 2, 3);
+            pMesh.Faces.AddFace(0, 4, 1);
+            pMesh.Faces.AddFace(4, 5, 1);
+            // And one quad face
+            pMesh.Faces.AddFace(1, 5, 6, 2);
+            
+            pMesh.Faces.Stellate(0);
+            pMesh.Faces.Stellate(1);
+            
+            Assert.AreEqual(9, pMesh.Faces.Count);
+            
+            Assert.AreEqual(-1, pMesh.Halfedges.CollapseEdge(2));
+            Assert.AreEqual(-1, pMesh.Halfedges.CollapseEdge(6));
         }
 
         [Test]

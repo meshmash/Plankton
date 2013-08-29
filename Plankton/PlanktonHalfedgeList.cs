@@ -466,6 +466,20 @@ namespace Plankton
                 }
             }
             
+            // Avoid creating a non-manifold edge...
+            // If the edge is internal, then its ends must not have more than 2 neighbours in common.
+            // If the edge is a boundary edge (or has one 3+ sided face), then its ends must not
+            // have more than one neighbour in common.
+            //int allowed = (f > -1 && f_pair > -1) ? 2 : 1;
+            int allowed = 0;
+            if (f >= 0 && fs.GetHalfedges(f).Length == 3) { allowed++; }
+            if (f_pair >= 0 && fs.GetHalfedges(f_pair).Length == 3) { allowed++; }
+            if (_mesh.Vertices.GetVertexNeighbours(v_keep)
+                .Intersect(_mesh.Vertices.GetVertexNeighbours(v_kill)).Count() > allowed)
+            {
+                return -1;
+            }
+            
             // Save a couple of halfedges for later
             int next = this[index].NextHalfedge;
             int pair_prev = this[pair].PrevHalfedge;
@@ -501,11 +515,11 @@ namespace Plankton
             
             // If either adjacent face was triangular it will now only have two sides. If so,
             // try to merge faces into whatever is on the RIGHT of the associated halfedge.
-            if (this.GetFaceCirculator(next).Count() < 3)
+            if (f > -1 && this.GetFaceCirculator(next).Count() < 3)
             {
                 if (fs.MergeFaces(this.GetPairHalfedge(next)) < 0) { fs.RemoveFace(face); }
             }
-            if (this.GetFaceCirculator(pair_prev).Count() < 3)
+            if (f_pair > -1 && this.GetFaceCirculator(pair_prev).Count() < 3)
             {
                 if (fs.MergeFaces(this.GetPairHalfedge(pair_prev)) < 0) { fs.RemoveFace(pair_face); }
             }
