@@ -27,7 +27,7 @@ namespace Plankton.Test
             Assert.AreEqual(0, pMesh.Halfedges[new_he].AdjacentFace);
 
             // Traverse from returned halfedge to new face
-            int new_he_pair = pMesh.Halfedges.PairHalfedge(new_he);
+            int new_he_pair = pMesh.Halfedges.GetPairHalfedge(new_he);
             int new_face = pMesh.Halfedges[new_he_pair].AdjacentFace;
             
             Assert.AreEqual(1, new_face);

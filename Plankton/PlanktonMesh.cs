@@ -72,10 +72,10 @@ namespace Plankton
                 int[] FaceHalfedges = P.Faces.GetHalfedges(i);
                 for (int j = 0; j < FaceHalfedges.Length; j++)
                 {
-                    if (P.Halfedges[P.Halfedges.PairHalfedge(FaceHalfedges[j])].AdjacentFace != -1)
+                    if (P.Halfedges[P.Halfedges.GetPairHalfedge(FaceHalfedges[j])].AdjacentFace != -1)
                     {
                         // D.Vertices[i].OutgoingHalfedge = FaceHalfedges[j];
-                        D.Vertices[D.Vertices.Count-1].OutgoingHalfedge = P.Halfedges.PairHalfedge(FaceHalfedges[j]);
+                        D.Vertices[D.Vertices.Count-1].OutgoingHalfedge = P.Halfedges.GetPairHalfedge(FaceHalfedges[j]);
                         break;
                     }
                 }
@@ -100,12 +100,12 @@ namespace Plankton
 
             for (int i = 0; i < P.Halfedges.Count; i++)
             {
-                if ((P.Halfedges[i].AdjacentFace != -1) & (P.Halfedges[P.Halfedges.PairHalfedge(i)].AdjacentFace != -1))
+                if ((P.Halfedges[i].AdjacentFace != -1) & (P.Halfedges[P.Halfedges.GetPairHalfedge(i)].AdjacentFace != -1))
                 {
                     PlanktonHalfedge DualHE = new PlanktonHalfedge();
                     PlanktonHalfedge PrimalHE = P.Halfedges[i];
                     //DualHE.StartVertex = PrimalHE.AdjacentFace;
-                    DualHE.StartVertex = P.Halfedges[P.Halfedges.PairHalfedge(i)].AdjacentFace;
+                    DualHE.StartVertex = P.Halfedges[P.Halfedges.GetPairHalfedge(i)].AdjacentFace;
 
                     if (P.Vertices.NakedEdgeCount(PrimalHE.StartVertex) == 0)
                     {
@@ -122,10 +122,10 @@ namespace Plankton
                     //this needs to be done repeatedly until no further change
 
                     //DualHE.NextHalfedge = P.Halfedges[P.PairHalfedge(i)].PrevHalfedge;
-                    DualHE.NextHalfedge = P.Halfedges.PairHalfedge(PrimalHE.PrevHalfedge);
+                    DualHE.NextHalfedge = P.Halfedges.GetPairHalfedge(PrimalHE.PrevHalfedge);
 
                     //DualHE.PrevHalfedge = P.PairHalfedge(PrimalHE.NextHalfedge);
-                    DualHE.PrevHalfedge = P.Halfedges[P.Halfedges.PairHalfedge(i)].NextHalfedge;
+                    DualHE.PrevHalfedge = P.Halfedges[P.Halfedges.GetPairHalfedge(i)].NextHalfedge;
 
                     D.Halfedges.Add(DualHE);
                 }

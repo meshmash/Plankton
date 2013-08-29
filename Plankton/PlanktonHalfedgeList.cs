@@ -73,7 +73,7 @@ namespace Plankton
         /// Note that this helper method doesn't update adjacent faces.</remarks>
         internal void RemovePairHelper(int index)
         {
-            int pair = this.PairHalfedge(index);
+            int pair = this.GetPairHalfedge(index);
             
             // Reconnect adjacent halfedges
             this.MakeConsecutive(this[pair].PrevHalfedge, this[index].NextHalfedge);
@@ -185,7 +185,7 @@ namespace Plankton
             do
             {
                 yield return h;
-                h = this[this.PairHalfedge(h)].NextHalfedge;
+                h = this[this.GetPairHalfedge(h)].NextHalfedge;
                 if (count++ > 999) { throw new InvalidOperationException("Runaway vertex circulator"); }
             }
             while (h != halfedgeIndex);
@@ -230,7 +230,7 @@ namespace Plankton
             int halfedgeIndex = _mesh.Vertices[start].OutgoingHalfedge;
             foreach (int h in this.GetVertexCirculator(halfedgeIndex))
             {
-                if (end == this[this.PairHalfedge(h)].StartVertex)
+                if (end == this[this.GetPairHalfedge(h)].StartVertex)
                     return h;
             }
             return -1;
@@ -241,7 +241,7 @@ namespace Plankton
         /// </summary>
         /// <param name="index">A halfedge index.</param>
         /// <returns>The halfedge index with which the specified halfedge is paired.</returns>
-        public int GetOpposite(int halfedgeIndex)
+        public int GetPairHalfedge(int halfedgeIndex)
         {
             if (halfedgeIndex < 0 || halfedgeIndex >= this.Count)
             {
@@ -251,14 +251,10 @@ namespace Plankton
             return halfedgeIndex % 2 == 0 ? halfedgeIndex + 1 : halfedgeIndex - 1;
         }
 
-        /// <summary>
-        /// <seealso cref="GetOpposite"/>
-        /// </summary>
-        /// <param name="halfedgeIndex"></param>
-        /// <returns></returns>
+        [Obsolete("PairHalfedge is deprecated, pease use GetPairHalfedge instead.")]
         public int PairHalfedge(int halfedgeIndex)
         {
-            return this.GetOpposite(halfedgeIndex);
+            return this.GetPairHalfedge(halfedgeIndex);
         }
 
         /// <summary>
@@ -271,7 +267,7 @@ namespace Plankton
         {
             int I, J;
             I = this[index].StartVertex;
-            J = this[this.PairHalfedge(index)].StartVertex;
+            J = this[this.GetPairHalfedge(index)].StartVertex;
 
             return new int[]{ I, J };
         }
@@ -301,7 +297,7 @@ namespace Plankton
         /// <returns><c>true</c> if the specified halfedge is on a boundary; otherwise, <c>false</c>.</returns>
         public bool IsBoundary(int index)
         {
-            int pair = this.PairHalfedge(index);
+            int pair = this.GetPairHalfedge(index);
 
             // Check for a face on both sides
             return (this[index].AdjacentFace == -1 || this[pair].AdjacentFace == -1);
@@ -315,7 +311,7 @@ namespace Plankton
         /// <remarks>This helper actually returns the start vertex of the other halfedge in the pair.</remarks>
         public int EndVertex(int halfedgeIndex)
         {
-            return this[PairHalfedge(halfedgeIndex)].StartVertex;
+            return this[GetPairHalfedge(halfedgeIndex)].StartVertex;
         }
         #endregion
 
@@ -338,11 +334,11 @@ namespace Plankton
         public bool FlipEdge(int index)
         {
             // Don't allow if halfedge is on a boundary
-            if (this[index].AdjacentFace < 0 || this[PairHalfedge(index)].AdjacentFace < 0)
+            if (this[index].AdjacentFace < 0 || this[GetPairHalfedge(index)].AdjacentFace < 0)
                 return false;
             
             // Make a note of some useful halfedges, along with 'index' itself
-            int pair = this.PairHalfedge(index);
+            int pair = this.GetPairHalfedge(index);
             int next = this[index].NextHalfedge;
             int pair_next = this[pair].NextHalfedge;
 
@@ -390,7 +386,7 @@ namespace Plankton
         /// <returns>The index of the newly created halfedge in the same direction as the input halfedge.</returns>
         public int SplitEdge(int index)
         {
-            int pair = this.PairHalfedge(index);
+            int pair = this.GetPairHalfedge(index);
 
             // Create a copy of the existing vertex (user can move it afterwards if needs be)
             int end_vertex = this[pair].StartVertex;
@@ -398,7 +394,7 @@ namespace Plankton
 
             // Add a new halfedge pair
             int new_halfedge1 = this.AddPair(new_vertex_index, this.EndVertex(index), this[index].AdjacentFace);
-            int new_halfedge2 = this.PairHalfedge(new_halfedge1);
+            int new_halfedge2 = this.GetPairHalfedge(new_halfedge1);
             this[new_halfedge2].AdjacentFace = this[pair].AdjacentFace;
 
             // Link new pair into mesh
@@ -439,7 +435,7 @@ namespace Plankton
             _mesh.Vertices[point_on_edge].Z = 0.5F * (_mesh.Vertices[this[index].StartVertex].Z + _mesh.Vertices[this.EndVertex(new_halfedge)].Z);
 
             int new_face1 = _mesh.Faces.SplitFace(new_halfedge, this[this[new_halfedge].NextHalfedge].NextHalfedge);
-            int new_face2 = _mesh.Faces.SplitFace(this.PairHalfedge(index), this[this[this.PairHalfedge(index)].NextHalfedge].NextHalfedge);
+            int new_face2 = _mesh.Faces.SplitFace(this.GetPairHalfedge(index), this[this[this.GetPairHalfedge(index)].NextHalfedge].NextHalfedge);
 
             return new_halfedge;
         }
@@ -452,7 +448,7 @@ namespace Plankton
         public int CollapseEdge(int index)
         {
             var fs = _mesh.Faces;
-            int pair = this.PairHalfedge(index);
+            int pair = this.GetPairHalfedge(index);
             int v_keep = this[index].StartVertex;
             int v_kill = this[pair].StartVertex;
             int f = this[index].AdjacentFace;
@@ -507,11 +503,11 @@ namespace Plankton
             // try to merge faces into whatever is on the RIGHT of the associated halfedge.
             if (this.GetFaceCirculator(next).Count() < 3)
             {
-                if (fs.MergeFaces(this.PairHalfedge(next)) < 0) { fs.RemoveFace(face); }
+                if (fs.MergeFaces(this.GetPairHalfedge(next)) < 0) { fs.RemoveFace(face); }
             }
             if (this.GetFaceCirculator(pair_prev).Count() < 3)
             {
-                if (fs.MergeFaces(this.PairHalfedge(pair_prev)) < 0) { fs.RemoveFace(pair_face); }
+                if (fs.MergeFaces(this.GetPairHalfedge(pair_prev)) < 0) { fs.RemoveFace(pair_face); }
             }
 
             // Kill the halfedge pair and its end vertex

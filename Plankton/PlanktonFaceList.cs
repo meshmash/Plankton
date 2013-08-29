@@ -152,24 +152,24 @@ namespace Plankton
                         case 1: // first is new, second is old
                             // iterate through halfedges clockwise around vertex #v2 until boundary
                             outer_prev = hs[loop[ii]].PrevHalfedge;
-                            outer_next = hs.PairHalfedge(loop[i]);
+                            outer_next = hs.GetPairHalfedge(loop[i]);
                             break;
                         case 2: // second is new, first is old
-                            outer_prev = hs.PairHalfedge(loop[ii]);
+                            outer_prev = hs.GetPairHalfedge(loop[ii]);
                             outer_next = hs[loop[i]].NextHalfedge;
                             break;
                         case 3: // both are new
-                            outer_prev = hs.PairHalfedge(loop[ii]);
-                            outer_next = hs.PairHalfedge(loop[i]);
+                            outer_prev = hs.GetPairHalfedge(loop[ii]);
+                            outer_next = hs.GetPairHalfedge(loop[i]);
                             break;
                         case 4: // both are new (non-manifold vertex)
                             // We have TWO boundaries to take care of here: first...
                             outer_prev = hs[vs[v2].OutgoingHalfedge].PrevHalfedge;
-                            outer_next = hs.PairHalfedge(loop[i]);
+                            outer_next = hs.GetPairHalfedge(loop[i]);
                             hs[outer_prev].NextHalfedge = outer_next;
                             hs[outer_next].PrevHalfedge = outer_prev;
                             // and second...
-                            outer_prev = hs.PairHalfedge(loop[ii]);
+                            outer_prev = hs.GetPairHalfedge(loop[ii]);
                             outer_next = vs[v2].OutgoingHalfedge;
                             break;
                     }
@@ -417,7 +417,7 @@ namespace Plankton
 
             // add the new halfedge pair
             int new_halfedge1 = hs.AddPair(hs[from].StartVertex, hs[to].StartVertex, existing_face);
-            int new_halfedge2 = hs.PairHalfedge(new_halfedge1);
+            int new_halfedge2 = hs.GetPairHalfedge(new_halfedge1);
 
             // add a new face
             PlanktonFace new_face = new PlanktonFace();
@@ -466,7 +466,7 @@ namespace Plankton
         public int MergeFaces(int index)
         {
             var hs = _mesh.Halfedges;
-            int pair = hs.PairHalfedge(index);
+            int pair = hs.GetPairHalfedge(index);
             int face = hs[index].AdjacentFace;
             int pair_face = hs[pair].AdjacentFace;
 
@@ -578,7 +578,7 @@ namespace Plankton
             int nakedCount = 0;
             foreach (int i in _mesh.Halfedges.GetFaceCirculator(this[f].FirstHalfedge))
             {
-                if (_mesh.Halfedges[_mesh.Halfedges.PairHalfedge(i)].AdjacentFace == -1) nakedCount++;
+                if (_mesh.Halfedges[_mesh.Halfedges.GetPairHalfedge(i)].AdjacentFace == -1) nakedCount++;
             }
             return nakedCount;
         }

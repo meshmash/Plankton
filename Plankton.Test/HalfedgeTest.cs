@@ -140,15 +140,15 @@ namespace Plankton.Test
             // Check that the 4 halfedges are all in the right places...
             // New ones are between new vertex and second vertex
             Assert.AreEqual(new_he, hs.FindHalfedge(4, 2));
-            Assert.AreEqual(hs.PairHalfedge(new_he), hs.FindHalfedge(2, 4));
+            Assert.AreEqual(hs.GetPairHalfedge(new_he), hs.FindHalfedge(2, 4));
             // Existing ones are now between first vertex and new vertex
             Assert.AreEqual(split_he, hs.FindHalfedge(0, 4));
-            Assert.AreEqual(hs.PairHalfedge(split_he), hs.FindHalfedge(4, 0));
+            Assert.AreEqual(hs.GetPairHalfedge(split_he), hs.FindHalfedge(4, 0));
             
             // New halfedges should have the same faces as the existing ones next to them
             Assert.AreEqual(hs[split_he].AdjacentFace, hs[new_he].AdjacentFace);
-            Assert.AreEqual(hs[hs.PairHalfedge(split_he)].AdjacentFace,
-                            hs[hs.PairHalfedge(new_he)].AdjacentFace);
+            Assert.AreEqual(hs[hs.GetPairHalfedge(split_he)].AdjacentFace,
+                            hs[hs.GetPairHalfedge(new_he)].AdjacentFace);
             
             // New vertex's outgoing should be returned halfedge
             Assert.AreEqual(new_he, pMesh.Vertices[4].OutgoingHalfedge);
@@ -194,7 +194,7 @@ namespace Plankton.Test
             Assert.AreEqual(new int[] { 2, 4, 6 }, pMesh.Faces.GetHalfedges(0));
 
             // Pair of predecessor to collapsed halfedge should now have its start vertex
-            int h_clps_prev_pair = pMesh.Halfedges.PairHalfedge(h_clps_prev);
+            int h_clps_prev_pair = pMesh.Halfedges.GetPairHalfedge(h_clps_prev);
             Assert.AreEqual(0, pMesh.Halfedges[h_clps_prev_pair].StartVertex);
         }
 
@@ -244,7 +244,7 @@ namespace Plankton.Test
             // Check no halfedges reference removed vertex (#7)
             for (int h = 0; h < pMesh.Halfedges.Count; h++)
             {
-                if (h == h_clps || h == pMesh.Halfedges.PairHalfedge(h_clps))
+                if (h == h_clps || h == pMesh.Halfedges.GetPairHalfedge(h_clps))
                     continue; // Skip removed halfedges
                 Assert.AreNotEqual(3, pMesh.Halfedges[h].StartVertex);
             }
@@ -364,7 +364,7 @@ namespace Plankton.Test
             pMesh.Faces.AddFace(8, 7, 4);
 
             int h = pMesh.Vertices[4].OutgoingHalfedge;
-            int pair = pMesh.Halfedges.PairHalfedge(h);
+            int pair = pMesh.Halfedges.GetPairHalfedge(h);
 
             // Confirm valence of vertices and sixe of adj faces before collapse
             Assert.AreEqual(5, pMesh.Vertices.GetValence(4));
