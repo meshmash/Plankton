@@ -298,7 +298,7 @@ namespace Plankton.Test
             pMesh.Faces.AddFace(1, 2, 5, 4); // 1
             pMesh.Faces.AddFace(3, 4, 7);    // 2
             pMesh.Faces.AddFace(4, 5, 7);    // 3
-            pMesh.Faces.AddFace(5, 6, 8, 7); // 4
+            pMesh.Faces.AddFace(7, 5, 6, 8); // 4
 
             // Try to collapse edge between vertices #4 and #7
             int h_clps = pMesh.Halfedges.FindHalfedge(4, 7);

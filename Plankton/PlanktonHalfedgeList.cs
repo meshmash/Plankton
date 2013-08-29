@@ -69,7 +69,8 @@ namespace Plankton
         /// Removes a pair of halfedges from the mesh.
         /// </summary>
         /// <param name="index">The index of a halfedge in the pair to remove.</param>
-        /// <remarks>The halfedges are topologically disconnected from the mesh and marked for deletion.</remarks>
+        /// <remarks>The halfedges are topologically disconnected from the mesh and marked for deletion.
+        /// Note that this helper method doesn't update adjacent faces.</remarks>
         internal void RemovePairHelper(int index)
         {
             int pair = this.PairHalfedge(index);
@@ -180,10 +181,12 @@ namespace Plankton
         {
             if (halfedgeIndex < 0 || halfedgeIndex > this.Count) { yield break; }
             int h = halfedgeIndex;
+            int count = 0;
             do
             {
                 yield return h;
                 h = this[this.PairHalfedge(h)].NextHalfedge;
+                if (count++ > 999) { throw new InvalidOperationException("Runaway vertex circulator"); }
             }
             while (h != halfedgeIndex);
         }
@@ -202,10 +205,12 @@ namespace Plankton
         {
             if (halfedgeIndex < 0 || halfedgeIndex > this.Count) { yield break; }
             int h = halfedgeIndex;
+            int count = 0;
             do
             {
                 yield return h;
                 h = this[h].NextHalfedge;
+                if (count++ > 999) { throw new InvalidOperationException("Runaway face circulator."); }
             }
             while (h != halfedgeIndex);
         }
@@ -499,18 +504,14 @@ namespace Plankton
                 fs[pair_face].FirstHalfedge = this[pair].NextHalfedge;
             
             // If either adjacent face was triangular it will now only have two sides. If so,
-            // manually merge faces into whatever is on the RIGHT of the associated halfedge.
+            // try to merge faces into whatever is on the RIGHT of the associated halfedge.
             if (this.GetFaceCirculator(next).Count() < 3)
             {
-                this[this[next].NextHalfedge].AdjacentFace = this[this.PairHalfedge(next)].AdjacentFace;
-                this.RemovePairHelper(next);
-                fs[face].Dead = true;
+                if (fs.MergeFaces(this.PairHalfedge(next)) < 0) { fs.RemoveFace(face); }
             }
             if (this.GetFaceCirculator(pair_prev).Count() < 3)
             {
-                this[this[pair_prev].NextHalfedge].AdjacentFace = this[this.PairHalfedge(pair_prev)].AdjacentFace;
-                this.RemovePairHelper(pair_prev);
-                fs[pair_face].Dead = true;
+                if (fs.MergeFaces(this.PairHalfedge(pair_prev)) < 0) { fs.RemoveFace(pair_face); }
             }
 
             // Kill the halfedge pair and its end vertex

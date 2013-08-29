@@ -486,10 +486,10 @@ namespace Plankton
 
             // Update retained face's first halfedge, if necessary
             if (this[face].FirstHalfedge == index)
-                this[face].FirstHalfedge = index_prev;
+                this[face].FirstHalfedge = index_next;
 
             // Go around the dead face, reassigning adjacency
-            foreach (int h in hs.GetFaceCirculator(index_prev))
+            foreach (int h in hs.GetFaceCirculator(index_next))
             {
                 hs[h].AdjacentFace = face;
             }
