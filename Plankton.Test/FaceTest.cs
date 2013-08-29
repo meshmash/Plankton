@@ -219,5 +219,29 @@ namespace Plankton.Test
 
             Assert.AreEqual(4, count);
         }
+
+        [Test]
+        public void CanCompact()
+        {
+            PlanktonMesh pMesh = new PlanktonMesh();
+
+            // Create one vertex for each corner of a square
+            pMesh.Vertices.Add(0, 0, 0); // 0
+            pMesh.Vertices.Add(1, 0, 0); // 1
+            pMesh.Vertices.Add(1, 1, 0); // 2
+            pMesh.Vertices.Add(0, 1, 0); // 3
+
+            // Create two triangular faces
+            pMesh.Faces.AddFace(0, 1, 2);
+            pMesh.Faces.AddFace(2, 3, 0);
+
+            // Merge faces and compact (squashing face #0)
+            pMesh.Faces.MergeFaces(4);
+            pMesh.Faces.CompactHelper();
+
+            // Check some things about the compacted mesh
+            Assert.AreEqual(1, pMesh.Faces.Count);
+            Assert.AreEqual(new int[] { 0, 1, 2, 3 }, pMesh.Faces.GetFaceVertices(0));
+        }
     }
 }

@@ -143,6 +143,19 @@ namespace Plankton
         {
         }
 
+        /// <summary>
+        /// Removes any unreferenced objects from arrays, reindexes as needed and shrinks arrays to minimum required size.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Thrown if halfedge count is odd after compaction.
+        /// Most likely caused by only marking one of the halfedges in a pair for deletion.</exception>
+        public void Compact()
+        {
+            // Compact vertices, faces and halfedges
+            this.Vertices.CompactHelper();
+            this.Faces.CompactHelper();
+            this.Halfedges.CompactHelper();
+        }
+
         //dihedral angle for an edge
         //
 

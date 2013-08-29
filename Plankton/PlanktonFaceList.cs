@@ -303,6 +303,39 @@ namespace Plankton
             }
         }
         #endregion
+
+        /// <summary>
+        /// Helper method to remove dead faces from the list, re-index and compact.
+        /// </summary>
+        internal void CompactHelper()
+        {
+            int marker = 0; // Location where the current face should be moved to
+
+            // Run through all the faces
+            for (int iter = 0; iter < _list.Count; iter++)
+            {
+                // If face is alive, check if we need to shuffle it down the list
+                if (!_list[iter].Dead)
+                {
+                    if (marker < iter)
+                    {
+                        // Room to shuffle. Copy current face to marked slot.
+                        _list[marker] = _list[iter];
+
+                        // Update all halfedges which are adjacent
+                        int first = _list[marker].FirstHalfedge;
+                        foreach (int h in _mesh.Halfedges.GetFaceCirculator(first))
+                        {
+                            _mesh.Halfedges[h].AdjacentFace = marker;
+                        }
+                    }
+                    marker++; // That spot's filled. Advance the marker.
+                }
+            }
+
+            // Trim list down to new size
+            if (marker < _list.Count) { _list.RemoveRange(marker, _list.Count - marker); }
+        }
         
         #region traversals
         /// <summary>

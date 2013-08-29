@@ -105,6 +105,7 @@ namespace Plankton
                 this._list[index] = value;
             }
         }
+        #endregion
         
         /// <summary>
         /// Helper method to remove dead vertices from the list, re-index and compact.
@@ -114,7 +115,7 @@ namespace Plankton
             int marker = 0; // Location where the current vertex should be moved to
             
             // Run through all the vertices
-            for (int iter = 0; iter < this.Count; iter++)
+            for (int iter = 0; iter < _list.Count; iter++)
             {
                 // If vertex is alive, check if we need to shuffle it down the list
                 if (!_list[iter].Dead)
@@ -136,9 +137,27 @@ namespace Plankton
             }
             
             // Trim list down to new size
-            if (marker < this.Count) { _list.RemoveRange(marker, this.Count - marker); }
+            if (marker < _list.Count) { _list.RemoveRange(marker, _list.Count - marker); }
         }
-        #endregion
+
+        /// <summary>
+        /// Removes all vertices that are currently not used by the Halfedge list.
+        /// </summary>
+        /// <returns>The number of unused vertices that were removed.</returns>
+        public int CullUnused()
+        {
+            int total = 0;
+            for (int i = 0; i < _list.Count; i++) {
+                if (!_list[i].Dead && _list[i].OutgoingHalfedge < 0) {
+                    _list[i].Dead = true;
+                    total++;
+                }
+            }
+
+            this.CompactHelper();
+
+            return total;
+        }
         
         #region traversals
         /// <summary>

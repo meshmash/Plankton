@@ -171,5 +171,34 @@ namespace Plankton.Test
             f = pMesh.Faces.AddFace(0, 5, 4);
             Assert.AreEqual(-1, f, "Face not added.");
         }
+
+        [Test]
+        public void CanCompact()
+        {
+            PlanktonMesh pMesh = new PlanktonMesh();
+
+            // Create vertices in 3x2 grid
+            pMesh.Vertices.Add(0, 0, 0); // 0
+            pMesh.Vertices.Add(1, 0, 0); // 1
+            pMesh.Vertices.Add(1, 1, 0); // 2
+            pMesh.Vertices.Add(0, 1, 0); // 3
+            pMesh.Vertices.Add(2, 0, 0); // 4
+            pMesh.Vertices.Add(2, 1, 0); // 5
+
+            // Create two quadrangular faces
+            pMesh.Faces.AddFace(0, 1, 2, 3);
+            pMesh.Faces.AddFace(1, 4, 5, 2);
+
+            // Remove the first face and compact
+            pMesh.Faces.RemoveFace(0);
+            pMesh.Vertices.CullUnused();
+            pMesh.Compact();
+
+            // Check some things about the compacted mesh
+            Assert.AreEqual(4, pMesh.Vertices.Count);
+            Assert.AreEqual(1, pMesh.Faces.Count);
+            Assert.AreEqual(8, pMesh.Halfedges.Count);
+            Assert.AreEqual(new int[] { 0, 2, 3, 1 }, pMesh.Faces.GetFaceVertices(0));
+        }
     }
 }

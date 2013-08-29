@@ -189,5 +189,18 @@ namespace Plankton.Test
             // Check we can still traverse from vertices correctly (5 used to be 7)
             Assert.AreEqual(new int[] { -1, 3, 1 }, pMesh.Vertices.GetVertexFaces(5));
         }
+
+        [Test]
+        public void CanCullUnused()
+        {
+            // Create a mesh and add some vertices, but don't connect anything to them!
+            PlanktonMesh pMesh = new PlanktonMesh();
+            pMesh.Vertices.Add(0, 0, 0);
+            pMesh.Vertices.Add(1, 1, 1);
+
+            // Cull unused vertices and check count
+            pMesh.Vertices.CullUnused();
+            Assert.AreEqual(0, pMesh.Vertices.Count);
+        }
     }
 }

@@ -149,6 +149,51 @@ namespace Plankton
         }
         #endregion
 
+        /// <summary>
+        /// Helper method to remove dead halfedges from the list, re-index and compact.
+        /// </summary>
+        internal void CompactHelper()
+        {
+            int marker = 0; // Location where the current halfedge should be moved to
+
+            // Run through all the vertices
+            for (int iter = 0; iter < _list.Count; iter++)
+            {
+                // If halfedge is alive, check if we need to shuffle it down the list
+                if (!_list[iter].Dead)
+                {
+                    if (marker < iter)
+                    {
+                        // Room to shuffle. Copy current halfedge to marked slot.
+                        _list[marker] = _list[iter];
+
+                        // Update start vertex, if necessary
+                        var vertex = _mesh.Vertices[_list[marker].StartVertex];
+                        if (vertex.OutgoingHalfedge == iter) { vertex.OutgoingHalfedge = marker; }
+
+                        // Update adjacent face, if necessary
+                        if (_list[marker].AdjacentFace > -1)
+                        {
+                            var face = _mesh.Faces[_list[marker].AdjacentFace];
+                            if (face.FirstHalfedge == iter) { face.FirstHalfedge = marker; }
+                        }
+
+                        // Update next/prev halfedges
+                        _list[_list[marker].NextHalfedge].PrevHalfedge = marker;
+                        _list[_list[marker].PrevHalfedge].NextHalfedge = marker;
+                    }
+                    marker++; // That spot's filled. Advance the marker.
+                }
+            }
+
+            // Throw a fit if we've ended up with an odd number of halfedges
+            // This could happen if only one of the halfedges in a pair was marked for deletion
+            if (marker % 2 > 0) { throw new InvalidOperationException("Halfedge count was odd after compaction"); }
+
+            // Trim list down to new size
+            if (marker < _list.Count) { _list.RemoveRange(marker, _list.Count - marker); }
+        }
+
         #region traversals
         /// <summary>
         /// Traverses clockwise around the starting vertex of a halfedge.
