@@ -8,6 +8,33 @@ namespace Plankton.Test
     public class HalfedgeTest
     {
         [Test]
+        public void CanFindHalfedge()
+        {
+            // Create a mesh with a single quad face
+            PlanktonMesh pMesh = new PlanktonMesh();
+            pMesh.Vertices.Add(0, 0, 0);
+            pMesh.Vertices.Add(1, 0, 0);
+            pMesh.Vertices.Add(1, 1, 0);
+            pMesh.Vertices.Add(0, 1, 0);
+            pMesh.Faces.AddFace(0, 1, 2, 3);
+            // Try and find some halfedges...
+            Assert.AreEqual(0, pMesh.Halfedges.FindHalfedge(0, 1));
+            Assert.AreEqual(2, pMesh.Halfedges.FindHalfedge(1, 2));
+            Assert.AreEqual(-1, pMesh.Halfedges.FindHalfedge(0, 2));
+        }
+
+        [Test]
+        public void CanFindHalfedgeUnusedVertices()
+        {
+            PlanktonMesh pMesh = new PlanktonMesh();
+            pMesh.Vertices.Add(0, 0, 0);
+            pMesh.Vertices.Add(1, 1, 1);
+            // Check for halfedge between v0 and v1
+            // In fact, both are unused so we shouldn't find one
+            Assert.AreEqual(-1, pMesh.Halfedges.FindHalfedge(0, 1));
+        }
+
+        [Test]
         public void CanFlipEdge()
         {
             // Create a triangulated grid and flip one of the edges.

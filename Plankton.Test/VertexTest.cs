@@ -8,35 +8,12 @@ namespace Plankton.Test
     public class VertexTest
     {
         [Test]
-        public void CanTraverseNakedVertex()
+        public void CanTraverseUnusedVertex()
         {
+            // Getting halfedges for unused vertex should return empty
             PlanktonMesh pMesh = new PlanktonMesh();
             pMesh.Vertices.Add(0, 0, 0);
-            pMesh.Vertices.Add(1, 1, 1);
-            Assert.AreEqual(0, pMesh.Vertices.GetHalfedges(0).Length);
-        }
-
-        [Test]
-        public void CanFindHalfedge()
-        {
-            PlanktonMesh pMesh = new PlanktonMesh();
-            pMesh.Vertices.Add(0, 0, 0);
-            pMesh.Vertices.Add(1, 0, 0);
-            pMesh.Vertices.Add(1, 1, 0);
-            pMesh.Vertices.Add(0, 1, 0);
-            pMesh.Faces.AddFace(0, 1, 2, 3);
-            Assert.AreEqual(0, pMesh.Halfedges.FindHalfedge(0, 1));
-            Assert.AreEqual(2, pMesh.Halfedges.FindHalfedge(1, 2));
-            Assert.AreEqual(-1, pMesh.Halfedges.FindHalfedge(0, 2));
-        }
-
-        [Test]
-        public void CanFindHalfedgeNakedVertex()
-        {
-            PlanktonMesh pMesh = new PlanktonMesh();
-            pMesh.Vertices.Add(0, 0, 0);
-            pMesh.Vertices.Add(1, 1, 1);
-            Assert.AreEqual(-1, pMesh.Halfedges.FindHalfedge(0, 1));
+            Assert.IsEmpty(pMesh.Vertices.GetHalfedges(0));
         }
 
         [Test]
