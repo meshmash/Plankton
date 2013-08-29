@@ -447,29 +447,19 @@ namespace Plankton
             // Make combined face halfedges consecutive
             int index_prev = hs[index].PrevHalfedge;
             int index_next = hs[index].NextHalfedge;
-            hs.MakeConsecutive(hs[pair].PrevHalfedge, index_next);
-            hs.MakeConsecutive(index_prev, hs[pair].NextHalfedge);
+
+            // Remove halfedges (handles re-linking at ends and re-assigning vertices' outgoing hes)
+            hs.RemovePairHelper(index);
 
             // Update retained face's first halfedge, if necessary
             if (this[face].FirstHalfedge == index)
                 this[face].FirstHalfedge = index_prev;
 
             // Go around the dead face, reassigning adjacency
-            foreach (int h in hs.GetFaceCirculator(this[face].FirstHalfedge))
+            foreach (int h in hs.GetFaceCirculator(index_prev))
             {
                 hs[h].AdjacentFace = face;
             }
-
-            // Reassign the start and end vert's outgoing halfedges and the face's first halfedge,
-            // if they were one of the ones we've just removed
-            var v1 = _mesh.Vertices[hs[index].StartVertex];
-            var v2 = _mesh.Vertices[hs[pair].StartVertex];
-            if (v1.OutgoingHalfedge == index) { v1.OutgoingHalfedge = hs[pair].NextHalfedge; }
-            if (v2.OutgoingHalfedge == pair) { v2.OutgoingHalfedge = hs[index].NextHalfedge; }
-
-            // Remove halfedges
-            hs[index].Dead = true;
-            hs[pair].Dead = true;
 
             // Keep the adjacent face, but remove the pair's adjacent face
             this[pair_face].Dead = true;

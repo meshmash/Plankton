@@ -78,22 +78,19 @@ namespace Plankton
             this.MakeConsecutive(this[pair].PrevHalfedge, this[index].NextHalfedge);
             this.MakeConsecutive(this[index].PrevHalfedge, this[pair].NextHalfedge);
             
-            // Update vertices' outgoing halfedges, if necessary. If last halfedge
-            // set unused (outgoing == -1), otherwise set to next around vertex.
-            var vs = this.GetVertices(index);
-            if (_mesh.Vertices[vs[0]].OutgoingHalfedge == index)
+            // Update vertices' outgoing halfedges, if necessary. If last halfedge then
+            // make vertex unused (outgoing == -1), otherwise set to next around vertex.
+            var v1 = _mesh.Vertices[this[index].StartVertex];
+            var v2 = _mesh.Vertices[this[pair].StartVertex];
+            if (v1.OutgoingHalfedge == index)
             {
-                if (this[pair].NextHalfedge == index)
-                    _mesh.Vertices[vs[0]].OutgoingHalfedge = -1; // unused
-                else
-                    _mesh.Vertices[vs[0]].OutgoingHalfedge = this[pair].NextHalfedge;
+                if (this[pair].NextHalfedge == index) { v1.OutgoingHalfedge = -1; }
+                else { v1.OutgoingHalfedge = this[pair].NextHalfedge; }
             }
-            if (_mesh.Vertices[vs[1]].OutgoingHalfedge == pair)
+            if (v2.OutgoingHalfedge == pair)
             {
-                if (this[index].NextHalfedge == pair)
-                    _mesh.Vertices[vs[1]].OutgoingHalfedge = -1; // unused
-                else
-                _mesh.Vertices[vs[1]].OutgoingHalfedge = this[index].NextHalfedge;
+                if (this[index].NextHalfedge == pair) { v2.OutgoingHalfedge = -1; }
+                else { v2.OutgoingHalfedge = this[index].NextHalfedge; }
             }
             
             // Mark halfedges for deletion
@@ -435,31 +432,30 @@ namespace Plankton
                 _mesh.Vertices[v_keep].OutgoingHalfedge = h_rtn; // Next around vertex
 
             // Bypass both halfedges by linking prev directly to next for each
-            this.MakeConsecutive(this[index].PrevHalfedge, this[index].NextHalfedge);
-            this.MakeConsecutive(this[pair].PrevHalfedge, this[pair].NextHalfedge);
+            this.MakeConsecutive(this[index].PrevHalfedge, next);
+            this.MakeConsecutive(pair_prev, this[pair].NextHalfedge);
 
             // Update faces' first halfedges, if necessary
-            int face;
-            face = this[index].AdjacentFace;
+            int face = this[index].AdjacentFace;
             if (face != -1 && fs[face].FirstHalfedge == index)
-                fs[face].FirstHalfedge = this[index].NextHalfedge;
-            face = this[pair].AdjacentFace;
-            if (face != -1 && fs[face].FirstHalfedge == pair)
-                fs[face].FirstHalfedge = this[pair].NextHalfedge;
+                fs[face].FirstHalfedge = next;
+            int pair_face = this[pair].AdjacentFace;
+            if (pair_face != -1 && fs[pair_face].FirstHalfedge == pair)
+                fs[pair_face].FirstHalfedge = this[pair].NextHalfedge;
             
-            // If either adjacent face was triangular it will now only have two sides
-            // Merge (or delete) these degenerate faces.
-            // (Maybe this could just be done manually...)
-            int ret_val;
-            if (f > -1 && fs.GetHalfedges(f).Length < 3)
+            // If either adjacent face was triangular it will now only have two sides. If so,
+            // manually merge faces into whatever is on the RIGHT of the associated halfedge.
+            if (this.GetFaceCirculator(next).Count() < 3)
             {
-                ret_val = fs.MergeFaces(this.PairHalfedge(next));
-                if (ret_val < 0) { fs.RemoveFace(f); } // remove face #f
+                this[this[next].NextHalfedge].AdjacentFace = this[this.PairHalfedge(next)].AdjacentFace;
+                this.RemovePairHelper(next);
+                fs[face].Dead = true;
             }
-            if (f_pair > -1 && fs.GetHalfedges(f_pair).Length < 3)
+            if (this.GetFaceCirculator(pair_prev).Count() < 3)
             {
-                ret_val = fs.MergeFaces(this.PairHalfedge(pair_prev));
-                if (ret_val < 0) { fs.RemoveFace(f_pair); } // remove face #f_pair
+                this[this[pair_prev].NextHalfedge].AdjacentFace = this[this.PairHalfedge(pair_prev)].AdjacentFace;
+                this.RemovePairHelper(pair_prev);
+                fs[pair_face].Dead = true;
             }
 
             // Kill the halfedge pair and its end vertex

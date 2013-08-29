@@ -86,6 +86,9 @@ namespace Plankton.Test
             pMesh.Faces.AddFace(0, 1, 2);
             pMesh.Faces.AddFace(2, 3, 0);
 
+            // Force merge to update outgoing halfedge of vertex #2
+            pMesh.Vertices[2].OutgoingHalfedge = 4;
+
             // Merge faces
             int h_rtn = pMesh.Faces.MergeFaces(4);
 
@@ -100,6 +103,10 @@ namespace Plankton.Test
             {
                 Assert.AreEqual(f, pMesh.Halfedges[h].AdjacentFace);
             }
+
+            // Check that outgoing halfedge of vertex #2 was updated correctly
+            Assert.AreEqual(6, pMesh.Vertices[2].OutgoingHalfedge);
+            Assert.AreEqual(f, pMesh.Halfedges[6].AdjacentFace);
         }
 
         [Test]
