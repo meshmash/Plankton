@@ -117,36 +117,6 @@ namespace Plankton
                 this._list[index] = value;
             }
         }
-        
-        /// <summary>
-        /// Gets the opposing halfedge in a pair.
-        /// </summary>
-        /// <param name="index">A halfedge index.</param>
-        /// <returns>The halfedge index with which the specified halfedge is paired.</returns>
-        public int PairHalfedge(int index)
-        {
-            if (index < 0 || index >= this.Count)
-            {
-                throw new IndexOutOfRangeException();
-            }
-            
-            return index % 2 == 0 ? index + 1 : index - 1;
-        }
-        
-        /// <summary>
-        /// Gets the two vertices for a halfedge.
-        /// </summary>
-        /// <param name="index">A halfedge index.</param>
-        /// <returns>The pair of vertex indices connected by the specified halfedge.
-        /// The order follows the direction of the halfedge.</returns>
-        public int[] GetVertices(int index)
-        {
-            int I, J;
-            I = this[index].StartVertex;
-            J = this[this.PairHalfedge(index)].StartVertex;
-            
-            return new int[]{ I, J };
-        }
         #endregion
 
         /// <summary>
@@ -259,6 +229,46 @@ namespace Plankton
                     return h;
             }
             return -1;
+        }
+
+        /// <summary>
+        /// Gets the opposing halfedge in a pair.
+        /// </summary>
+        /// <param name="index">A halfedge index.</param>
+        /// <returns>The halfedge index with which the specified halfedge is paired.</returns>
+        public int GetOpposite(int halfedgeIndex)
+        {
+            if (halfedgeIndex < 0 || halfedgeIndex >= this.Count)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            return halfedgeIndex % 2 == 0 ? halfedgeIndex + 1 : halfedgeIndex - 1;
+        }
+
+        /// <summary>
+        /// <seealso cref="GetOpposite"/>
+        /// </summary>
+        /// <param name="halfedgeIndex"></param>
+        /// <returns></returns>
+        public int PairHalfedge(int halfedgeIndex)
+        {
+            return this.GetOpposite(halfedgeIndex);
+        }
+
+        /// <summary>
+        /// Gets the two vertices for a halfedge.
+        /// </summary>
+        /// <param name="index">A halfedge index.</param>
+        /// <returns>The pair of vertex indices connected by the specified halfedge.
+        /// The order follows the direction of the halfedge.</returns>
+        public int[] GetVertices(int index)
+        {
+            int I, J;
+            I = this[index].StartVertex;
+            J = this[this.PairHalfedge(index)].StartVertex;
+
+            return new int[]{ I, J };
         }
 
         /// <summary>
