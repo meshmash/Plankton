@@ -360,6 +360,26 @@ namespace PlanktonGh
         {
             return vertexList.SetVertex(index, vertex.X, vertex.Y, vertex.Z);
         }
+        
+        /// <summary>
+        /// Adds a new vertex to the end of the Vertex list.
+        /// </summary>
+        /// <param name="vertex">Location of new vertex.</param>
+        /// <returns>The index of the newly added vertex.</returns>
+        public static int Add(this PlanktonVertexList vertexList, Point3f vertex)
+        {
+            return vertexList.Add(vertex.X, vertex.Y, vertex.Z);
+        }
+        
+        /// <summary>
+        /// Adds a new vertex to the end of the Vertex list.
+        /// </summary>
+        /// <param name="vertex">Location of new vertex.</param>
+        /// <returns>The index of the newly added vertex.</returns>
+        public static int Add(this PlanktonVertexList vertexList, Point3d vertex)
+        {
+            return vertexList.Add(vertex.X, vertex.Y, vertex.Z);
+        }
     }
 }
 
