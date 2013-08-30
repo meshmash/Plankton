@@ -24,7 +24,7 @@ namespace PlanktonGh
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddGenericParameter("PMesh", "PMesh", "The input PlanktonMesh to decompose", GH_ParamAccess.item);
+            pManager.AddParameter(new GH_PlanktonMeshParam(), "PMesh", "PMesh", "The input PlanktonMesh to decompose", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -48,8 +48,8 @@ namespace PlanktonGh
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            PlanktonMesh P = new PlanktonMesh();
-            if (!DA.GetData<PlanktonMesh>(0, ref P)) return;
+            PlanktonMesh P = null;
+            if (!DA.GetData(0, ref P)) return;
 
             List<Point3d> Positions = new List<Point3d>();
             List<int> OutHEdge = new List<int>();

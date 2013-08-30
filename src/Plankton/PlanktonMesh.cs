@@ -18,6 +18,32 @@ namespace Plankton
         public PlanktonMesh() //blank constructor
         {
         }
+        
+        public PlanktonMesh(PlanktonMesh source)
+        {
+            foreach (var v in source.Vertices)
+            {
+                this.Vertices.Add(new PlanktonVertex() {
+                                      OutgoingHalfedge = v.OutgoingHalfedge,
+                                      X = v.X,
+                                      Y = v.Y,
+                                      Z = v.Z
+                                  });
+            }
+            foreach (var f in source.Faces)
+            {
+                this.Faces.Add(new PlanktonFace() { FirstHalfedge = f.FirstHalfedge });
+            }
+            foreach (var h in source.Halfedges)
+            {
+                this.Halfedges.Add(new PlanktonHalfedge() {
+                                       StartVertex = h.StartVertex,
+                                       AdjacentFace = h.AdjacentFace,
+                                       NextHalfedge = h.NextHalfedge,
+                                       PrevHalfedge = h.PrevHalfedge,
+                                   });
+            }
+        }
         #endregion
 
         #region "properties"
