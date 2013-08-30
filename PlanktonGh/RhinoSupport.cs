@@ -332,6 +332,34 @@ namespace PlanktonGh
         {
             return new Vector3f(vector.X, vector.Y, vector.Z);
         }
+        
+        /// <summary>
+        /// <para>Sets or adds a vertex to the Vertex List.</para>
+        /// <para>If [index] is less than [Count], the existing vertex at [index] will be modified.</para>
+        /// <para>If [index] equals [Count], a new vertex is appended to the end of the vertex list.</para>
+        /// <para>If [index] is larger than [Count], the function will return false.</para>
+        /// </summary>
+        /// <param name="index">Index of vertex to set.</param>
+        /// <param name="vertex">Vertex location.</param>
+        /// <returns><c>true</c> on success, <c>false</c> on failure.</returns>
+        public static bool SetVertex(this PlanktonVertexList vertexList, int index, Point3f vertex)
+        {
+            return vertexList.SetVertex(index, vertex.X, vertex.Y, vertex.Z);
+        }
+        
+        /// <summary>
+        /// <para>Sets or adds a vertex to the Vertex List.</para>
+        /// <para>If [index] is less than [Count], the existing vertex at [index] will be modified.</para>
+        /// <para>If [index] equals [Count], a new vertex is appended to the end of the vertex list.</para>
+        /// <para>If [index] is larger than [Count], the function will return false.</para>
+        /// </summary>
+        /// <param name="index">Index of vertex to set.</param>
+        /// <param name="vertex">Vertex location.</param>
+        /// <returns><c>true</c> on success, <c>false</c> on failure.</returns>
+        public static bool SetVertex(this PlanktonVertexList vertexList, int index, Point3d vertex)
+        {
+            return vertexList.SetVertex(index, vertex.X, vertex.Y, vertex.Z);
+        }
     }
 }
 

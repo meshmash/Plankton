@@ -105,6 +105,64 @@ namespace Plankton
                 this._list[index] = value;
             }
         }
+        
+        /// <summary>
+        /// <para>Sets or adds a vertex to the Vertex List.</para>
+        /// <para>If [index] is less than [Count], the existing vertex at [index] will be modified.</para>
+        /// <para>If [index] equals [Count], a new vertex is appended to the end of the vertex list.</para>
+        /// <para>If [index] is larger than [Count], the function will return false.</para>
+        /// </summary>
+        /// <param name="vertexIndex">Index of vertex to set.</param>
+        /// <param name="x">X component of vertex location.</param>
+        /// <param name="y">Y component of vertex location.</param>
+        /// <param name="z">Z component of vertex location.</param>
+        /// <returns><c>true</c> on success, <c>false</c> on failure.</returns>
+        public bool SetVertex(int vertexIndex, float x, float y, float z)
+        {
+            if (vertexIndex >= 0 && vertexIndex < _list.Count)
+            {
+                var v = this._list[vertexIndex];
+                v.X = x;
+                v.Y = y;
+                v.Z = z;
+            }
+            else if (vertexIndex == _list.Count)
+            {
+                this.Add(x, y, z);
+            }
+            else { return false; }
+            
+            return true;
+        }
+        
+        /// <summary>
+        /// <para>Sets or adds a vertex to the Vertex List.</para>
+        /// <para>If [index] is less than [Count], the existing vertex at [index] will be modified.</para>
+        /// <para>If [index] equals [Count], a new vertex is appended to the end of the vertex list.</para>
+        /// <para>If [index] is larger than [Count], the function will return false.</para>
+        /// </summary>
+        /// <param name="vertexIndex">Index of vertex to set.</param>
+        /// <param name="x">X component of vertex location.</param>
+        /// <param name="y">Y component of vertex location.</param>
+        /// <param name="z">Z component of vertex location.</param>
+        /// <returns><c>true</c> on success, <c>false</c> on failure.</returns>
+        public bool SetVertex(int vertexIndex, double x, double y, double z)
+        {
+            if (vertexIndex >= 0 && vertexIndex < _list.Count)
+            {
+                var v = this._list[vertexIndex];
+                v.X = (float)x;
+                v.Y = (float)y;
+                v.Z = (float)z;
+            }
+            else if (vertexIndex == _list.Count)
+            {
+                this.Add(x, y, z);
+            }
+            else { return false; }
+            
+            return true;
+        }
         #endregion
         
         /// <summary>
