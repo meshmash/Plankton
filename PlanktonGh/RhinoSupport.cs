@@ -360,6 +360,17 @@ namespace PlanktonGh
         {
             return vertexList.SetVertex(index, vertex.X, vertex.Y, vertex.Z);
         }
+
+        /// <summary>
+        /// <para>Moves a vertex by a vector.</para>       
+        /// </summary>
+        /// <param name="index">Index of vertex to move.</param>
+        /// <param name="vector">Vector to move by.</param>
+        /// <returns><c>true</c> on success, <c>false</c> on failure.</returns>
+        public static bool MoveVertex(this PlanktonVertexList vertexList, int index, Vector3d vector)
+        {
+            return vertexList.SetVertex(index, vertexList[index].X + vector.X, vertexList[index].Y + vector.Y, vertexList[index].Z + vector.Z);
+        }
         
         /// <summary>
         /// Adds a new vertex to the end of the Vertex list.
