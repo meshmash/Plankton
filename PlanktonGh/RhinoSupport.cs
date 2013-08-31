@@ -224,35 +224,29 @@ namespace PlanktonGh
             Mesh rMesh = new Mesh();
             foreach (PlanktonVertex v in source.Vertices)
             {
-               // if (v.Dead == false)
-                {
-                    rMesh.Vertices.Add(v.X, v.Y, v.Z);
-                }                
+                rMesh.Vertices.Add(v.X, v.Y, v.Z);       
             }
             for (int i = 0; i < source.Faces.Count; i++)
             {
-                if (source.Faces[i].Dead == false)
+                int[] fvs = source.Faces.GetFaceVertices(i);
+                if (fvs.Length == 3)
                 {
-                    int[] fvs = source.Faces.GetFaceVertices(i);
-                    if (fvs.Length == 3)
+                    rMesh.Faces.AddFace(fvs[0], fvs[1], fvs[2]);
+                }
+                else if (fvs.Length == 4)
+                {
+                    rMesh.Faces.AddFace(fvs[0], fvs[1], fvs[2], fvs[3]);
+                }
+                else if (fvs.Length > 4)
+                {
+                    // triangulate about face center (fan)
+                    var fc = source.Faces.GetFaceCenter(i);
+                    rMesh.Vertices.Add(fc.X, fc.Y, fc.Z);
+                    for (int j = 0; j < fvs.Length; j++)
                     {
-                        rMesh.Faces.AddFace(fvs[0], fvs[1], fvs[2]);
+                        rMesh.Faces.AddFace(fvs[j], fvs[(j + 1) % fvs.Length], rMesh.Vertices.Count - 1);
                     }
-                    else if (fvs.Length == 4)
-                    {
-                        rMesh.Faces.AddFace(fvs[0], fvs[1], fvs[2], fvs[3]);
-                    }
-                    else if (fvs.Length > 4)
-                    {
-                        // triangulate about face center (fan)
-                        var fc = source.Faces.GetFaceCenter(i);
-                        rMesh.Vertices.Add(fc.X, fc.Y, fc.Z);
-                        for (int j = 0; j < fvs.Length; j++)
-                        {
-                            rMesh.Faces.AddFace(fvs[j], fvs[(j + 1) % fvs.Length], rMesh.Vertices.Count - 1);
-                        }
-                    }
-                }                
+                }            
             }
             return rMesh;
         }
@@ -268,18 +262,16 @@ namespace PlanktonGh
             Polyline[] polylines = new Polyline[n];
             for (int i = 0; i < n; i++)
             {
-                if (source.Faces[i].Dead == false)
+                Polyline facePoly = new Polyline();
+                int[] vs = source.Faces.GetFaceVertices(i);
+                for (int j = 0; j <= vs.Length; j++)
                 {
-                    Polyline facePoly = new Polyline();
-                    int[] vs = source.Faces.GetFaceVertices(i);
-                    for (int j = 0; j <= vs.Length; j++)
-                    {
-                        var v = source.Vertices[vs[j % vs.Length]];
-                        facePoly.Add(v.X, v.Y, v.Z);
-                    }
-                    polylines[i] = facePoly;
-                }                
+                    var v = source.Vertices[vs[j % vs.Length]];
+                    facePoly.Add(v.X, v.Y, v.Z);
+                }
+                polylines[i] = facePoly;
             }
+            
             return polylines;
         }
         

@@ -17,7 +17,7 @@ namespace Plankton
         /// Initializes a new instance of the <see cref="PlanktonHalfedgeList"/> class.
         /// Should be called from the mesh constructor.
         /// </summary>
-        /// <param name="ownerMesh">The mesh to which this list of halfedges belongs.</param>
+        /// <param name="owner">The mesh to which this list of halfedges belongs.</param>
         internal PlanktonHalfEdgeList(PlanktonMesh owner)
         {
             this._list = new List<PlanktonHalfedge>();
@@ -95,8 +95,8 @@ namespace Plankton
             }
             
             // Mark halfedges for deletion
-            this[index].Dead = true;
-            this[pair].Dead = true;
+            this[index] = PlanktonHalfedge.Unset;
+            this[pair] = PlanktonHalfedge.Unset;
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace Plankton
             for (int iter = 0; iter < _list.Count; iter++)
             {
                 // If halfedge is alive, check if we need to shuffle it down the list
-                if (!_list[iter].Dead)
+                if (!_list[iter].IsUnused)
                 {
                     if (marker < iter)
                     {
@@ -186,6 +186,7 @@ namespace Plankton
             {
                 yield return h;
                 h = this[this.GetPairHalfedge(h)].NextHalfedge;
+                if (h < 0) { throw new InvalidOperationException("Unset index, cannot continue."); }
                 if (count++ > 999) { throw new InvalidOperationException("Runaway vertex circulator"); }
             }
             while (h != halfedgeIndex);
@@ -210,6 +211,7 @@ namespace Plankton
             {
                 yield return h;
                 h = this[h].NextHalfedge;
+                if (h < 0) { throw new InvalidOperationException("Unset index, cannot continue."); }
                 if (count++ > 999) { throw new InvalidOperationException("Runaway face circulator."); }
             }
             while (h != halfedgeIndex);
@@ -525,9 +527,9 @@ namespace Plankton
             }
 
             // Kill the halfedge pair and its end vertex
-            this[index].Dead = true;
-            this[pair].Dead = true;
-            _mesh.Vertices[v_kill].Dead = true;
+            this[index] = PlanktonHalfedge.Unset;
+            this[pair] = PlanktonHalfedge.Unset;
+            _mesh.Vertices[v_kill] = PlanktonVertex.Unset;
 
             return h_rtn;
         }

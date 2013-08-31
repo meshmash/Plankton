@@ -326,7 +326,7 @@ namespace Plankton.Test
 
             Assert.AreEqual(8, count);
 
-            Assert.IsTrue(pMesh.Faces[2].Dead && pMesh.Faces[3].Dead);
+            Assert.IsTrue(pMesh.Faces[2].IsUnused && pMesh.Faces[3].IsUnused);
         }
 
         [Test]
@@ -418,6 +418,19 @@ namespace Plankton.Test
             // Check some things about the compacted mesh
             Assert.AreEqual(8, pMesh.Halfedges.Count);
             Assert.AreEqual(new int[] { 1, 4, 5, 2 }, pMesh.Faces.GetFaceVertices(1));
+        }
+        
+        [Test]
+        public void CannotTraverseUnusedHalfedge()
+        {
+            PlanktonMesh pMesh = new PlanktonMesh();
+            pMesh.Halfedges.Add(PlanktonHalfedge.Unset);
+            pMesh.Halfedges.Add(PlanktonHalfedge.Unset);
+            
+            // You shouldn't be able to enumerate a circulator for either of these unset halfedges
+            Assert.Throws<InvalidOperationException>(() => pMesh.Halfedges.GetFaceCirculator(0).ToArray());
+            Assert.Throws<InvalidOperationException>(
+                delegate { foreach (int h in pMesh.Halfedges.GetVertexCirculator(1)) {} } );
         }
     }
 }

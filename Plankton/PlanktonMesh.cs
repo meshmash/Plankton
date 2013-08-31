@@ -85,9 +85,9 @@ namespace Plankton
             {
                 if (P.Vertices.NakedEdgeCount(i) == 0)
                 {
-                    D.Faces.Add(new PlanktonFace());
+                    int df = D.Faces.Add(PlanktonFace.Unset);
                     // D.Faces[i].FirstHalfedge = P.PairHalfedge(P.Vertices[i].OutgoingHalfedge);
-                    D.Faces[D.Faces.Count-1].FirstHalfedge = P.Vertices[i].OutgoingHalfedge;
+                    D.Faces[df].FirstHalfedge = P.Vertices[i].OutgoingHalfedge;
                 }
             }
 
@@ -102,7 +102,7 @@ namespace Plankton
             {
                 if ((P.Halfedges[i].AdjacentFace != -1) & (P.Halfedges[P.Halfedges.GetPairHalfedge(i)].AdjacentFace != -1))
                 {
-                    PlanktonHalfedge DualHE = new PlanktonHalfedge();
+                    PlanktonHalfedge DualHE = PlanktonHalfedge.Unset;
                     PlanktonHalfedge PrimalHE = P.Halfedges[i];
                     //DualHE.StartVertex = PrimalHE.AdjacentFace;
                     DualHE.StartVertex = P.Halfedges[P.Halfedges.GetPairHalfedge(i)].AdjacentFace;

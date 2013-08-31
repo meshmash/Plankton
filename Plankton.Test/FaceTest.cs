@@ -243,5 +243,16 @@ namespace Plankton.Test
             Assert.AreEqual(1, pMesh.Faces.Count);
             Assert.AreEqual(new int[] { 0, 1, 2, 3 }, pMesh.Faces.GetFaceVertices(0));
         }
+        
+        [Test]
+        public void CanTraverseUnusedFace()
+        {
+            PlanktonMesh pMesh = new PlanktonMesh();
+            
+            // Add a single unset face
+            pMesh.Faces.Add(PlanktonFace.Unset);
+            
+            Assert.IsEmpty(pMesh.Faces.GetHalfedges(0));
+        }
     }
 }
