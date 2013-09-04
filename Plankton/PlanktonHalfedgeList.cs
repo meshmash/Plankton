@@ -323,6 +323,30 @@ namespace Plankton
         }
         #endregion
 
+        #region Geometry
+        public double[] GetLengths()
+        /// <summary>
+        /// Measure the lengths of all the halfedges
+        /// </summary>       
+        /// <returns>An array of lengths for all halfedges, or -1 for dead ones</returns>
+        {
+            double[] Lengths = new double[this.Count];
+            for (int i = 0; i < this.Count; i += 2)
+            {
+                double EdgeLength = -1;
+                if (this[i].Dead == false)
+                {                  
+                    PlanktonXYZ Start = _mesh.Vertices[this[i].StartVertex].ToXYZ();
+                    PlanktonXYZ End = _mesh.Vertices[this[i+1].StartVertex].ToXYZ();
+                    EdgeLength = (End - Start).Length();
+                }
+                Lengths[i] = EdgeLength;
+                Lengths[i + 1] = EdgeLength;
+            }
+            return Lengths;
+        }
+        #endregion
+
         #region Euler operators
         /// <summary>
         /// Performs an edge flip. This works by shifting the start/end vertices of the edge
