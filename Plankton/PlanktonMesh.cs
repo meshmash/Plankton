@@ -47,10 +47,53 @@ namespace Plankton
         #endregion
 
         #region "general methods"
-        // public void ReIndex() //clear away all the dead elements to save space
-        // //maybe it is better to just create a fresh one rather than trying to shuffle the existing
-        // {
-        // }
+
+        /// <summary>
+        /// Calculate the volume of the mesh
+        /// </summary>
+        public double Volume()
+        {
+            double VolumeSum = 0;
+            for (int i = 0; i < this.Faces.Count; i++)
+            {
+                if (Faces[i].Dead == false)
+                {
+                    int[] FaceVerts = this.Faces.GetFaceVertices(i);
+                    int EdgeCount = FaceVerts.Length;
+                    if (EdgeCount == 3)
+                    {
+                        PlanktonXYZ P = this.Vertices[FaceVerts[0]].ToXYZ();
+                        PlanktonXYZ Q = this.Vertices[FaceVerts[1]].ToXYZ();
+                        PlanktonXYZ R = this.Vertices[FaceVerts[2]].ToXYZ();
+                        //get the signed volume of the tetrahedron formed by the triangle and the origin
+                        VolumeSum += (1 / 6d) * (
+                               P.X * Q.Y * R.Z +
+                               P.Y * Q.Z * R.X +
+                               P.Z * Q.X * R.Y -
+                               P.X * Q.Z * R.Y -
+                               P.Y * Q.X * R.Z -
+                               P.Z * Q.Y * R.X);
+                    }
+                    else
+                    {
+                        PlanktonXYZ P = this._faces.GetFaceCenter(i);
+                        for (int j = 0; j < EdgeCount; j++)
+                        {
+                            PlanktonXYZ Q = this.Vertices[FaceVerts[j]].ToXYZ();
+                            PlanktonXYZ R = this.Vertices[FaceVerts[(j + 1) % EdgeCount]].ToXYZ();
+                            VolumeSum += (1 / 6d) * (
+                                P.X * Q.Y * R.Z + 
+                                P.Y * Q.Z * R.X + 
+                                P.Z * Q.X * R.Y - 
+                                P.X * Q.Z * R.Y - 
+                                P.Y * Q.X * R.Z - 
+                                P.Z * Q.Y * R.X);
+                        }
+                    }
+                }                
+            }            
+            return VolumeSum;
+        }
 
         public PlanktonMesh Dual()
         {
