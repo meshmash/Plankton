@@ -124,6 +124,7 @@ namespace PlanktonGh
                     else
                     {
                         HalfB.AdjacentFace = -1;
+                        pMesh.Vertices[HalfB.StartVertex].OutgoingHalfedge = pMesh.Halfedges.Count + 1;
                     }
                 }
                 else
@@ -145,12 +146,11 @@ namespace PlanktonGh
                     else
                     {
                         HalfA.AdjacentFace = -1;
+                        pMesh.Vertices[HalfA.StartVertex].OutgoingHalfedge = pMesh.Halfedges.Count;
                     }
                 }
                 pMesh.Halfedges.Add(HalfA);
-                //pMesh.Halfedges[2 * i].Index = 2 * i; //
                 pMesh.Halfedges.Add(HalfB);
-                //pMesh.Halfedges[2 * i + 1].Index = 2 * i + 1; //
             }
 
             for (int i = 0; i < (pMesh.Halfedges.Count); i += 2)
