@@ -121,7 +121,7 @@ namespace Plankton.Test
             // Erase center vertex
             pMesh.Vertices.EraseCenterVertex(4);
 
-            Assert.IsFalse(pMesh.Faces[0].Dead);
+            Assert.IsFalse(pMesh.Faces[0].IsUnused);
             int[] faceHalfedges = pMesh.Faces.GetHalfedges(0);
             int[] expected = new int[] { 6, 0, 14, 16, 20, 22, 10, 12 };
             Assert.AreEqual(8, faceHalfedges.Length);

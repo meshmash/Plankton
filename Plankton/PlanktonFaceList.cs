@@ -19,7 +19,7 @@ namespace Plankton
         /// Initializes a new instance of the <see cref="PlanktonFaceList"/> class.
         /// Should be called from the mesh constructor.
         /// </summary>
-        /// <param name="ownerMesh">The mesh to which this list of half-edges belongs.</param>
+        /// <param name="owner">The mesh to which this list of half-edges belongs.</param>
         internal PlanktonFaceList(PlanktonMesh owner)
         {
             this._list = new List<PlanktonFace>();
@@ -234,8 +234,7 @@ namespace Plankton
             }
             
             // Finally, add the face and return its index
-            PlanktonFace f = new PlanktonFace();
-            f.FirstHalfedge = loop[0];
+            PlanktonFace f = new PlanktonFace() { FirstHalfedge = loop[0] };
             
             return this.Add(f);
         }
@@ -280,7 +279,7 @@ namespace Plankton
                 if (_mesh.Halfedges.IsBoundary(h)) { _mesh.Halfedges.RemovePairHelper(h); }
                 else { _mesh.Halfedges[h].AdjacentFace = -1; }
             }
-            this[index].Dead = true;
+            this[index] = PlanktonFace.Unset;
         }
         
         /// <summary>
@@ -315,7 +314,7 @@ namespace Plankton
             for (int iter = 0; iter < _list.Count; iter++)
             {
                 // If face is alive, check if we need to shuffle it down the list
-                if (!_list[iter].Dead)
+                if (!_list[iter].IsUnused)
                 {
                     if (marker < iter)
                     {
@@ -420,8 +419,8 @@ namespace Plankton
             int new_halfedge2 = hs.GetPairHalfedge(new_halfedge1);
 
             // add a new face
-            PlanktonFace new_face = new PlanktonFace();
-            int new_face_index = this.Add(new_face);
+            //PlanktonFace new_face = new PlanktonFace();
+            int new_face_index = this.Add(PlanktonFace.Unset);
 
             //link everything up
 
@@ -495,7 +494,7 @@ namespace Plankton
             }
 
             // Keep the adjacent face, but remove the pair's adjacent face
-            this[pair_face].Dead = true;
+            this[pair_face] = PlanktonFace.Unset;
 
             return index_next;
         }
@@ -515,7 +514,7 @@ namespace Plankton
                 int ThisHalfEdge = FaceHalfEdges[i];
                 int TriangleFace;
                 if (i == 0) {TriangleFace = f;}
-                else {TriangleFace = this.Add(new PlanktonFace());}                
+                else {TriangleFace = this.Add(PlanktonFace.Unset);}                
                 this[TriangleFace].FirstHalfedge = ThisHalfEdge;
                 _mesh.Halfedges[ThisHalfEdge].AdjacentFace = TriangleFace;
                 int OutSpoke = _mesh.Halfedges.AddPair(central_vertex, _mesh.Halfedges[ThisHalfEdge].StartVertex, TriangleFace);

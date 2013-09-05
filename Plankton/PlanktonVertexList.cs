@@ -17,7 +17,7 @@ namespace Plankton
         /// Initializes a new instance of the <see cref="PlanktonVertexList"/> class.
         /// Should be called from the mesh constructor.
         /// </summary>
-        /// <param name="ownerMesh">The mesh to which this list of vertices belongs.</param>
+        /// <param name="owner">The mesh to which this list of vertices belongs.</param>
         internal PlanktonVertexList(PlanktonMesh owner)
         {
             this._list = new List<PlanktonVertex>();
@@ -168,7 +168,7 @@ namespace Plankton
         /// <summary>
         /// Helper method to remove dead vertices from the list, re-index and compact.
         /// </summary>
-        internal void CompactHelper()
+        internal int CompactHelper()
         {
             int marker = 0; // Location where the current vertex should be moved to
             
@@ -176,7 +176,7 @@ namespace Plankton
             for (int iter = 0; iter < _list.Count; iter++)
             {
                 // If vertex is alive, check if we need to shuffle it down the list
-                if (!_list[iter].Dead)
+                if (!_list[iter].IsUnused)
                 {
                     if (marker < iter)
                     {
@@ -196,6 +196,8 @@ namespace Plankton
             
             // Trim list down to new size
             if (marker < _list.Count) { _list.RemoveRange(marker, _list.Count - marker); }
+            
+            return _list.Count - marker;
         }
 
         /// <summary>
@@ -204,17 +206,7 @@ namespace Plankton
         /// <returns>The number of unused vertices that were removed.</returns>
         public int CullUnused()
         {
-            int total = 0;
-            for (int i = 0; i < _list.Count; i++) {
-                if (!_list[i].Dead && _list[i].OutgoingHalfedge < 0) {
-                    _list[i].Dead = true;
-                    total++;
-                }
-            }
-
-            this.CompactHelper();
-
-            return total;
+            return this.CompactHelper();
         }
         
         #region traversals
@@ -479,7 +471,7 @@ namespace Plankton
             _mesh.Halfedges.RemovePairHelper(vertexHalfedges[0]);
             for (int i = 1; i < vertexHalfedges.Length; i++)
             {
-                _mesh.Faces[_mesh.Halfedges[vertexHalfedges[i]].AdjacentFace].Dead = true;
+                _mesh.Faces[_mesh.Halfedges[vertexHalfedges[i]].AdjacentFace] = PlanktonFace.Unset;
                 _mesh.Halfedges.RemovePairHelper(vertexHalfedges[i]);
             }
 
@@ -490,7 +482,7 @@ namespace Plankton
             }
 
             // Mark center vertex for deletion
-            this[vertexIndex].Dead = true;
+            this[vertexIndex] = PlanktonVertex.Unset;
 
             return _mesh.Faces[faceIndex].FirstHalfedge;
         }
