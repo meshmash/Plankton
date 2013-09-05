@@ -124,6 +124,7 @@ namespace PlanktonGh
                     else
                     {
                         HalfB.AdjacentFace = -1;
+                        pMesh.Vertices[HalfB.StartVertex].OutgoingHalfedge = pMesh.Halfedges.Count + 1;
                     }
                 }
                 else
@@ -145,12 +146,11 @@ namespace PlanktonGh
                     else
                     {
                         HalfA.AdjacentFace = -1;
+                        pMesh.Vertices[HalfA.StartVertex].OutgoingHalfedge = pMesh.Halfedges.Count;
                     }
                 }
                 pMesh.Halfedges.Add(HalfA);
-                //pMesh.Halfedges[2 * i].Index = 2 * i; //
                 pMesh.Halfedges.Add(HalfB);
-                //pMesh.Halfedges[2 * i + 1].Index = 2 * i + 1; //
             }
 
             for (int i = 0; i < (pMesh.Halfedges.Count); i += 2)
@@ -224,7 +224,7 @@ namespace PlanktonGh
             Mesh rMesh = new Mesh();
             foreach (PlanktonVertex v in source.Vertices)
             {
-                rMesh.Vertices.Add(v.X, v.Y, v.Z);
+                rMesh.Vertices.Add(v.X, v.Y, v.Z);       
             }
             for (int i = 0; i < source.Faces.Count; i++)
             {
@@ -246,7 +246,7 @@ namespace PlanktonGh
                     {
                         rMesh.Faces.AddFace(fvs[j], fvs[(j + 1) % fvs.Length], rMesh.Vertices.Count - 1);
                     }
-                }
+                }            
             }
             return rMesh;
         }
@@ -271,6 +271,7 @@ namespace PlanktonGh
                 }
                 polylines[i] = facePoly;
             }
+            
             return polylines;
         }
         
@@ -283,6 +284,16 @@ namespace PlanktonGh
         {
             return new Point3f(vertex.X, vertex.Y, vertex.Z);
         }
+
+        /// <summary>
+        /// Creates a Rhino Point3d from a Plankton vertex.
+        /// </summary>
+        /// <param name="vertex">A Plankton vertex</param>
+        /// <returns>A Point3d with the same coordinates as the vertex.</returns>
+        public static Point3d ToPoint3d(this PlanktonVertex vertex)
+        {
+            return new Point3d(vertex.X, vertex.Y, vertex.Z);
+        }
         
         /// <summary>
         /// Creates a Rhino Point3f from a Plankton vector.
@@ -293,6 +304,16 @@ namespace PlanktonGh
         {
             return new Point3f(vector.X, vector.Y, vector.Z);
         }
+
+        /// <summary>
+        /// Creates a Rhino Point3d from a Plankton vector.
+        /// </summary>
+        /// <param name="vector">A Plankton vector.</param>
+        /// <returns>A Point3d with the same XYZ components as the vector.</returns>
+        public static Point3d ToPoint3d(this PlanktonXYZ vector)
+        {
+            return new Point3d(vector.X, vector.Y, vector.Z);
+        }
         
         /// <summary>
         /// Creates a Rhino Vector3f from a Plankton vector.
@@ -302,6 +323,65 @@ namespace PlanktonGh
         public static Vector3f ToVector3f(this PlanktonXYZ vector)
         {
             return new Vector3f(vector.X, vector.Y, vector.Z);
+        }
+        
+        /// <summary>
+        /// <para>Sets or adds a vertex to the Vertex List.</para>
+        /// <para>If [index] is less than [Count], the existing vertex at [index] will be modified.</para>
+        /// <para>If [index] equals [Count], a new vertex is appended to the end of the vertex list.</para>
+        /// <para>If [index] is larger than [Count], the function will return false.</para>
+        /// </summary>
+        /// <param name="index">Index of vertex to set.</param>
+        /// <param name="vertex">Vertex location.</param>
+        /// <returns><c>true</c> on success, <c>false</c> on failure.</returns>
+        public static bool SetVertex(this PlanktonVertexList vertexList, int index, Point3f vertex)
+        {
+            return vertexList.SetVertex(index, vertex.X, vertex.Y, vertex.Z);
+        }
+        
+        /// <summary>
+        /// <para>Sets or adds a vertex to the Vertex List.</para>
+        /// <para>If [index] is less than [Count], the existing vertex at [index] will be modified.</para>
+        /// <para>If [index] equals [Count], a new vertex is appended to the end of the vertex list.</para>
+        /// <para>If [index] is larger than [Count], the function will return false.</para>
+        /// </summary>
+        /// <param name="index">Index of vertex to set.</param>
+        /// <param name="vertex">Vertex location.</param>
+        /// <returns><c>true</c> on success, <c>false</c> on failure.</returns>
+        public static bool SetVertex(this PlanktonVertexList vertexList, int index, Point3d vertex)
+        {
+            return vertexList.SetVertex(index, vertex.X, vertex.Y, vertex.Z);
+        }
+
+        /// <summary>
+        /// <para>Moves a vertex by a vector.</para>       
+        /// </summary>
+        /// <param name="index">Index of vertex to move.</param>
+        /// <param name="vector">Vector to move by.</param>
+        /// <returns><c>true</c> on success, <c>false</c> on failure.</returns>
+        public static bool MoveVertex(this PlanktonVertexList vertexList, int index, Vector3d vector)
+        {
+            return vertexList.SetVertex(index, vertexList[index].X + vector.X, vertexList[index].Y + vector.Y, vertexList[index].Z + vector.Z);
+        }
+        
+        /// <summary>
+        /// Adds a new vertex to the end of the Vertex list.
+        /// </summary>
+        /// <param name="vertex">Location of new vertex.</param>
+        /// <returns>The index of the newly added vertex.</returns>
+        public static int Add(this PlanktonVertexList vertexList, Point3f vertex)
+        {
+            return vertexList.Add(vertex.X, vertex.Y, vertex.Z);
+        }
+        
+        /// <summary>
+        /// Adds a new vertex to the end of the Vertex list.
+        /// </summary>
+        /// <param name="vertex">Location of new vertex.</param>
+        /// <returns>The index of the newly added vertex.</returns>
+        public static int Add(this PlanktonVertexList vertexList, Point3d vertex)
+        {
+            return vertexList.Add(vertex.X, vertex.Y, vertex.Z);
         }
     }
 }
