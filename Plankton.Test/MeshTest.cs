@@ -200,5 +200,33 @@ namespace Plankton.Test
             Assert.AreEqual(8, pMesh.Halfedges.Count);
             Assert.AreEqual(new int[] { 0, 2, 3, 1 }, pMesh.Faces.GetFaceVertices(0));
         }
+        
+        [Test]
+        public void CanCalculateVolume()
+        {
+            // Create a simple cube
+
+            PlanktonMesh pMesh = new PlanktonMesh();
+
+            pMesh.Vertices.Add(-0.5, -0.5, 0.5);
+            pMesh.Vertices.Add(-0.5, -0.5, -0.5);
+            pMesh.Vertices.Add(-0.5, 0.5, -0.5);
+            pMesh.Vertices.Add(-0.5, 0.5, 0.5);
+            pMesh.Vertices.Add(0.5, -0.5, 0.5);
+            pMesh.Vertices.Add(0.5, -0.5, -0.5);
+            pMesh.Vertices.Add(0.5, 0.5, -0.5);
+            pMesh.Vertices.Add(0.5, 0.5, 0.5);
+
+            pMesh.Faces.AddFace(3, 2, 1, 0);
+            pMesh.Faces.AddFace(1, 5, 4, 0);
+            pMesh.Faces.AddFace(2, 6, 5, 1);
+            pMesh.Faces.AddFace(7, 6, 2, 3);
+            pMesh.Faces.AddFace(4, 7, 3, 0);
+            pMesh.Faces.AddFace(5, 6, 7, 4);
+            
+            // Calculate volume
+            
+            Assert.AreEqual(1, pMesh.Volume(), 1E-9);
+        }
     }
 }

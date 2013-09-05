@@ -336,7 +336,7 @@ namespace Plankton
             for (int i = 0; i < this.Count; i += 2)
             {
                 double EdgeLength = -1;
-                if (this[i].Dead == false)
+                if (this[i].IsUnused == false)
                 {                  
                     PlanktonXYZ Start = _mesh.Vertices[this[i].StartVertex].ToXYZ();
                     PlanktonXYZ End = _mesh.Vertices[this[i+1].StartVertex].ToXYZ();
