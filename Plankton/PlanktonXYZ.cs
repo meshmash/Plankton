@@ -101,6 +101,17 @@ namespace Plankton
         }
 
         /// <summary>
+        /// Subtracts one vector from another.
+        /// </summary>
+        /// <param name="v1">A vector.</param>
+        /// <param name="v2">A second vector.</param>
+        /// <returns>The first vector minus the second vector</returns>
+        public static PlanktonXYZ operator -(PlanktonXYZ v1, PlanktonXYZ v2)
+        {
+            return new PlanktonXYZ(v1._x - v2._x, v1._y - v2._y, v1._z - v2._z);
+        }
+
+        /// <summary>
         /// Multiplies a vector by a number, having the effect of scaling it.
         /// </summary>
         /// <param name="vector">A vector.</param>
@@ -109,6 +120,15 @@ namespace Plankton
         public static PlanktonXYZ operator *(PlanktonXYZ vector, float t)
         {
             return new PlanktonXYZ(vector._x * t, vector._y * t, vector._z * t);
+        }
+
+        /// <summary>
+        /// Get the length of a vector
+        /// </summary>        
+        /// <returns>The length</returns>
+        public double Length()
+        {
+            return Math.Sqrt(this._x * this._x + this._y * this._y + this._z * this._z);
         }
     }
 }

@@ -34,11 +34,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GH_IO">
-      <HintPath>..\..\..\..\..\Desktop\Grasshopper\GH_IO.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Grasshopper\GH_IO.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Grasshopper">
-      <HintPath>..\..\..\..\..\Desktop\Grasshopper\Grasshopper.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Grasshopper\Grasshopper.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="RhinoCommon">

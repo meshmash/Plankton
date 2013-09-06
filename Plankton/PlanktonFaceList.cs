@@ -19,7 +19,7 @@ namespace Plankton
         /// Initializes a new instance of the <see cref="PlanktonFaceList"/> class.
         /// Should be called from the mesh constructor.
         /// </summary>
-        /// <param name="ownerMesh">The mesh to which this list of half-edges belongs.</param>
+        /// <param name="owner">The mesh to which this list of half-edges belongs.</param>
         internal PlanktonFaceList(PlanktonMesh owner)
         {
             this._list = new List<PlanktonFace>();
@@ -152,24 +152,24 @@ namespace Plankton
                         case 1: // first is new, second is old
                             // iterate through halfedges clockwise around vertex #v2 until boundary
                             outer_prev = hs[loop[ii]].PrevHalfedge;
-                            outer_next = hs.PairHalfedge(loop[i]);
+                            outer_next = hs.GetPairHalfedge(loop[i]);
                             break;
                         case 2: // second is new, first is old
-                            outer_prev = hs.PairHalfedge(loop[ii]);
+                            outer_prev = hs.GetPairHalfedge(loop[ii]);
                             outer_next = hs[loop[i]].NextHalfedge;
                             break;
                         case 3: // both are new
-                            outer_prev = hs.PairHalfedge(loop[ii]);
-                            outer_next = hs.PairHalfedge(loop[i]);
+                            outer_prev = hs.GetPairHalfedge(loop[ii]);
+                            outer_next = hs.GetPairHalfedge(loop[i]);
                             break;
                         case 4: // both are new (non-manifold vertex)
                             // We have TWO boundaries to take care of here: first...
                             outer_prev = hs[vs[v2].OutgoingHalfedge].PrevHalfedge;
-                            outer_next = hs.PairHalfedge(loop[i]);
+                            outer_next = hs.GetPairHalfedge(loop[i]);
                             hs[outer_prev].NextHalfedge = outer_next;
                             hs[outer_next].PrevHalfedge = outer_prev;
                             // and second...
-                            outer_prev = hs.PairHalfedge(loop[ii]);
+                            outer_prev = hs.GetPairHalfedge(loop[ii]);
                             outer_next = vs[v2].OutgoingHalfedge;
                             break;
                     }
@@ -186,7 +186,9 @@ namespace Plankton
                     
                     // ensure vertex->outgoing is boundary if vertex is boundary
                     if (is_new[i]) // first is new
+                    {
                         vs[v2].OutgoingHalfedge = loop[i] + 1;
+                    }
                 }
                 else // both old (non-manifold vertex trickery below)
                 {
@@ -196,7 +198,7 @@ namespace Plankton
                     // (as will be the case if v2 was non-manifold).
                     if (vs[v2].OutgoingHalfedge == loop[ii])
                     {
-                        foreach (int h in vs.GetHalfedgesCirculator(v2).Skip(1))
+                        foreach (int h in hs.GetVertexCirculator(loop[ii]).Skip(1))
                         {
                             if (hs[h].AdjacentFace < 0)
                             {
@@ -215,11 +217,11 @@ namespace Plankton
                         // Find another boundary at this vertex to link 'next' and 'prev' into.
                         try
                         {
-                            int boundary = vs.GetHalfedgesCirculator(v2, loop[ii]).Skip(1)
+                            int boundary = hs.GetVertexCirculator(loop[ii]).Skip(1)
                                 .First(h => hs[h].AdjacentFace < 0);
-                            hs.MakeAdjacent(loop[i], loop[ii]);
-                            hs.MakeAdjacent(hs[boundary].PrevHalfedge, next);
-                            hs.MakeAdjacent(prev, boundary);
+                            hs.MakeConsecutive(loop[i], loop[ii]);
+                            hs.MakeConsecutive(hs[boundary].PrevHalfedge, next);
+                            hs.MakeConsecutive(prev, boundary);
                         }
                         // If no other boundary is found, something must be wrong...
                         catch (InvalidOperationException)
@@ -232,8 +234,7 @@ namespace Plankton
             }
             
             // Finally, add the face and return its index
-            PlanktonFace f = new PlanktonFace();
-            f.FirstHalfedge = loop[0];
+            PlanktonFace f = new PlanktonFace() { FirstHalfedge = loop[0] };
             
             return this.Add(f);
         }
@@ -264,6 +265,22 @@ namespace Plankton
         {
             return this.AddFace(new int[] { a, b, c, d });
         }
+
+        /// <summary>
+        /// <para>Removes a face from the mesh without affecting the remaining geometry.</para>
+        /// <para>Ensures that the topology of the halfedge mesh remains fully intact.</para>
+        /// </summary>
+        /// <param name="index">The index of the face to be removed.</param>
+        public void RemoveFace(int index)
+        {
+            int[] fhs = this.GetHalfedges(index);
+            foreach (int h in fhs)
+            {
+                if (_mesh.Halfedges.IsBoundary(h)) { _mesh.Halfedges.RemovePairHelper(h); }
+                else { _mesh.Halfedges[h].AdjacentFace = -1; }
+            }
+            this[index] = PlanktonFace.Unset;
+        }
         
         /// <summary>
         /// Returns the face at the given index.
@@ -279,31 +296,55 @@ namespace Plankton
             {
                 return this._list[index];
             }
-            private set
+            internal set
             {
                 this._list[index] = value;
             }
         }
         #endregion
-        
-        #region traversals
+
         /// <summary>
-        /// Gets the halfedges which bound a face.
+        /// Helper method to remove dead faces from the list, re-index and compact.
         /// </summary>
-        /// <param name="f">A face index.</param>
-        /// <returns>The indices of halfedges incident to a particular face.
-        /// Ordered anticlockwise around the face.</returns>
-        public int[] GetHalfedges(int f)
+        internal void CompactHelper()
         {
-            return this.GetHalfedgesCirculator(f).ToArray();
+            int marker = 0; // Location where the current face should be moved to
+
+            // Run through all the faces
+            for (int iter = 0; iter < _list.Count; iter++)
+            {
+                // If face is alive, check if we need to shuffle it down the list
+                if (!_list[iter].IsUnused)
+                {
+                    if (marker < iter)
+                    {
+                        // Room to shuffle. Copy current face to marked slot.
+                        _list[marker] = _list[iter];
+
+                        // Update all halfedges which are adjacent
+                        int first = _list[marker].FirstHalfedge;
+                        foreach (int h in _mesh.Halfedges.GetFaceCirculator(first))
+                        {
+                            _mesh.Halfedges[h].AdjacentFace = marker;
+                        }
+                    }
+                    marker++; // That spot's filled. Advance the marker.
+                }
+            }
+
+            // Trim list down to new size
+            if (marker < _list.Count) { _list.RemoveRange(marker, _list.Count - marker); }
         }
         
+        #region traversals
         /// <summary>
         /// Traverses the halfedge indices which bound a face.
         /// </summary>
         /// <param name="f">A face index.</param>
         /// <returns>An enumerable of halfedge indices incident to the specified face.
         /// Ordered anticlockwise around the face.</returns>
+        [Obsolete("GetHalfedgesCirculator(int) is deprecated, please use" +
+            "Halfedges.GetFaceCirculator(int) instead.")]
         public IEnumerable<int> GetHalfedgesCirculator(int f)
         {
             int he_first = this[f].FirstHalfedge;
@@ -317,7 +358,19 @@ namespace Plankton
             while (he_current != he_first);
         }
         #endregion
-        
+
+        #region adjacency queries
+        /// <summary>
+        /// Gets the halfedges which bound a face.
+        /// </summary>
+        /// <param name="f">A face index.</param>
+        /// <returns>The indices of halfedges incident to a particular face.
+        /// Ordered anticlockwise around the face.</returns>
+        public int[] GetHalfedges(int f)
+        {
+            return _mesh.Halfedges.GetFaceCirculator(this[f].FirstHalfedge).ToArray();
+        }
+
         /// <summary>
         /// Gets vertex indices of a face.
         /// </summary>
@@ -326,16 +379,170 @@ namespace Plankton
         /// Ordered anticlockwise around the face.</returns>
         public int[] GetFaceVertices(int f)
         {
-            return this.GetHalfedgesCirculator(f)
+            return _mesh.Halfedges.GetFaceCirculator(this[f].FirstHalfedge)
                 .Select(h => _mesh.Halfedges[h].StartVertex).ToArray();
         }
-        
+
         [Obsolete("GetVertices is deprecated, please use GetFaceVertices instead.")]
         public int[] GetVertices(int f)
         {
             return this.GetFaceVertices(f);
         }
-        
+        #endregion
+
+        #region Euler operators
+        /// <summary>
+        /// <para>Split a face into two faces by inserting a new edge</para>
+        /// <seealso cref="MergeFaces"/>
+        /// </summary>
+        /// <param name="to">The index of a second halfedge adjacent to the face to split.
+        /// The new edge will end at the start of this halfedge.</param>
+        /// <param name="from">The index of a halfedge adjacent to the face to split.
+        /// The new edge will begin at the start of this halfedge.</param>
+        /// <returns>The index of one of the newly created halfedges, or -1 on failure.
+        /// The returned halfedge will be adjacent to the pre-existing face.</returns>
+        public int SplitFace(int to, int from)
+        {
+            // split the adjacent face in 2
+            // by creating a new edge from the start of the given halfedge
+            // to another vertex around the face
+
+            var hs = _mesh.Halfedges;
+
+            // check preconditions
+            int existing_face = hs[from].AdjacentFace;
+            if (existing_face == -1 || existing_face != hs[to].AdjacentFace) { return -1; }
+            if (from == to || hs[from].NextHalfedge == to || hs[to].NextHalfedge == from) { return -1; }
+
+            // add the new halfedge pair
+            int new_halfedge1 = hs.AddPair(hs[from].StartVertex, hs[to].StartVertex, existing_face);
+            int new_halfedge2 = hs.GetPairHalfedge(new_halfedge1);
+
+            // add a new face
+            //PlanktonFace new_face = new PlanktonFace();
+            int new_face_index = this.Add(PlanktonFace.Unset);
+
+            //link everything up
+
+            //prev of input he becomes prev of new_he1
+            hs.MakeConsecutive(hs[from].PrevHalfedge, new_halfedge1);
+
+            //prev of he_around becomes prev of new_he2
+            hs.MakeConsecutive(hs[to].PrevHalfedge, new_halfedge2);
+            
+            //next of new_he1 becomes he_around
+            hs.MakeConsecutive(new_halfedge1, to);
+
+            //next of new_he2 becomes index
+            hs.MakeConsecutive(new_halfedge2, from);
+
+            //set the original face's first halfedge to new_he1
+            this[existing_face].FirstHalfedge = new_halfedge1;
+            //set the new face's first halfedge to new_he2
+            this[new_face_index].FirstHalfedge = new_halfedge2;
+            
+            //set adjface of new face loop
+            foreach (int h in _mesh.Halfedges.GetFaceCirculator(new_halfedge2))
+            {
+                hs[h].AdjacentFace = new_face_index;
+            }
+
+            //think thats all of it!           
+
+            return new_halfedge1;
+        }
+
+        /// <summary>
+        /// <para>Merges the two faces incident to the specified halfedge pair.</para>
+        /// <seealso cref="SplitFace"/>
+        /// </summary>
+        /// <param name="index">The index of a halfedge inbetween the two faces to merge.
+        /// The face adjacent to this halfedge will be retained.</param>        
+        /// <returns>The successor of <paramref name="index"/> around the face, or -1 on failure.</returns>
+        /// <remarks>
+        /// The invariant <c>mesh.Faces.MergeFaces(mesh.Faces.SplitFace(a, b))</c> will return a,
+        /// leaving the mesh unchanged.</remarks>
+        public int MergeFaces(int index)
+        {
+            var hs = _mesh.Halfedges;
+            int pair = hs.GetPairHalfedge(index);
+            int face = hs[index].AdjacentFace;
+            int pair_face = hs[pair].AdjacentFace;
+
+            // Check for a face on both sides
+            if (face == -1 || pair_face == -1) { return -1; }
+
+            // Both vertices incident to given halfedge must have valence > 2
+            if (3 > _mesh.Vertices.GetHalfedges(hs[index].StartVertex).Length) { return -1; }
+            if (3 > _mesh.Vertices.GetHalfedges(hs[pair].StartVertex).Length) { return -1; }
+
+            // Make combined face halfedges consecutive
+            int index_prev = hs[index].PrevHalfedge;
+            int index_next = hs[index].NextHalfedge;
+
+            // Remove halfedges (handles re-linking at ends and re-assigning vertices' outgoing hes)
+            hs.RemovePairHelper(index);
+
+            // Update retained face's first halfedge, if necessary
+            if (this[face].FirstHalfedge == index)
+                this[face].FirstHalfedge = index_next;
+
+            // Go around the dead face, reassigning adjacency
+            foreach (int h in hs.GetFaceCirculator(index_next))
+            {
+                hs[h].AdjacentFace = face;
+            }
+
+            // Keep the adjacent face, but remove the pair's adjacent face
+            this[pair_face] = PlanktonFace.Unset;
+
+            return index_next;
+        }
+
+        /// <summary>
+        /// Divides an n-sided face into n triangles, adding a new vertex in the center of the face.
+        /// </summary>
+        /// <param name="index">The index of the face to stellate</param>        
+        /// <returns>The index of the central vertex</returns>
+        public int Stellate(int f)
+        {
+            int central_vertex = _mesh.Vertices.Add(this.GetFaceCenter(f));
+            int CountBefore = _mesh.Halfedges.Count();
+            int[] FaceHalfEdges = this.GetHalfedges(f);
+            for (int i = 0; i < FaceHalfEdges.Length; i++)
+            {    
+                int ThisHalfEdge = FaceHalfEdges[i];
+                int TriangleFace;
+                if (i == 0) {TriangleFace = f;}
+                else {TriangleFace = this.Add(PlanktonFace.Unset);}                
+                this[TriangleFace].FirstHalfedge = ThisHalfEdge;
+                _mesh.Halfedges[ThisHalfEdge].AdjacentFace = TriangleFace;
+                int OutSpoke = _mesh.Halfedges.AddPair(central_vertex, _mesh.Halfedges[ThisHalfEdge].StartVertex, TriangleFace);
+                if (i == 0) { _mesh.Vertices[central_vertex].OutgoingHalfedge = OutSpoke; }
+                _mesh.Halfedges.MakeConsecutive(OutSpoke,ThisHalfEdge);
+            }
+            for (int i = 0; i < FaceHalfEdges.Length; i++)
+            {
+                int ThisHalfEdge = FaceHalfEdges[i];
+                if(i<FaceHalfEdges.Length-1)
+                {
+                    //link the edge to the ingoing spoke, and the ingoing spoke to the outgoing one
+                    _mesh.Halfedges.MakeConsecutive(ThisHalfEdge, CountBefore + i*2 + 3);
+                    _mesh.Halfedges.MakeConsecutive(CountBefore + (i*2) + 3, CountBefore + (i*2));
+                    //set the AdjacentFace of the ingoing spoke                
+                    _mesh.Halfedges[CountBefore + (i * 2) + 3].AdjacentFace = _mesh.Halfedges[ThisHalfEdge].AdjacentFace;
+                }
+                else
+                {
+                    _mesh.Halfedges.MakeConsecutive(ThisHalfEdge, CountBefore + 1);
+                    _mesh.Halfedges.MakeConsecutive(CountBefore + 1, CountBefore + (i*2));
+                    _mesh.Halfedges[CountBefore + 1].AdjacentFace = _mesh.Halfedges[ThisHalfEdge].AdjacentFace;
+                }
+            }            
+            return central_vertex;
+        }
+        #endregion
+
         /// <summary>
         /// Gets the barycenter of a face's vertices.
         /// </summary>
@@ -368,9 +575,9 @@ namespace Plankton
         public int NakedEdgeCount(int f)
         {
             int nakedCount = 0;
-            foreach (int i in this.GetHalfedgesCirculator(f))
+            foreach (int i in _mesh.Halfedges.GetFaceCirculator(this[f].FirstHalfedge))
             {
-                if (_mesh.Halfedges[_mesh.Halfedges.PairHalfedge(i)].AdjacentFace == -1) nakedCount++;
+                if (_mesh.Halfedges[_mesh.Halfedges.GetPairHalfedge(i)].AdjacentFace == -1) nakedCount++;
             }
             return nakedCount;
         }
