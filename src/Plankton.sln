@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plankton", "Plankton\Plankt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanktonGh", "PlanktonGh\PlanktonGh.csproj", "{9C7EA9A3-331B-4574-BF22-B9D609DE2F1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plankton.Test", "Plankton.Test\Plankton.Test.csproj", "{8FC24017-EDF3-4747-B966-C29DBD18103F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanktonTests", "PlanktonTests\PlanktonTests.csproj", "{8FC24017-EDF3-4747-B966-C29DBD18103F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
