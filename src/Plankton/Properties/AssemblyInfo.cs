@@ -36,4 +36,4 @@ using System.Runtime.InteropServices;
 
 // Make internal classes/members visible in other assemblies.
 [assembly: InternalsVisibleTo("PlanktonGh"),
-           InternalsVisibleTo("Plankton.Test")]
+           InternalsVisibleTo("PlanktonTests")]
