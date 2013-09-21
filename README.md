@@ -28,7 +28,7 @@ There is, of course, a line to be drawn between algorithms that belong **in** th
 
 ## License
 
-Plankton an **open source** library and is licensed under the [Gnu Lesser General Public License][lgpl] (LGPL). We chose this license because we believe that it will encourage those who **improve** the library to share their work whilst not requiring the same of those who simply **use** the library in their software.
+Plankton an **open source** library and is licensed under the [Gnu Lesser General Public License][lgpl] (LGPL). We chose this license because we believe that it will encourage those who **improve** the library to **share** their work whilst not requiring the same of those who simply **use** the library in their software.
 
     Plankton is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as
@@ -54,13 +54,13 @@ To use Plankton from a C#/VB scripting component in Grasshopper you'll need to r
 
 ### Building from source
 
-If you want to keep up with the latest developments, or if you wish to contribute to the project, then you'll need to compile Plankton on your own computer.  Plankton is built against .NET 4.0 so you'll need Visual Studio 2010 or later (or SharpDevelop).  Resolving the dependencies should be as easy as dropping `Grasshopper.dll`, `GH_IO.dll` and `Rhinocommon.dll` into the `lib/` folder.
+If you want to keep up with the latest developments, or if you wish to contribute to the project, then you'll need to compile Plankton on your own computer.  Plankton is built against .NET 4.0 so you'll need Visual Studio 2010 or later (or SharpDevelop).  Resolving the dependencies should be as easy as dropping `Grasshopper.dll`, `GH_IO.dll` and `Rhinocommon.dll` into the `lib/` folder. The solution also includes a test project which uses [NUnit].
 
 Once you've built the library continue with the instructions for [pre-compiled binaries](#pre-compiled-binaries).
 
 ## Thanks
 
-Thanks to Daniel Hambleton, John Harding, Kristoffer Josefsson, Harri Lewis, Giulio Piacentino, and especially Dave Stasiuk.
+Thanks to Dave Stasiuk, Giulio Piacentino, Kristoffer Josefsson, Harri Lewis, John Harding, Daniel Hambleton.
 
 ***
 
@@ -78,3 +78,4 @@ Plankton © 2013 Daniel Piker and Will Pearson.
 [releases]: http://github.com/Dan-Piker/Plankton/releases
 [scripting]: http://github.com/Dan-Piker/Plankton/wiki/Scripting
 [Turtle]: http://github.com/piac/TurtleMesh
+[nunit]: http://www.nunit.org
