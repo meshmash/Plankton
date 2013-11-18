@@ -1,6 +1,7 @@
 using Plankton;
 using Rhino.Geometry;
 using System;
+using System.Collections.Generic;
 
 namespace PlanktonGh
 {
@@ -249,6 +250,22 @@ namespace PlanktonGh
                 }            
             }
             return rMesh;
+        }
+
+        /// <summary>
+        /// Replaces the vertices of a PlanktonMesh with a new list of points
+        /// </summary>
+        /// <returns>A list of closed polylines representing the boundary edges of each face.</returns>
+        /// <param name="source">A Plankton mesh.</param>
+        /// <param name="points">A list of points.</param>
+        public static PlanktonMesh ReplaceVertices(this PlanktonMesh source, List<Point3d> points)
+        {            
+            PlanktonMesh pMesh = source;
+            for (int i = 0; i < points.Count; i++)
+            {
+                pMesh.Vertices.SetVertex(i, points[i]);
+            }
+            return pMesh;
         }
 
         /// <summary>
