@@ -335,18 +335,29 @@ namespace Plankton
             double[] Lengths = new double[this.Count];
             for (int i = 0; i < this.Count; i += 2)
             {
-                double EdgeLength = -1;
-                if (this[i].IsUnused == false)
-                {                  
-                    PlanktonXYZ Start = _mesh.Vertices[this[i].StartVertex].ToXYZ();
-                    PlanktonXYZ End = _mesh.Vertices[this[i+1].StartVertex].ToXYZ();
-                    EdgeLength = (End - Start).Length();
-                }
+                double EdgeLength = GetLength(i);
                 Lengths[i] = EdgeLength;
                 Lengths[i + 1] = EdgeLength;
             }
             return Lengths;
         }
+
+        public double GetLength(int index)
+        /// <summary>
+        /// Measure the length of a single halfedge
+        /// </summary>       
+        /// <returns>The length of the halfedge, or -1 if unused</returns>
+        {
+            double EdgeLength = -1;
+            if (this[index].IsUnused == false)
+            {
+                PlanktonXYZ Start = _mesh.Vertices[this[index].StartVertex].ToXYZ();              
+                PlanktonXYZ End = _mesh.Vertices[this.EndVertex(index)].ToXYZ();
+                EdgeLength = (End - Start).Length();                
+            }
+            return EdgeLength;
+        }
+
         #endregion
 
         #region Euler operators
