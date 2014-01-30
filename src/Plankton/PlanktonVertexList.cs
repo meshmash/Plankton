@@ -85,6 +85,16 @@ namespace Plankton
             return this.Add(new PlanktonVertex(x, y, z));
         }
         #endregion
+
+        /// <summary>
+        /// Adds a series of new vertices to the end of the vertex list.
+        /// </summary>
+        /// <param name="vertices">A list, an array or any enumerable set of <see cref="PlanktonXYZ"/>.</param>
+        /// <returns>Indices of the newly created vertices.</returns>
+        public int[] AddVertices(IEnumerable<PlanktonXYZ> vertices)
+        {
+            return vertices.Select(v => this.Add(v)).ToArray();
+        }
         
         /// <summary>
         /// Returns the vertex at the given index.
