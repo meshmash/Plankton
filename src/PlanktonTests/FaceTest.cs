@@ -254,5 +254,29 @@ namespace Plankton.Test
             
             Assert.IsEmpty(pMesh.Faces.GetHalfedges(0));
         }
+
+        [Test]
+        public void CanAddManyFaces()
+        {
+            PlanktonMesh pMesh = new PlanktonMesh();
+
+            // Create one vertex for each corner of a square
+            pMesh.Vertices.Add(0, 0, 0); // 0
+            pMesh.Vertices.Add(1, 0, 0); // 1
+            pMesh.Vertices.Add(1, 1, 0); // 2
+            pMesh.Vertices.Add(0, 1, 0); // 3
+
+            // Create two triangular faces
+            var faces = new int[][]
+            {
+                new int[] { 0, 1, 2 },
+                new int[] { 3, 2, 1 }
+            };
+            var retval = pMesh.Faces.AddFaces(faces);
+
+            Assert.AreEqual(new int[] { 0, 1 }, retval);
+            Assert.AreEqual(2, pMesh.Faces.Count);
+            Assert.AreEqual(faces[1], pMesh.Faces.GetFaceVertices(1));
+        }
     }
 }

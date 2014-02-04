@@ -267,6 +267,16 @@ namespace Plankton
         }
 
         /// <summary>
+        /// Appends a list of faces to the end of the mesh face list.
+        /// </summary>
+        /// <param name="faces">Faces to add.</param>
+        /// <returns>Indices of the newly created faces.</returns>
+        public int[] AddFaces(IEnumerable<IEnumerable<int>> faces)
+        {
+            return faces.Select(f => this.AddFace(f)).ToArray();
+        }
+
+        /// <summary>
         /// <para>Removes a face from the mesh without affecting the remaining geometry.</para>
         /// <para>Ensures that the topology of the halfedge mesh remains fully intact.</para>
         /// </summary>
