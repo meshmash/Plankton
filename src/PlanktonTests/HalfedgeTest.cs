@@ -327,22 +327,19 @@ namespace Plankton.Test
             Assert.AreEqual(8, count);
 
             Assert.IsTrue(pMesh.Faces[2].IsUnused && pMesh.Faces[3].IsUnused);
+
+            Assert.AreEqual(25, pMesh.Halfedges[5].NextHalfedge);
+            Assert.AreEqual(5, pMesh.Halfedges[25].PrevHalfedge);
+
+            foreach (int i in new int[] { 14, 15, 16, 17, 18, 19 })
+            {
+                Assert.IsTrue(pMesh.Halfedges[i].IsUnused);
+            }
         }
 
         [Test]
         public void CanCollapseValenceThreeVertex()
         {
-            // Create five faces and collapse diagonal edge
-            // (halfedge {4->8} - valence three vertex at end)
-            //
-            // 0---3---6
-            // |   |   |
-            // |   |   |
-            // 1-- 4---7
-            // |   |\  |
-            // |   |  \|
-            // 2---5---8
-
             PlanktonMesh pMesh = new PlanktonMesh();
 
             // Create mesh with one triangular face
@@ -351,15 +348,21 @@ namespace Plankton.Test
             pMesh.Vertices.Add(1, 1.4, 0); // 2
             pMesh.Faces.AddFace(0, 1, 2);
             
-            pMesh.Faces.Stellate(0);
-            int h = pMesh.Vertices.GetIncomingHalfedge(3);
-            
+            // create vertex at center and get a halfedge pointing *towards* it
+            int v = pMesh.Faces.Stellate(0);
+            int h = pMesh.Vertices.GetIncomingHalfedge(v);
+
+            // count faces before collapse
             Assert.AreEqual(3, pMesh.Faces.Count);
-            
+
+            // attempt to collapse one of the internal edges
             Assert.GreaterOrEqual(0, pMesh.Halfedges.CollapseEdge(h));
-            
+
+            // there should be 6 unused halfedges now...
+            Assert.AreEqual(6, pMesh.Halfedges.Where(q => q.IsUnused).Count());
+
+            // compact and count faces again
             pMesh.Compact();
-            
             Assert.AreEqual(1, pMesh.Faces.Count);
         }
         
