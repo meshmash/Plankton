@@ -559,7 +559,7 @@ namespace Plankton
             {
                 if (fs.MergeFaces(this.GetPairHalfedge(next)) < 0) { fs.RemoveFace(f); }
             }
-            if (f_pair > -1 && this.GetFaceCirculator(pair_prev).Count() < 3)
+            if (f_pair > -1 && !this[pair_prev].IsUnused && this.GetFaceCirculator(pair_prev).Count() < 3)
             {
                 if (fs.MergeFaces(this.GetPairHalfedge(pair_prev)) < 0) { fs.RemoveFace(f_pair); }
             }
