@@ -432,5 +432,30 @@ namespace Plankton.Test
             Assert.Throws<InvalidOperationException>(
                 delegate { foreach (int h in pMesh.Halfedges.GetVertexCirculator(1)) {} } );
         }
+
+        [Test]
+        public void CanCollapseSameFace()
+        {
+            // 3-------2
+            // |  f1   |      Tries to collapse the halfedge
+            // |       |      from vertex 1 to vertex 4.
+            // |   4   |
+            // | /   \ |      ^ y
+            // |/ f0  \|      |
+            // 0-------1      L--> x
+
+            PlanktonMesh mesh = new PlanktonMesh();
+
+            mesh.Vertices.Add(0, 0, 0);     // 0
+            mesh.Vertices.Add(100, 0, 0);   // 1
+            mesh.Vertices.Add(100, 100, 0); // 2
+            mesh.Vertices.Add(0, 100, 0);   // 3
+            mesh.Vertices.Add(50, 50, 0);   // 4
+
+            mesh.Faces.AddFace(1, 4, 0);
+            mesh.Faces.AddFace(new int[] { 1, 2, 3, 0, 4 });
+
+            mesh.Halfedges.CollapseEdge(0);
+        }
     }
 }
