@@ -436,8 +436,11 @@ namespace Plankton.Test
                 delegate { foreach (int h in pMesh.Halfedges.GetVertexCirculator(1)) {} } );
         }
 
-        [Test]
-        public void CanCollapseSameFace()
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void CanCollapseSameFace(int h)
         {
             // 3-------2
             // |  f1   |      Tries to collapse the halfedge
@@ -458,7 +461,7 @@ namespace Plankton.Test
             mesh.Faces.AddFace(1, 4, 0);
             mesh.Faces.AddFace(new int[] { 1, 2, 3, 0, 4 });
 
-            mesh.Halfedges.CollapseEdge(0);
+            mesh.Halfedges.CollapseEdge(h);
         }
     }
 }
