@@ -442,13 +442,13 @@ namespace Plankton.Test
         [TestCase(3)]
         public void CanCollapseSameFace(int h)
         {
-            // 3-------2
-            // |  f1   |      Tries to collapse the halfedge
-            // |       |      from vertex 1 to vertex 4.
-            // |   4   |
-            // | /   \ |      ^ y
-            // |/ f0  \|      |
-            // 0-------1      L--> x
+            //   3-------2
+            //   |  f1   |      Tries to collapse the halfedge...
+            //   |       |      * 0 - from vertex 1 to vertex 4
+            //   |   4   |      * 1 - from vertex 4 to vertex 1
+            //   | /   \ |      * 2 - from vertex 4 to vertex 0
+            //   |/ f0  \|      * 3 - from vertex 0 to vertex 4
+            //   0-------1
 
             PlanktonMesh mesh = new PlanktonMesh();
 
@@ -462,6 +462,9 @@ namespace Plankton.Test
             mesh.Faces.AddFace(new int[] { 1, 2, 3, 0, 4 });
 
             mesh.Halfedges.CollapseEdge(h);
+
+            Assert.IsTrue(mesh.Faces[0].IsUnused, "face 0 should be unset");
+            Assert.AreEqual(4, mesh.Faces.GetFaceVertices(1).Length, "face 1 should have 4 vertices");
         }
     }
 }
