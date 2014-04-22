@@ -249,6 +249,7 @@ namespace PlanktonGh
                     }
                 }            
             }
+            rMesh.Normals.ComputeNormals();
             return rMesh;
         }
 
