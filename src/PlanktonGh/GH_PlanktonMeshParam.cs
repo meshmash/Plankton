@@ -170,7 +170,7 @@ namespace PlanktonGh
         {
             get
             {
-                return Resources.plankton;
+                return Resources.plankton_param;
             }
         }
     }
