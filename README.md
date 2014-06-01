@@ -1,5 +1,9 @@
 # Plankton
 
+[![Build Status](https://travis-ci.org/Dan-Piker/Plankton.svg?branch=master)](https://travis-ci.org/Dan-Piker/Plankton)*
+
+*_Core library only._
+
 ## Description
 
 Plankton is a flexible and efficient library for handling n-gonal meshes. Plankton is written in C# and implements the [halfedge data structure][hds].  The structure of the library is loosely based on [Rhinocommon][rc]'s mesh classes and was originally created for use within C#/VB scripting components in [Grasshopper][gh].
@@ -9,7 +13,7 @@ _Plankton is still in the **very early stages** of development and as such thing
 ## Features
 
 * **Flexible** – Plankton can represent n-gonal meshes. There is no restriction to the number of sides that a face can have.
-* **Fast** – Efficient adjacency queries (traversals) are provided by the underlying [halfedge data structure][hds].  These operations, such as finding the faces adjacent to a particular vertex, are *O(n)* where *n* is the number of elements returned.
+* **Fast** – Efficient adjacency queries (traversals) are provided by the underlying [halfedge data structure][hds].  These operations, such as finding the faces adjacent to a particular vertex, are _O(n)_ where _n_ is the number of elements returned.
 * **Robust** – Several [Euler operators][euler] have been implemented (such as edge-collapsing, and face-splitting) that allow the user to modify the topology of a mesh without worrying about the specifics of the data structure.
 * **Compatible** – Plankton can interface with the face-vertex mesh representation, making it straightforward to use alongside [Turtle]. 
 
@@ -22,13 +26,13 @@ Plankton was created as a framework for our own work with meshes in Grasshopper.
 * subdivision surfaces
 * polyline support in Grasshopper – to improve compatibility with other Grasshopper add-ons
 * documentation and examples
-* support for Dynamo/DesignScript
+* _proper_ support for Dynamo/DesignScript
 
-There is, of course, a line to be drawn between algorithms that belong **in** the library and algorithms that are simply written **for** the library.  We hope to iron out such details in due course, along with guidelines for contributing to the project.
+There is, of course, a line to be drawn between algorithms that belong _in_ the library and algorithms that are simply written _for_ the library.  We hope to iron out such details in due course, along with guidelines for [contributing](CONTRIBUTING.md) to the project.
 
 ## License
 
-Plankton an **open source** library and is licensed under the [Gnu Lesser General Public License][lgpl] (LGPL). We chose this license because we believe that it will encourage those who **improve** the library to **share** their work whilst not requiring the same of those who simply **use** the library in their software.
+Plankton an _open source_ library and is licensed under the [Gnu Lesser General Public License][lgpl] (LGPL). We chose this license because we believe that it will encourage those who _improve_ the library to _share_ their work whilst not requiring the same of those who simply _use_ the library in their software.
 
     Plankton is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as
@@ -50,7 +54,7 @@ Plankton an **open source** library and is licensed under the [Gnu Lesser Genera
 
 The easiest way to use Plankton is to download the latest [release][releases].  Both the core library, `plankton.dll`, and the Grasshopper assembly, `plankton.gha`, should be copied into Grasshopper's "libraries" folder (usually `%appdata%\Roaming\Grasshopper\Libraries\`).  Rhino will need to be restarted if it is already running and don't forget to **unblock** the assemblies!
 
-To use Plankton from a C#/VB scripting component in Grasshopper you'll need to reference the library in the script. Right-click on the component, choose "Manage Assemblies" and using the dialog box, select **both** of the assemblies.  See [here][scripting] for more information about writing scripts that use Plankton.
+To use Plankton from a C#/VB scripting component in Grasshopper you'll need to reference the library in the script. Right-click on the component, choose "Manage Assemblies" and using the dialog box, select _both_ of the assemblies.  See [here][scripting] for more information about writing scripts that use Plankton.
 
 ### Building from source
 
