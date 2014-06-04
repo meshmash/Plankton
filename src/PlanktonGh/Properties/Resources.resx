@@ -124,6 +124,9 @@
   <data name="plankton_decon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\plankton_decon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="plankton_param" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\plankton_param.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="plankton_verts" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\plankton_verts.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

@@ -15,6 +15,10 @@ build/
 [Bb]in/
 [Oo]bj/
 
+# Referenced Libraries
+[Ll]ib/**/*.dll
+[Ll]ib/**/*.xml
+
 # Enable "build/" folder in the NuGet Packages folder since NuGet packages use it for MSBuild targets
 !packages/*/build/
 

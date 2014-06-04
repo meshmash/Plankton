@@ -542,29 +542,27 @@ namespace Plankton
             this.MakeConsecutive(this[index].PrevHalfedge, next);
             this.MakeConsecutive(pair_prev, this[pair].NextHalfedge);
 
+            // Kill the halfedge pair and its end vertex
+            this[index] = PlanktonHalfedge.Unset;
+            this[pair] = PlanktonHalfedge.Unset;
+            _mesh.Vertices[v_kill] = PlanktonVertex.Unset;
+
             // Update faces' first halfedges, if necessary
-            int face = this[index].AdjacentFace;
-            if (face != -1 && fs[face].FirstHalfedge == index)
-                fs[face].FirstHalfedge = next;
-            int pair_face = this[pair].AdjacentFace;
-            if (pair_face != -1 && fs[pair_face].FirstHalfedge == pair)
-                fs[pair_face].FirstHalfedge = this[pair].NextHalfedge;
+            if (f != -1 && fs[f].FirstHalfedge == index)
+                fs[f].FirstHalfedge = next;
+            if (f_pair != -1 && fs[f_pair].FirstHalfedge == pair)
+                fs[f_pair].FirstHalfedge = this[pair].NextHalfedge;
             
             // If either adjacent face was triangular it will now only have two sides. If so,
             // try to merge faces into whatever is on the RIGHT of the associated halfedge.
             if (f > -1 && this.GetFaceCirculator(next).Count() < 3)
             {
-                if (fs.MergeFaces(this.GetPairHalfedge(next)) < 0) { fs.RemoveFace(face); }
+                if (fs.MergeFaces(this.GetPairHalfedge(next)) < 0) { fs.RemoveFace(f); }
             }
-            if (f_pair > -1 && this.GetFaceCirculator(pair_prev).Count() < 3)
+            if (f_pair > -1 && !this[pair_prev].IsUnused && this.GetFaceCirculator(pair_prev).Count() < 3)
             {
-                if (fs.MergeFaces(this.GetPairHalfedge(pair_prev)) < 0) { fs.RemoveFace(pair_face); }
+                if (fs.MergeFaces(this.GetPairHalfedge(pair_prev)) < 0) { fs.RemoveFace(f_pair); }
             }
-
-            // Kill the halfedge pair and its end vertex
-            this[index] = PlanktonHalfedge.Unset;
-            this[pair] = PlanktonHalfedge.Unset;
-            _mesh.Vertices[v_kill] = PlanktonVertex.Unset;
 
             return h_rtn;
         }
