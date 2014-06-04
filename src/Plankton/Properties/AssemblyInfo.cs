@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PlanktonGh")]
-[assembly: AssemblyDescription("Provides components for mesh operations using Plankton's half-edge, ngon mesh representation.")]
+[assembly: AssemblyTitle("Plankton")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("PlanktonGh")]
+[assembly: AssemblyProduct("Plankton")]
 [assembly: AssemblyCopyright("Copyright © 2013 Plankton contributors.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("dd0582a1-c8dd-499d-9c7c-4afadfbffc83")]
+[assembly: Guid("2be075ee-5b3e-4315-9e84-982dfef7457e")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,4 +32,8 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.2.0")]
+[assembly: AssemblyVersion("0.3.0")]
+
+// Make internal classes/members visible in other assemblies.
+[assembly: InternalsVisibleTo("PlanktonGh"),
+           InternalsVisibleTo("PlanktonTests")]
