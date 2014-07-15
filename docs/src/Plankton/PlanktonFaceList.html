@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>PlanktonFaceList.cs</title>
+  <link rel="stylesheet" href="../../pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  
+  <div id="jump_to">
+    Jump To &hellip;
+    <div id="jump_wrapper">
+      <div id="jump_page">
+          <a class="source" href="/Users/Will/Code/GitHub/Plankton/docs/src/Plankton/PlanktonFace.html">src/Plankton/PlanktonFace.cs</a>
+          <a class="source" href="/Users/Will/Code/GitHub/Plankton/docs/src/Plankton/PlanktonFaceList.html">src/Plankton/PlanktonFaceList.cs</a>
+          <a class="source" href="/Users/Will/Code/GitHub/Plankton/docs/src/Plankton/PlanktonHalfedge.html">src/Plankton/PlanktonHalfedge.cs</a>
+          <a class="source" href="/Users/Will/Code/GitHub/Plankton/docs/src/Plankton/PlanktonHalfedgeList.html">src/Plankton/PlanktonHalfedgeList.cs</a>
+          <a class="source" href="/Users/Will/Code/GitHub/Plankton/docs/src/Plankton/PlanktonMesh.html">src/Plankton/PlanktonMesh.cs</a>
+          <a class="source" href="/Users/Will/Code/GitHub/Plankton/docs/src/Plankton/PlanktonVertex.html">src/Plankton/PlanktonVertex.cs</a>
+          <a class="source" href="/Users/Will/Code/GitHub/Plankton/docs/src/Plankton/PlanktonVertexList.html">src/Plankton/PlanktonVertexList.cs</a>
+          <a class="source" href="/Users/Will/Code/GitHub/Plankton/docs/src/Plankton/PlanktonXYZ.html">src/Plankton/PlanktonXYZ.cs</a>
+      </div>
+    </div>
+  </div>
+  
+  <div class='section'>
+    <div class='docs'><h1>PlanktonFaceList.cs</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section public' id='section-00-planktonfacelist'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-00-planktonfacelist'>#</a>
+      </div>
+      <h2>PlanktonFaceList</h2>
+<p>Provides access to the faces and Face related functionality of a Mesh.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">ï</span><span class="err">»¿</span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Collections</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Linq</span><span class="p">;</span>
+
+<span class="c1">//using Rhino.Geometry;</span>
+
+<span class="k">namespace</span> <span class="nn">Plankton</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">class</span> <span class="nc">PlanktonFaceList</span> <span class="p">:</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">PlanktonFace</span><span class="p">&gt;</span>
+    <span class="p">{</span>
+        <span class="k">private</span> <span class="k">readonly</span> <span class="n">PlanktonMesh</span> <span class="n">_mesh</span><span class="p">;</span>
+        <span class="k">private</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">PlanktonFace</span><span class="p">&gt;</span> <span class="n">_list</span><span class="p">;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section internal' id='section-01-planktonfacelist'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-01-planktonfacelist'>#</a>
+      </div>
+      <h2>PlanktonFaceList</h2>
+<p>Initializes a new instance of the <a href="PlanktonFaceList.html">PlanktonFaceList.cs</a> class.
+Should be called from the mesh constructor.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>owner</em>: The mesh to which this list of half-edges belongs.</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">internal</span> <span class="nf">PlanktonFaceList</span><span class="p">(</span><span class="n">PlanktonMesh</span> <span class="n">owner</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="n">_list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">PlanktonFace</span><span class="p">&gt;();</span>
+            <span class="k">this</span><span class="p">.</span><span class="n">_mesh</span> <span class="p">=</span> <span class="n">owner</span><span class="p">;</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-02-count'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-02-count'>#</a>
+      </div>
+      <h2>Count</h2>
+<p>Gets the number of faces.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="n">Count</span>
+        <span class="p">{</span>
+            <span class="k">get</span>
+            <span class="p">{</span>
+                <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">_list</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        
+        <span class="cp">#region methods</span>
+        <span class="cp">#region face access</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section internal' id='section-03-add'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-03-add'>#</a>
+      </div>
+      <h2>Add</h2>
+<p>Adds a new face to the end of the Face list.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>halfEdge</em>: Face to add.</li>
+</ul>
+<h3>Returns</h3>
+<p>The index of the newly added face.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">internal</span> <span class="kt">int</span> <span class="nf">Add</span><span class="p">(</span><span class="n">PlanktonFace</span> <span class="n">face</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">face</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span> <span class="k">return</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span>
+            <span class="k">this</span><span class="p">.</span><span class="n">_list</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">face</span><span class="p">);</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">Count</span> <span class="p">-</span> <span class="m">1</span><span class="p">;</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-04-addface'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-04-addface'>#</a>
+      </div>
+      <h2>AddFace</h2>
+<p>Adds a new face to the end of the Face list. Creates any halfedge pairs that are required.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>indices</em>: The vertex indices which define the face, ordered anticlockwise.</li>
+</ul>
+<h3>Returns</h3>
+<p>The index of the newly added face (-1 in the case that the face could not be added).</p>
+<h3>Remarks</h3>
+<p>The mesh must remain 2-manifold and orientable at all times.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="nf">AddFace</span><span class="p">(</span><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">indices</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="c1">// This method always ensures that if a vertex lies on a boundary,</span>
+            <span class="c1">// vertex -&gt; outgoingHalfedge -&gt; adjacentFace == -1</span>
+            
+            <span class="kt">int</span><span class="p">[]</span> <span class="n">array</span> <span class="p">=</span> <span class="n">indices</span><span class="p">.</span><span class="n">ToArray</span><span class="p">();</span> <span class="c1">// using Linq for convenience</span>
+            
+            <span class="kt">var</span> <span class="n">hs</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">;</span>
+            <span class="kt">var</span> <span class="n">vs</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Vertices</span><span class="p">;</span>
+            <span class="kt">int</span> <span class="n">n</span> <span class="p">=</span> <span class="n">array</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span>
+            
+            <span class="c1">// Don&#39;t allow degenerate faces</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="p">&lt;</span> <span class="m">3</span><span class="p">)</span> <span class="k">return</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span>
+            
+            <span class="c1">// Check vertices</span>
+            <span class="k">foreach</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="k">in</span> <span class="n">array</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="c1">// Check that all vertex indices exist in this mesh</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="p">&lt;</span> <span class="m">0</span> <span class="p">||</span> <span class="n">i</span> <span class="p">&gt;=</span> <span class="n">vs</span><span class="p">.</span><span class="n">Count</span><span class="p">)</span>
+                    <span class="k">throw</span> <span class="k">new</span> <span class="nf">IndexOutOfRangeException</span><span class="p">(</span><span class="s">&quot;No vertex exists at this index.&quot;</span><span class="p">);</span>
+                <span class="c1">// Check that all vertices are on a boundary</span>
+                <span class="kt">int</span> <span class="n">outgoing</span> <span class="p">=</span> <span class="n">vs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">OutgoingHalfedge</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">outgoing</span> <span class="p">!=</span> <span class="p">-</span><span class="m">1</span> <span class="p">&amp;&amp;</span> <span class="n">hs</span><span class="p">[</span><span class="n">outgoing</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">!=</span> <span class="p">-</span><span class="m">1</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span>
+            <span class="p">}</span>
+            
+            <span class="c1">// For each pair of vertices, check for an existing halfedge</span>
+            <span class="c1">// If it exists, check that it doesn&#39;t already have a face</span>
+            <span class="c1">// If it doesn&#39;t exist, mark for creation of a new halfedge pair</span>
+            <span class="kt">int</span><span class="p">[]</span> <span class="n">loop</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">int</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+            <span class="kt">bool</span><span class="p">[]</span> <span class="n">is_new</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">bool</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+            
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">,</span> <span class="n">ii</span> <span class="p">=</span> <span class="m">1</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="p">++,</span> <span class="n">ii</span><span class="p">++,</span> <span class="n">ii</span> <span class="p">%=</span> <span class="n">n</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="kt">int</span> <span class="n">v1</span> <span class="p">=</span> <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">v2</span> <span class="p">=</span> <span class="n">array</span><span class="p">[</span><span class="n">ii</span><span class="p">];</span>
+
+                <span class="c1">// Find existing edge, if it exists</span>
+                <span class="kt">int</span> <span class="n">h</span> <span class="p">=</span> <span class="n">hs</span><span class="p">.</span><span class="n">FindHalfedge</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">h</span> <span class="p">&lt;</span> <span class="m">0</span><span class="p">)</span>
+                    <span class="c1">// No halfedge found, mark for creation</span>
+                    <span class="n">is_new</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+                <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">hs</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">&gt;</span> <span class="p">-</span><span class="m">1</span><span class="p">)</span>
+                    <span class="c1">// Existing halfedge already has a face (non-manifold)</span>
+                    <span class="k">return</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span>
+                <span class="k">else</span>
+                    <span class="n">loop</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">=</span> <span class="n">h</span><span class="p">;</span>
+                <span class="c1">// NOTE: To PREVENT non-manifold vertices, uncomment the line below...</span>
+                <span class="c1">//if(is_new[i] &amp;&amp; is_new[(i+n-1)%n] &amp;&amp; vs[v1].OutgoingHalfedge &gt; -1) return -1;</span>
+            <span class="p">}</span>
+            
+            <span class="c1">// Now create any missing halfedge pairs...</span>
+            <span class="c1">// (This could be done in the loop above but it avoids having to tidy up</span>
+            <span class="c1">// any recently added halfedges should a non-manifold edge be found.)</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">,</span> <span class="n">ii</span> <span class="p">=</span> <span class="m">1</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="p">++,</span> <span class="n">ii</span><span class="p">++,</span> <span class="n">ii</span> <span class="p">%=</span> <span class="n">n</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">is_new</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="c1">// new halfedge pair required</span>
+                <span class="p">{</span>
+                    <span class="kt">int</span> <span class="n">v1</span> <span class="p">=</span> <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">v2</span> <span class="p">=</span> <span class="n">array</span><span class="p">[</span><span class="n">ii</span><span class="p">];</span>
+                    <span class="n">loop</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">=</span> <span class="n">hs</span><span class="p">.</span><span class="n">AddPair</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="n">Count</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="k">else</span>
+                <span class="p">{</span>
+                    <span class="c1">// Link existing halfedge to new face</span>
+                    <span class="n">hs</span><span class="p">[</span><span class="n">loop</span><span class="p">[</span><span class="n">i</span><span class="p">]].</span><span class="n">AdjacentFace</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            
+            <span class="c1">// Link halfedges</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">,</span> <span class="n">ii</span> <span class="p">=</span> <span class="m">1</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="p">++,</span> <span class="n">ii</span><span class="p">++,</span> <span class="n">ii</span> <span class="p">%=</span> <span class="n">n</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="c1">//int v1 = array[i];</span>
+                <span class="kt">int</span> <span class="n">v2</span> <span class="p">=</span> <span class="n">array</span><span class="p">[</span><span class="n">ii</span><span class="p">];</span>
+                <span class="kt">int</span> <span class="n">id</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">is_new</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>  <span class="n">id</span> <span class="p">+=</span> <span class="m">1</span><span class="p">;</span> <span class="c1">// first is new</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">is_new</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span> <span class="n">id</span> <span class="p">+=</span> <span class="m">2</span><span class="p">;</span> <span class="c1">// second is new</span>
+                
+                <span class="c1">// Check for non-manifold vertex case, i.e. both current halfedges are new</span>
+                <span class="c1">// but the vertex between them is already part of another face. This vertex</span>
+                <span class="c1">// will have TWO OR MORE outgoing boundary halfedges! (Not strictly allowed,</span>
+                <span class="c1">// but it could happen if faces are added in an UGLY order.)</span>
+                <span class="c1">// TODO: If a mesh has non-manifold vertices perhaps it should be considered</span>
+                <span class="c1">// INVALID. Any operations performed on such a mesh cannot be relied upon to</span>
+                <span class="c1">// perform correctly as the adjacency information may not be correct.</span>
+                <span class="c1">// (More reading: http://www.pointclouds.org/blog/nvcs/)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">id</span> <span class="p">==</span> <span class="m">3</span> <span class="p">&amp;&amp;</span> <span class="n">vs</span><span class="p">[</span><span class="n">v2</span><span class="p">].</span><span class="n">OutgoingHalfedge</span> <span class="p">&gt;</span> <span class="p">-</span><span class="m">1</span><span class="p">)</span> <span class="n">id</span><span class="p">++;</span> <span class="c1">// id == 4</span>
+                
+                <span class="k">if</span> <span class="p">(</span><span class="n">id</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span> <span class="c1">// At least one of the halfedge pairs is new...</span>
+                <span class="p">{</span>
+                    <span class="c1">// Link outer halfedges</span>
+                    <span class="kt">int</span> <span class="n">outer_prev</span> <span class="p">=</span> <span class="p">-</span><span class="m">1</span><span class="p">,</span> <span class="n">outer_next</span> <span class="p">=</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span>
+                    <span class="k">switch</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
+                    <span class="p">{</span>
+                        <span class="k">case</span> <span class="m">1</span><span class="p">:</span> <span class="c1">// first is new, second is old</span>
+                            <span class="c1">// iterate through halfedges clockwise around vertex #v2 until boundary</span>
+                            <span class="n">outer_prev</span> <span class="p">=</span> <span class="n">hs</span><span class="p">[</span><span class="n">loop</span><span class="p">[</span><span class="n">ii</span><span class="p">]].</span><span class="n">PrevHalfedge</span><span class="p">;</span>
+                            <span class="n">outer_next</span> <span class="p">=</span> <span class="n">hs</span><span class="p">.</span><span class="n">GetPairHalfedge</span><span class="p">(</span><span class="n">loop</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+                            <span class="k">break</span><span class="p">;</span>
+                        <span class="k">case</span> <span class="m">2</span><span class="p">:</span> <span class="c1">// second is new, first is old</span>
+                            <span class="n">outer_prev</span> <span class="p">=</span> <span class="n">hs</span><span class="p">.</span><span class="n">GetPairHalfedge</span><span class="p">(</span><span class="n">loop</span><span class="p">[</span><span class="n">ii</span><span class="p">]);</span>
+                            <span class="n">outer_next</span> <span class="p">=</span> <span class="n">hs</span><span class="p">[</span><span class="n">loop</span><span class="p">[</span><span class="n">i</span><span class="p">]].</span><span class="n">NextHalfedge</span><span class="p">;</span>
+                            <span class="k">break</span><span class="p">;</span>
+                        <span class="k">case</span> <span class="m">3</span><span class="p">:</span> <span class="c1">// both are new</span>
+                            <span class="n">outer_prev</span> <span class="p">=</span> <span class="n">hs</span><span class="p">.</span><span class="n">GetPairHalfedge</span><span class="p">(</span><span class="n">loop</span><span class="p">[</span><span class="n">ii</span><span class="p">]);</span>
+                            <span class="n">outer_next</span> <span class="p">=</span> <span class="n">hs</span><span class="p">.</span><span class="n">GetPairHalfedge</span><span class="p">(</span><span class="n">loop</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+                            <span class="k">break</span><span class="p">;</span>
+                        <span class="k">case</span> <span class="m">4</span><span class="p">:</span> <span class="c1">// both are new (non-manifold vertex)</span>
+                            <span class="c1">// We have TWO boundaries to take care of here: first...</span>
+                            <span class="n">outer_prev</span> <span class="p">=</span> <span class="n">hs</span><span class="p">[</span><span class="n">vs</span><span class="p">[</span><span class="n">v2</span><span class="p">].</span><span class="n">OutgoingHalfedge</span><span class="p">].</span><span class="n">PrevHalfedge</span><span class="p">;</span>
+                            <span class="n">outer_next</span> <span class="p">=</span> <span class="n">hs</span><span class="p">.</span><span class="n">GetPairHalfedge</span><span class="p">(</span><span class="n">loop</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+                            <span class="n">hs</span><span class="p">[</span><span class="n">outer_prev</span><span class="p">].</span><span class="n">NextHalfedge</span> <span class="p">=</span> <span class="n">outer_next</span><span class="p">;</span>
+                            <span class="n">hs</span><span class="p">[</span><span class="n">outer_next</span><span class="p">].</span><span class="n">PrevHalfedge</span> <span class="p">=</span> <span class="n">outer_prev</span><span class="p">;</span>
+                            <span class="c1">// and second...</span>
+                            <span class="n">outer_prev</span> <span class="p">=</span> <span class="n">hs</span><span class="p">.</span><span class="n">GetPairHalfedge</span><span class="p">(</span><span class="n">loop</span><span class="p">[</span><span class="n">ii</span><span class="p">]);</span>
+                            <span class="n">outer_next</span> <span class="p">=</span> <span class="n">vs</span><span class="p">[</span><span class="n">v2</span><span class="p">].</span><span class="n">OutgoingHalfedge</span><span class="p">;</span>
+                            <span class="k">break</span><span class="p">;</span>
+                    <span class="p">}</span>
+                    <span class="c1">// outer_{prev,next} should now be set, so store links in HDS</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">outer_prev</span> <span class="p">&gt;</span> <span class="p">-</span><span class="m">1</span> <span class="p">&amp;&amp;</span> <span class="n">outer_next</span> <span class="p">&gt;</span> <span class="p">-</span><span class="m">1</span><span class="p">)</span>
+                    <span class="p">{</span>
+                        <span class="n">hs</span><span class="p">[</span><span class="n">outer_prev</span><span class="p">].</span><span class="n">NextHalfedge</span> <span class="p">=</span> <span class="n">outer_next</span><span class="p">;</span>
+                        <span class="n">hs</span><span class="p">[</span><span class="n">outer_next</span><span class="p">].</span><span class="n">PrevHalfedge</span> <span class="p">=</span> <span class="n">outer_prev</span><span class="p">;</span>
+                    <span class="p">}</span>
+                    
+                    <span class="c1">// Link inner halfedges</span>
+                    <span class="n">hs</span><span class="p">[</span><span class="n">loop</span><span class="p">[</span><span class="n">i</span><span class="p">]].</span><span class="n">NextHalfedge</span> <span class="p">=</span> <span class="n">loop</span><span class="p">[</span><span class="n">ii</span><span class="p">];</span>
+                    <span class="n">hs</span><span class="p">[</span><span class="n">loop</span><span class="p">[</span><span class="n">ii</span><span class="p">]].</span><span class="n">PrevHalfedge</span> <span class="p">=</span> <span class="n">loop</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+                    
+                    <span class="c1">// ensure vertex-&gt;outgoing is boundary if vertex is boundary</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">is_new</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="c1">// first is new</span>
+                    <span class="p">{</span>
+                        <span class="n">vs</span><span class="p">[</span><span class="n">v2</span><span class="p">].</span><span class="n">OutgoingHalfedge</span> <span class="p">=</span> <span class="n">loop</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">+</span> <span class="m">1</span><span class="p">;</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+                <span class="k">else</span> <span class="c1">// both old (non-manifold vertex trickery below)</span>
+                <span class="p">{</span>
+                    <span class="c1">// In the case that v2 links to the current second halfedge, creating a</span>
+                    <span class="c1">// face here will redefine v2 as a non-boundary vertex. Do a quick lap of</span>
+                    <span class="c1">// v2&#39;s other outgoing halfedges in case one of them is still a boundary</span>
+                    <span class="c1">// (as will be the case if v2 was non-manifold).</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">vs</span><span class="p">[</span><span class="n">v2</span><span class="p">].</span><span class="n">OutgoingHalfedge</span> <span class="p">==</span> <span class="n">loop</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
+                    <span class="p">{</span>
+                        <span class="k">foreach</span> <span class="p">(</span><span class="kt">int</span> <span class="n">h</span> <span class="k">in</span> <span class="n">hs</span><span class="p">.</span><span class="n">GetVertexCirculator</span><span class="p">(</span><span class="n">loop</span><span class="p">[</span><span class="n">ii</span><span class="p">]).</span><span class="n">Skip</span><span class="p">(</span><span class="m">1</span><span class="p">))</span>
+                        <span class="p">{</span>
+                            <span class="k">if</span> <span class="p">(</span><span class="n">hs</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">&lt;</span> <span class="m">0</span><span class="p">)</span>
+                            <span class="p">{</span>
+                                <span class="n">vs</span><span class="p">[</span><span class="n">v2</span><span class="p">].</span><span class="n">OutgoingHalfedge</span> <span class="p">=</span> <span class="n">h</span><span class="p">;</span>
+                                <span class="k">break</span><span class="p">;</span>
+                            <span class="p">}</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                    <span class="c1">// If inner loop exists, but for some reason it&#39;s not already linked</span>
+                    <span class="c1">// (non-manifold vertex) make loop[i] adjacent to loop[ii]. Tidy up other</span>
+                    <span class="c1">// halfedge links such that all outgoing halfedges remain visible to v2.</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">hs</span><span class="p">[</span><span class="n">loop</span><span class="p">[</span><span class="n">i</span><span class="p">]].</span><span class="n">NextHalfedge</span> <span class="p">!=</span> <span class="n">loop</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="p">||</span> <span class="n">hs</span><span class="p">[</span><span class="n">loop</span><span class="p">[</span><span class="n">ii</span><span class="p">]].</span><span class="n">PrevHalfedge</span> <span class="p">!=</span> <span class="n">loop</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="p">{</span>
+                        <span class="kt">int</span> <span class="n">next</span> <span class="p">=</span> <span class="n">hs</span><span class="p">[</span><span class="n">loop</span><span class="p">[</span><span class="n">i</span><span class="p">]].</span><span class="n">NextHalfedge</span><span class="p">;</span>
+                        <span class="kt">int</span> <span class="n">prev</span> <span class="p">=</span> <span class="n">hs</span><span class="p">[</span><span class="n">loop</span><span class="p">[</span><span class="n">ii</span><span class="p">]].</span><span class="n">PrevHalfedge</span><span class="p">;</span>
+                        <span class="c1">// Find another boundary at this vertex to link &#39;next&#39; and &#39;prev&#39; into.</span>
+                        <span class="k">try</span>
+                        <span class="p">{</span>
+                            <span class="kt">int</span> <span class="n">boundary</span> <span class="p">=</span> <span class="n">hs</span><span class="p">.</span><span class="n">GetVertexCirculator</span><span class="p">(</span><span class="n">loop</span><span class="p">[</span><span class="n">ii</span><span class="p">]).</span><span class="n">Skip</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+                                <span class="p">.</span><span class="n">First</span><span class="p">(</span><span class="n">h</span> <span class="p">=&gt;</span> <span class="n">hs</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">&lt;</span> <span class="m">0</span><span class="p">);</span>
+                            <span class="n">hs</span><span class="p">.</span><span class="n">MakeConsecutive</span><span class="p">(</span><span class="n">loop</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">loop</span><span class="p">[</span><span class="n">ii</span><span class="p">]);</span>
+                            <span class="n">hs</span><span class="p">.</span><span class="n">MakeConsecutive</span><span class="p">(</span><span class="n">hs</span><span class="p">[</span><span class="n">boundary</span><span class="p">].</span><span class="n">PrevHalfedge</span><span class="p">,</span> <span class="n">next</span><span class="p">);</span>
+                            <span class="n">hs</span><span class="p">.</span><span class="n">MakeConsecutive</span><span class="p">(</span><span class="n">prev</span><span class="p">,</span> <span class="n">boundary</span><span class="p">);</span>
+                        <span class="p">}</span>
+                        <span class="c1">// If no other boundary is found, something must be wrong...</span>
+                        <span class="k">catch</span> <span class="p">(</span><span class="n">InvalidOperationException</span><span class="p">)</span>
+                        <span class="p">{</span>
+                            <span class="k">throw</span> <span class="k">new</span> <span class="nf">InvalidOperationException</span><span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="n">Format</span><span class="p">(</span>
+                                <span class="s">&quot;Failed to relink halfedges around vertex #{0} during creation of face #{1}&quot;</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="n">Count</span><span class="p">));</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            
+            <span class="c1">// Finally, add the face and return its index</span>
+            <span class="n">PlanktonFace</span> <span class="n">f</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PlanktonFace</span><span class="p">()</span> <span class="p">{</span> <span class="n">FirstHalfedge</span> <span class="p">=</span> <span class="n">loop</span><span class="p">[</span><span class="m">0</span><span class="p">]</span> <span class="p">};</span>
+            
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-05-addface'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-05-addface'>#</a>
+      </div>
+      <h2>AddFace</h2>
+<p>Appends a new triangular face to the end of the mesh face list. Creates any halfedge pairs that are required.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>a</em>: Index of first corner.</li>
+<li><em>b</em>: Index of second corner.</li>
+<li><em>c</em>: Index of third corner.</li>
+</ul>
+<h3>Returns</h3>
+<p>The index of the newly added face (-1 in the case that the face could not be added).</p>
+<h3>Remarks</h3>
+<p>The mesh must remain 2-manifold and orientable at all times.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="nf">AddFace</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">,</span> <span class="kt">int</span> <span class="n">c</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">AddFace</span><span class="p">(</span><span class="k">new</span> <span class="kt">int</span><span class="p">[]</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="p">});</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-06-addface'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-06-addface'>#</a>
+      </div>
+      <h2>AddFace</h2>
+<p>Appends a new quadragular face to the end of the mesh face list. Creates any halfedge pairs that are required.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>a</em>: Index of first corner.</li>
+<li><em>b</em>: Index of second corner.</li>
+<li><em>c</em>: Index of third corner.</li>
+<li><em>d</em>: Index of fourth corner.</li>
+</ul>
+<h3>Returns</h3>
+<p>The index of the newly added face (-1 in the case that the face could not be added).</p>
+<h3>Remarks</h3>
+<p>The mesh must remain 2-manifold and orientable at all times.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="nf">AddFace</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">,</span> <span class="kt">int</span> <span class="n">c</span><span class="p">,</span> <span class="kt">int</span> <span class="n">d</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">AddFace</span><span class="p">(</span><span class="k">new</span> <span class="kt">int</span><span class="p">[]</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="p">});</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-07-addfaces'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-07-addfaces'>#</a>
+      </div>
+      <h2>AddFaces</h2>
+<p>Appends a list of faces to the end of the mesh face list.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>faces</em>: Faces to add.</li>
+</ul>
+<h3>Returns</h3>
+<p>Indices of the newly created faces.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span><span class="p">[]</span> <span class="nf">AddFaces</span><span class="p">(</span><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;&gt;</span> <span class="n">faces</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">faces</span><span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">f</span> <span class="p">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="n">AddFace</span><span class="p">(</span><span class="n">f</span><span class="p">)).</span><span class="n">ToArray</span><span class="p">();</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-08-removeface'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-08-removeface'>#</a>
+      </div>
+      <h2>RemoveFace</h2>
+<p>Removes a face from the mesh without affecting the remaining geometry.</p>
+<p>Ensures that the topology of the halfedge mesh remains fully intact.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>index</em>: The index of the face to be removed.</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">void</span> <span class="nf">RemoveFace</span><span class="p">(</span><span class="kt">int</span> <span class="n">index</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">int</span><span class="p">[]</span> <span class="n">fhs</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">GetHalfedges</span><span class="p">(</span><span class="n">index</span><span class="p">);</span>
+            <span class="k">foreach</span> <span class="p">(</span><span class="kt">int</span> <span class="n">h</span> <span class="k">in</span> <span class="n">fhs</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">IsBoundary</span><span class="p">(</span><span class="n">h</span><span class="p">))</span> <span class="p">{</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">RemovePairHelper</span><span class="p">(</span><span class="n">h</span><span class="p">);</span> <span class="p">}</span>
+                <span class="k">else</span> <span class="p">{</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">=</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span> <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="k">this</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="p">=</span> <span class="n">PlanktonFace</span><span class="p">.</span><span class="n">Unset</span><span class="p">;</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-09-index'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-09-index'>#</a>
+      </div>
+      <h2>index</h2>
+<p>Returns the face at the given index.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>index</em>: 
+Index of face to get.
+Must be larger than or equal to zero and smaller than the Face Count of the mesh.</li>
+</ul>
+<h3>Returns</h3>
+<p>The face at the given index.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="n">PlanktonFace</span> <span class="k">this</span><span class="p">[</span><span class="kt">int</span> <span class="n">index</span><span class="p">]</span>
+        <span class="p">{</span>
+            <span class="k">get</span>
+            <span class="p">{</span>
+                <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">_list</span><span class="p">[</span><span class="n">index</span><span class="p">];</span>
+            <span class="p">}</span>
+            <span class="k">internal</span> <span class="k">set</span>
+            <span class="p">{</span>
+                <span class="k">this</span><span class="p">.</span><span class="n">_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="p">=</span> <span class="k">value</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="cp">#endregion</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section internal' id='section-10-compacthelper'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10-compacthelper'>#</a>
+      </div>
+      <h2>CompactHelper</h2>
+<p>Helper method to remove dead faces from the list, re-index and compact.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">internal</span> <span class="k">void</span> <span class="nf">CompactHelper</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="kt">int</span> <span class="n">marker</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="c1">// Location where the current face should be moved to</span>
+
+            <span class="c1">// Run through all the faces</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">iter</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">iter</span> <span class="p">&lt;</span> <span class="n">_list</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span> <span class="n">iter</span><span class="p">++)</span>
+            <span class="p">{</span>
+                <span class="c1">// If face is alive, check if we need to shuffle it down the list</span>
+                <span class="k">if</span> <span class="p">(!</span><span class="n">_list</span><span class="p">[</span><span class="n">iter</span><span class="p">].</span><span class="n">IsUnused</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">marker</span> <span class="p">&lt;</span> <span class="n">iter</span><span class="p">)</span>
+                    <span class="p">{</span>
+                        <span class="c1">// Room to shuffle. Copy current face to marked slot.</span>
+                        <span class="n">_list</span><span class="p">[</span><span class="n">marker</span><span class="p">]</span> <span class="p">=</span> <span class="n">_list</span><span class="p">[</span><span class="n">iter</span><span class="p">];</span>
+
+                        <span class="c1">// Update all halfedges which are adjacent</span>
+                        <span class="kt">int</span> <span class="n">first</span> <span class="p">=</span> <span class="n">_list</span><span class="p">[</span><span class="n">marker</span><span class="p">].</span><span class="n">FirstHalfedge</span><span class="p">;</span>
+                        <span class="k">foreach</span> <span class="p">(</span><span class="kt">int</span> <span class="n">h</span> <span class="k">in</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">GetFaceCirculator</span><span class="p">(</span><span class="n">first</span><span class="p">))</span>
+                        <span class="p">{</span>
+                            <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">=</span> <span class="n">marker</span><span class="p">;</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                    <span class="n">marker</span><span class="p">++;</span> <span class="c1">// That spot&#39;s filled. Advance the marker.</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+            <span class="c1">// Trim list down to new size</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">marker</span> <span class="p">&lt;</span> <span class="n">_list</span><span class="p">.</span><span class="n">Count</span><span class="p">)</span> <span class="p">{</span> <span class="n">_list</span><span class="p">.</span><span class="n">RemoveRange</span><span class="p">(</span><span class="n">marker</span><span class="p">,</span> <span class="n">_list</span><span class="p">.</span><span class="n">Count</span> <span class="p">-</span> <span class="n">marker</span><span class="p">);</span> <span class="p">}</span>
+        <span class="p">}</span>
+        
+        <span class="cp">#region traversals</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section internal' id='section-11-[missing]'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11-[missing]'>#</a>
+      </div>
+      <h2>[missing]</h2>
+<p>Traverses the halfedge indices which bound a face.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>f</em>: A face index.</li>
+</ul>
+<h3>Returns</h3>
+<p>An enumerable of halfedge indices incident to the specified face.
+Ordered anticlockwise around the face.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="na">        [Obsolete(&quot;GetHalfedgesCirculator(int) is deprecated, please use&quot; +</span>
+<span class="na">            &quot;Halfedges.GetFaceCirculator(int) instead.&quot;)]</span>
+        <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">GetHalfedgesCirculator</span><span class="p">(</span><span class="kt">int</span> <span class="n">f</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">int</span> <span class="n">he_first</span> <span class="p">=</span> <span class="k">this</span><span class="p">[</span><span class="n">f</span><span class="p">].</span><span class="n">FirstHalfedge</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">he_first</span> <span class="p">&lt;</span> <span class="m">0</span><span class="p">)</span> <span class="k">yield</span> <span class="k">break</span><span class="p">;</span> <span class="c1">// face has no connectivity, exit</span>
+            <span class="kt">int</span> <span class="n">he_current</span> <span class="p">=</span> <span class="n">he_first</span><span class="p">;</span>
+            <span class="k">do</span>
+            <span class="p">{</span>
+                <span class="k">yield</span> <span class="k">return</span> <span class="n">he_current</span><span class="p">;</span>
+                <span class="n">he_current</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">he_current</span><span class="p">].</span><span class="n">NextHalfedge</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">he_current</span> <span class="p">!=</span> <span class="n">he_first</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="cp">#endregion</span>
+
+        <span class="cp">#region adjacency queries</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-12-gethalfedges'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12-gethalfedges'>#</a>
+      </div>
+      <h2>GetHalfedges</h2>
+<p>Gets the halfedges which bound a face.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>f</em>: A face index.</li>
+</ul>
+<h3>Returns</h3>
+<p>The indices of halfedges incident to a particular face.
+Ordered anticlockwise around the face.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span><span class="p">[]</span> <span class="nf">GetHalfedges</span><span class="p">(</span><span class="kt">int</span> <span class="n">f</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">GetFaceCirculator</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="n">f</span><span class="p">].</span><span class="n">FirstHalfedge</span><span class="p">).</span><span class="n">ToArray</span><span class="p">();</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-13-getfacevertices'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13-getfacevertices'>#</a>
+      </div>
+      <h2>GetFaceVertices</h2>
+<p>Gets vertex indices of a face.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>f</em>: A face index.</li>
+</ul>
+<h3>Returns</h3>
+<p>An array of vertex indices incident to the specified face.
+Ordered anticlockwise around the face.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span><span class="p">[]</span> <span class="nf">GetFaceVertices</span><span class="p">(</span><span class="kt">int</span> <span class="n">f</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">GetFaceCirculator</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="n">f</span><span class="p">].</span><span class="n">FirstHalfedge</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">h</span> <span class="p">=&gt;</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">).</span><span class="n">ToArray</span><span class="p">();</span>
+        <span class="p">}</span>
+
+<span class="na">        [Obsolete(&quot;GetVertices is deprecated, please use GetFaceVertices instead.&quot;)]</span>
+        <span class="k">public</span> <span class="kt">int</span><span class="p">[]</span> <span class="nf">GetVertices</span><span class="p">(</span><span class="kt">int</span> <span class="n">f</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">GetFaceVertices</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="cp">#endregion</span>
+
+        <span class="cp">#region Euler operators</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-14-splitface'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14-splitface'>#</a>
+      </div>
+      <h2>SplitFace</h2>
+<p>Split a face into two faces by inserting a new edge</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>to</em>: The index of a second halfedge adjacent to the face to split.
+The new edge will end at the start of this halfedge.</li>
+<li><em>from</em>: The index of a halfedge adjacent to the face to split.
+The new edge will begin at the start of this halfedge.</li>
+</ul>
+<h3>Returns</h3>
+<p>The index of one of the newly created halfedges, or -1 on failure.
+The returned halfedge will be adjacent to the pre-existing face.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="nf">SplitFace</span><span class="p">(</span><span class="kt">int</span> <span class="n">to</span><span class="p">,</span> <span class="kt">int</span> <span class="k">from</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="c1">// split the adjacent face in 2</span>
+            <span class="c1">// by creating a new edge from the start of the given halfedge</span>
+            <span class="c1">// to another vertex around the face</span>
+
+            <span class="kt">var</span> <span class="n">hs</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">;</span>
+
+            <span class="c1">// check preconditions</span>
+            <span class="kt">int</span> <span class="n">existing_face</span> <span class="p">=</span> <span class="n">hs</span><span class="p">[</span><span class="k">from</span><span class="p">].</span><span class="n">AdjacentFace</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">existing_face</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span> <span class="p">||</span> <span class="n">existing_face</span> <span class="p">!=</span> <span class="n">hs</span><span class="p">[</span><span class="n">to</span><span class="p">].</span><span class="n">AdjacentFace</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span> <span class="p">}</span>
+            <span class="k">if</span> <span class="p">(</span><span class="k">from</span> <span class="p">==</span> <span class="n">to</span> <span class="p">||</span> <span class="n">hs</span><span class="p">[</span><span class="k">from</span><span class="p">].</span><span class="n">NextHalfedge</span> <span class="p">==</span> <span class="n">to</span> <span class="p">||</span> <span class="n">hs</span><span class="p">[</span><span class="n">to</span><span class="p">].</span><span class="n">NextHalfedge</span> <span class="p">==</span> <span class="k">from</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span> <span class="p">}</span>
+
+            <span class="c1">// add the new halfedge pair</span>
+            <span class="kt">int</span> <span class="n">new_halfedge1</span> <span class="p">=</span> <span class="n">hs</span><span class="p">.</span><span class="n">AddPair</span><span class="p">(</span><span class="n">hs</span><span class="p">[</span><span class="k">from</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">,</span> <span class="n">hs</span><span class="p">[</span><span class="n">to</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">,</span> <span class="n">existing_face</span><span class="p">);</span>
+            <span class="kt">int</span> <span class="n">new_halfedge2</span> <span class="p">=</span> <span class="n">hs</span><span class="p">.</span><span class="n">GetPairHalfedge</span><span class="p">(</span><span class="n">new_halfedge1</span><span class="p">);</span>
+
+            <span class="c1">// add a new face</span>
+            <span class="c1">//PlanktonFace new_face = new PlanktonFace();</span>
+            <span class="kt">int</span> <span class="n">new_face_index</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">PlanktonFace</span><span class="p">.</span><span class="n">Unset</span><span class="p">);</span>
+
+            <span class="c1">//link everything up</span>
+
+            <span class="c1">//prev of input he becomes prev of new_he1</span>
+            <span class="n">hs</span><span class="p">.</span><span class="n">MakeConsecutive</span><span class="p">(</span><span class="n">hs</span><span class="p">[</span><span class="k">from</span><span class="p">].</span><span class="n">PrevHalfedge</span><span class="p">,</span> <span class="n">new_halfedge1</span><span class="p">);</span>
+
+            <span class="c1">//prev of he_around becomes prev of new_he2</span>
+            <span class="n">hs</span><span class="p">.</span><span class="n">MakeConsecutive</span><span class="p">(</span><span class="n">hs</span><span class="p">[</span><span class="n">to</span><span class="p">].</span><span class="n">PrevHalfedge</span><span class="p">,</span> <span class="n">new_halfedge2</span><span class="p">);</span>
+            
+            <span class="c1">//next of new_he1 becomes he_around</span>
+            <span class="n">hs</span><span class="p">.</span><span class="n">MakeConsecutive</span><span class="p">(</span><span class="n">new_halfedge1</span><span class="p">,</span> <span class="n">to</span><span class="p">);</span>
+
+            <span class="c1">//next of new_he2 becomes index</span>
+            <span class="n">hs</span><span class="p">.</span><span class="n">MakeConsecutive</span><span class="p">(</span><span class="n">new_halfedge2</span><span class="p">,</span> <span class="k">from</span><span class="p">);</span>
+
+            <span class="c1">//set the original face&#39;s first halfedge to new_he1</span>
+            <span class="k">this</span><span class="p">[</span><span class="n">existing_face</span><span class="p">].</span><span class="n">FirstHalfedge</span> <span class="p">=</span> <span class="n">new_halfedge1</span><span class="p">;</span>
+            <span class="c1">//set the new face&#39;s first halfedge to new_he2</span>
+            <span class="k">this</span><span class="p">[</span><span class="n">new_face_index</span><span class="p">].</span><span class="n">FirstHalfedge</span> <span class="p">=</span> <span class="n">new_halfedge2</span><span class="p">;</span>
+            
+            <span class="c1">//set adjface of new face loop</span>
+            <span class="k">foreach</span> <span class="p">(</span><span class="kt">int</span> <span class="n">h</span> <span class="k">in</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">GetFaceCirculator</span><span class="p">(</span><span class="n">new_halfedge2</span><span class="p">))</span>
+            <span class="p">{</span>
+                <span class="n">hs</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">=</span> <span class="n">new_face_index</span><span class="p">;</span>
+            <span class="p">}</span>
+
+            <span class="c1">//think thats all of it!           </span>
+
+            <span class="k">return</span> <span class="n">new_halfedge1</span><span class="p">;</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-15-mergefaces'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15-mergefaces'>#</a>
+      </div>
+      <h2>MergeFaces</h2>
+<p>Merges the two faces incident to the specified halfedge pair.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>index</em>: The index of a halfedge inbetween the two faces to merge.
+The face adjacent to this halfedge will be retained.</li>
+</ul>
+<h3>Returns</h3>
+<p>The successor of <em>index</em> around the face, or -1 on failure.</p>
+<h3>Remarks</h3>
+<p>The invariant  will return a,
+leaving the mesh unchanged.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="nf">MergeFaces</span><span class="p">(</span><span class="kt">int</span> <span class="n">index</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">var</span> <span class="n">hs</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">;</span>
+            <span class="kt">int</span> <span class="n">pair</span> <span class="p">=</span> <span class="n">hs</span><span class="p">.</span><span class="n">GetPairHalfedge</span><span class="p">(</span><span class="n">index</span><span class="p">);</span>
+            <span class="kt">int</span> <span class="n">face</span> <span class="p">=</span> <span class="n">hs</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="n">AdjacentFace</span><span class="p">;</span>
+            <span class="kt">int</span> <span class="n">pair_face</span> <span class="p">=</span> <span class="n">hs</span><span class="p">[</span><span class="n">pair</span><span class="p">].</span><span class="n">AdjacentFace</span><span class="p">;</span>
+
+            <span class="c1">// Check for a face on both sides</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">face</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span> <span class="p">||</span> <span class="n">pair_face</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span> <span class="p">}</span>
+
+            <span class="c1">// Both vertices incident to given halfedge must have valence &gt; 2</span>
+            <span class="k">if</span> <span class="p">(</span><span class="m">3</span> <span class="p">&gt;</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">GetHalfedges</span><span class="p">(</span><span class="n">hs</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">).</span><span class="n">Length</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span> <span class="p">}</span>
+            <span class="k">if</span> <span class="p">(</span><span class="m">3</span> <span class="p">&gt;</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">GetHalfedges</span><span class="p">(</span><span class="n">hs</span><span class="p">[</span><span class="n">pair</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">).</span><span class="n">Length</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span> <span class="p">}</span>
+
+            <span class="c1">// Make combined face halfedges consecutive</span>
+            <span class="kt">int</span> <span class="n">index_prev</span> <span class="p">=</span> <span class="n">hs</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="n">PrevHalfedge</span><span class="p">;</span>
+            <span class="kt">int</span> <span class="n">index_next</span> <span class="p">=</span> <span class="n">hs</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="n">NextHalfedge</span><span class="p">;</span>
+
+            <span class="c1">// Remove halfedges (handles re-linking at ends and re-assigning vertices&#39; outgoing hes)</span>
+            <span class="n">hs</span><span class="p">.</span><span class="n">RemovePairHelper</span><span class="p">(</span><span class="n">index</span><span class="p">);</span>
+
+            <span class="c1">// Update retained face&#39;s first halfedge, if necessary</span>
+            <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="n">face</span><span class="p">].</span><span class="n">FirstHalfedge</span> <span class="p">==</span> <span class="n">index</span><span class="p">)</span>
+                <span class="k">this</span><span class="p">[</span><span class="n">face</span><span class="p">].</span><span class="n">FirstHalfedge</span> <span class="p">=</span> <span class="n">index_next</span><span class="p">;</span>
+
+            <span class="c1">// Go around the dead face, reassigning adjacency</span>
+            <span class="k">foreach</span> <span class="p">(</span><span class="kt">int</span> <span class="n">h</span> <span class="k">in</span> <span class="n">hs</span><span class="p">.</span><span class="n">GetFaceCirculator</span><span class="p">(</span><span class="n">index_next</span><span class="p">))</span>
+            <span class="p">{</span>
+                <span class="n">hs</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">=</span> <span class="n">face</span><span class="p">;</span>
+            <span class="p">}</span>
+
+            <span class="c1">// Keep the adjacent face, but remove the pair&#39;s adjacent face</span>
+            <span class="k">this</span><span class="p">[</span><span class="n">pair_face</span><span class="p">]</span> <span class="p">=</span> <span class="n">PlanktonFace</span><span class="p">.</span><span class="n">Unset</span><span class="p">;</span>
+
+            <span class="k">return</span> <span class="n">index_next</span><span class="p">;</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-16-stellate'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16-stellate'>#</a>
+      </div>
+      <h2>Stellate</h2>
+<p>Divides an n-sided face into n triangles, adding a new vertex in the center of the face.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>index</em>: The index of the face to stellate</li>
+</ul>
+<h3>Returns</h3>
+<p>The index of the central vertex</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="nf">Stellate</span><span class="p">(</span><span class="kt">int</span> <span class="n">f</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">int</span> <span class="n">central_vertex</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">GetFaceCenter</span><span class="p">(</span><span class="n">f</span><span class="p">));</span>
+            <span class="kt">int</span> <span class="n">CountBefore</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">Count</span><span class="p">();</span>
+            <span class="kt">int</span><span class="p">[]</span> <span class="n">FaceHalfEdges</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">GetHalfedges</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">FaceHalfEdges</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+            <span class="p">{</span>    
+                <span class="kt">int</span> <span class="n">ThisHalfEdge</span> <span class="p">=</span> <span class="n">FaceHalfEdges</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+                <span class="kt">int</span> <span class="n">TriangleFace</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="p">==</span> <span class="m">0</span><span class="p">)</span> <span class="p">{</span><span class="n">TriangleFace</span> <span class="p">=</span> <span class="n">f</span><span class="p">;}</span>
+                <span class="k">else</span> <span class="p">{</span><span class="n">TriangleFace</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">PlanktonFace</span><span class="p">.</span><span class="n">Unset</span><span class="p">);}</span>                
+                <span class="k">this</span><span class="p">[</span><span class="n">TriangleFace</span><span class="p">].</span><span class="n">FirstHalfedge</span> <span class="p">=</span> <span class="n">ThisHalfEdge</span><span class="p">;</span>
+                <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">ThisHalfEdge</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">=</span> <span class="n">TriangleFace</span><span class="p">;</span>
+                <span class="kt">int</span> <span class="n">OutSpoke</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">AddPair</span><span class="p">(</span><span class="n">central_vertex</span><span class="p">,</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">ThisHalfEdge</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">,</span> <span class="n">TriangleFace</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="p">==</span> <span class="m">0</span><span class="p">)</span> <span class="p">{</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Vertices</span><span class="p">[</span><span class="n">central_vertex</span><span class="p">].</span><span class="n">OutgoingHalfedge</span> <span class="p">=</span> <span class="n">OutSpoke</span><span class="p">;</span> <span class="p">}</span>
+                <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">MakeConsecutive</span><span class="p">(</span><span class="n">OutSpoke</span><span class="p">,</span><span class="n">ThisHalfEdge</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">FaceHalfEdges</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+            <span class="p">{</span>
+                <span class="kt">int</span> <span class="n">ThisHalfEdge</span> <span class="p">=</span> <span class="n">FaceHalfEdges</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="p">&lt;</span><span class="n">FaceHalfEdges</span><span class="p">.</span><span class="n">Length</span><span class="p">-</span><span class="m">1</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="c1">//link the edge to the ingoing spoke, and the ingoing spoke to the outgoing one</span>
+                    <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">MakeConsecutive</span><span class="p">(</span><span class="n">ThisHalfEdge</span><span class="p">,</span> <span class="n">CountBefore</span> <span class="p">+</span> <span class="n">i</span><span class="p">*</span><span class="m">2</span> <span class="p">+</span> <span class="m">3</span><span class="p">);</span>
+                    <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">MakeConsecutive</span><span class="p">(</span><span class="n">CountBefore</span> <span class="p">+</span> <span class="p">(</span><span class="n">i</span><span class="p">*</span><span class="m">2</span><span class="p">)</span> <span class="p">+</span> <span class="m">3</span><span class="p">,</span> <span class="n">CountBefore</span> <span class="p">+</span> <span class="p">(</span><span class="n">i</span><span class="p">*</span><span class="m">2</span><span class="p">));</span>
+                    <span class="c1">//set the AdjacentFace of the ingoing spoke                </span>
+                    <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">CountBefore</span> <span class="p">+</span> <span class="p">(</span><span class="n">i</span> <span class="p">*</span> <span class="m">2</span><span class="p">)</span> <span class="p">+</span> <span class="m">3</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">ThisHalfEdge</span><span class="p">].</span><span class="n">AdjacentFace</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">else</span>
+                <span class="p">{</span>
+                    <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">MakeConsecutive</span><span class="p">(</span><span class="n">ThisHalfEdge</span><span class="p">,</span> <span class="n">CountBefore</span> <span class="p">+</span> <span class="m">1</span><span class="p">);</span>
+                    <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">MakeConsecutive</span><span class="p">(</span><span class="n">CountBefore</span> <span class="p">+</span> <span class="m">1</span><span class="p">,</span> <span class="n">CountBefore</span> <span class="p">+</span> <span class="p">(</span><span class="n">i</span><span class="p">*</span><span class="m">2</span><span class="p">));</span>
+                    <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">CountBefore</span> <span class="p">+</span> <span class="m">1</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">ThisHalfEdge</span><span class="p">].</span><span class="n">AdjacentFace</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>            
+            <span class="k">return</span> <span class="n">central_vertex</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="cp">#endregion</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-17-getfacecenter'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-17-getfacecenter'>#</a>
+      </div>
+      <h2>GetFaceCenter</h2>
+<p>Gets the barycenter of a face's vertices.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>f</em>: A face index.</li>
+</ul>
+<h3>Returns</h3>
+<p>The location of the specified face's barycenter.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="n">PlanktonXYZ</span> <span class="nf">GetFaceCenter</span><span class="p">(</span><span class="kt">int</span> <span class="n">f</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">PlanktonXYZ</span> <span class="n">centroid</span> <span class="p">=</span> <span class="n">PlanktonXYZ</span><span class="p">.</span><span class="n">Zero</span><span class="p">;</span>
+            <span class="kt">int</span> <span class="n">count</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+            <span class="k">foreach</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="k">in</span> <span class="k">this</span><span class="p">.</span><span class="n">GetFaceVertices</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+            <span class="p">{</span>
+                <span class="n">centroid</span> <span class="p">+=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Vertices</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">ToXYZ</span><span class="p">();</span>
+                <span class="n">count</span><span class="p">++;</span>
+            <span class="p">}</span>
+            <span class="n">centroid</span> <span class="p">*=</span> <span class="m">1f</span> <span class="p">/</span> <span class="n">count</span><span class="p">;</span>
+            <span class="k">return</span> <span class="n">centroid</span><span class="p">;</span>
+        <span class="p">}</span>
+<span class="na">        </span>
+<span class="na">        [Obsolete(&quot;FaceCentroid is deprecated, please use GetFaceCenter instead.&quot;)]</span>
+        <span class="k">public</span> <span class="n">PlanktonXYZ</span> <span class="nf">FaceCentroid</span><span class="p">(</span><span class="kt">int</span> <span class="n">f</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">GetFaceCenter</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-18-nakededgecount'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-18-nakededgecount'>#</a>
+      </div>
+      <h2>NakedEdgeCount</h2>
+<p>Gets the number of naked edges which bound this face.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>f</em>: A face index.</li>
+</ul>
+<h3>Returns</h3>
+<p>The number of halfedges for which the opposite halfedge has no face (i.e. adjacent face index is -1).</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="nf">NakedEdgeCount</span><span class="p">(</span><span class="kt">int</span> <span class="n">f</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">int</span> <span class="n">nakedCount</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+            <span class="k">foreach</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="k">in</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">GetFaceCirculator</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="n">f</span><span class="p">].</span><span class="n">FirstHalfedge</span><span class="p">))</span>
+            <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">GetPairHalfedge</span><span class="p">(</span><span class="n">i</span><span class="p">)].</span><span class="n">AdjacentFace</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span><span class="p">)</span> <span class="n">nakedCount</span><span class="p">++;</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">nakedCount</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="cp">#endregion</span>
+        
+        <span class="cp">#region IEnumerable implementation</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-19-getenumerator'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-19-getenumerator'>#</a>
+      </div>
+      <h2>GetEnumerator</h2>
+<p>Gets an enumerator that yields all faces in this collection.</p>
+<h3>Returns</h3>
+<p>An enumerator.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="n">IEnumerator</span><span class="p">&lt;</span><span class="n">PlanktonFace</span><span class="p">&gt;</span> <span class="n">GetEnumerator</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">_list</span><span class="p">.</span><span class="n">GetEnumerator</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="n">IEnumerator</span> <span class="n">IEnumerable</span><span class="p">.</span><span class="n">GetEnumerator</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">GetEnumerator</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="cp">#endregion</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

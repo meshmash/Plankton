@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>PlanktonVertexList.cs</title>
+  <link rel="stylesheet" href="../../pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  
+  <div id="jump_to">
+    Jump To &hellip;
+    <div id="jump_wrapper">
+      <div id="jump_page">
+          <a class="source" href="/Users/Will/Code/GitHub/Plankton/docs/src/Plankton/PlanktonFace.html">src/Plankton/PlanktonFace.cs</a>
+          <a class="source" href="/Users/Will/Code/GitHub/Plankton/docs/src/Plankton/PlanktonFaceList.html">src/Plankton/PlanktonFaceList.cs</a>
+          <a class="source" href="/Users/Will/Code/GitHub/Plankton/docs/src/Plankton/PlanktonHalfedge.html">src/Plankton/PlanktonHalfedge.cs</a>
+          <a class="source" href="/Users/Will/Code/GitHub/Plankton/docs/src/Plankton/PlanktonHalfedgeList.html">src/Plankton/PlanktonHalfedgeList.cs</a>
+          <a class="source" href="/Users/Will/Code/GitHub/Plankton/docs/src/Plankton/PlanktonMesh.html">src/Plankton/PlanktonMesh.cs</a>
+          <a class="source" href="/Users/Will/Code/GitHub/Plankton/docs/src/Plankton/PlanktonVertex.html">src/Plankton/PlanktonVertex.cs</a>
+          <a class="source" href="/Users/Will/Code/GitHub/Plankton/docs/src/Plankton/PlanktonVertexList.html">src/Plankton/PlanktonVertexList.cs</a>
+          <a class="source" href="/Users/Will/Code/GitHub/Plankton/docs/src/Plankton/PlanktonXYZ.html">src/Plankton/PlanktonXYZ.cs</a>
+      </div>
+    </div>
+  </div>
+  
+  <div class='section'>
+    <div class='docs'><h1>PlanktonVertexList.cs</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section public' id='section-00-planktonvertexlist'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-00-planktonvertexlist'>#</a>
+      </div>
+      <h2>PlanktonVertexList</h2>
+<p>Provides access to the vertices and Vertex related functionality of a Mesh.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">ï</span><span class="err">»¿</span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Collections</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Linq</span><span class="p">;</span>
+
+<span class="k">namespace</span> <span class="nn">Plankton</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">class</span> <span class="nc">PlanktonVertexList</span> <span class="p">:</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">PlanktonVertex</span><span class="p">&gt;</span>
+    <span class="p">{</span>
+        <span class="k">private</span> <span class="k">readonly</span> <span class="n">PlanktonMesh</span> <span class="n">_mesh</span><span class="p">;</span>
+        <span class="k">private</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">PlanktonVertex</span><span class="p">&gt;</span> <span class="n">_list</span><span class="p">;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section internal' id='section-01-planktonvertexlist'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-01-planktonvertexlist'>#</a>
+      </div>
+      <h2>PlanktonVertexList</h2>
+<p>Initializes a new instance of the <a href="PlanktonVertexList.html">PlanktonVertexList.cs</a> class.
+Should be called from the mesh constructor.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>owner</em>: The mesh to which this list of vertices belongs.</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">internal</span> <span class="nf">PlanktonVertexList</span><span class="p">(</span><span class="n">PlanktonMesh</span> <span class="n">owner</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="n">_list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">PlanktonVertex</span><span class="p">&gt;();</span>
+            <span class="k">this</span><span class="p">.</span><span class="n">_mesh</span> <span class="p">=</span> <span class="n">owner</span><span class="p">;</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-02-count'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-02-count'>#</a>
+      </div>
+      <h2>Count</h2>
+<p>Gets the number of vertices.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="n">Count</span>
+        <span class="p">{</span>
+            <span class="k">get</span>
+            <span class="p">{</span>
+                <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">_list</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        
+        <span class="cp">#region methods</span>
+        <span class="cp">#region vertex access</span>
+        <span class="cp">#region adding</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section internal' id='section-03-add'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-03-add'>#</a>
+      </div>
+      <h2>Add</h2>
+<p>Adds a new vertex to the end of the Vertex list.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>vertex</em>: Vertex to add.</li>
+</ul>
+<h3>Returns</h3>
+<p>The index of the newly added vertex.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">internal</span> <span class="kt">int</span> <span class="nf">Add</span><span class="p">(</span><span class="n">PlanktonVertex</span> <span class="n">vertex</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">vertex</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span> <span class="k">return</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span>
+            <span class="k">this</span><span class="p">.</span><span class="n">_list</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">vertex</span><span class="p">);</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">Count</span> <span class="p">-</span> <span class="m">1</span><span class="p">;</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section internal' id='section-04-add'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-04-add'>#</a>
+      </div>
+      <h2>Add</h2>
+<p>Adds a new vertex to the end of the Vertex list.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>vertex</em>: Vertex to add.</li>
+</ul>
+<h3>Returns</h3>
+<p>The index of the newly added vertex.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">internal</span> <span class="kt">int</span> <span class="nf">Add</span><span class="p">(</span><span class="n">PlanktonXYZ</span> <span class="n">vertex</span><span class="p">)</span>
+        <span class="p">{</span>            
+            <span class="k">this</span><span class="p">.</span><span class="n">_list</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">PlanktonVertex</span><span class="p">(</span><span class="n">vertex</span><span class="p">.</span><span class="n">X</span><span class="p">,</span><span class="n">vertex</span><span class="p">.</span><span class="n">Y</span><span class="p">,</span><span class="n">vertex</span><span class="p">.</span><span class="n">Z</span><span class="p">));</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">Count</span> <span class="p">-</span> <span class="m">1</span><span class="p">;</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-05-add'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-05-add'>#</a>
+      </div>
+      <h2>Add</h2>
+<p>Adds a new vertex to the end of the Vertex list.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>x</em>: X component of new vertex coordinate.</li>
+<li><em>y</em>: Y component of new vertex coordinate.</li>
+<li><em>z</em>: Z component of new vertex coordinate.</li>
+</ul>
+<h3>Returns</h3>
+<p>The index of the newly added vertex.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="nf">Add</span><span class="p">(</span><span class="kt">double</span> <span class="n">x</span><span class="p">,</span> <span class="kt">double</span> <span class="n">y</span><span class="p">,</span> <span class="kt">double</span> <span class="n">z</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">PlanktonVertex</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">));</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-06-add'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-06-add'>#</a>
+      </div>
+      <h2>Add</h2>
+<p>Adds a new vertex to the end of the Vertex list.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>x</em>: X component of new vertex coordinate.</li>
+<li><em>y</em>: Y component of new vertex coordinate.</li>
+<li><em>z</em>: Z component of new vertex coordinate.</li>
+</ul>
+<h3>Returns</h3>
+<p>The index of the newly added vertex.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="nf">Add</span><span class="p">(</span><span class="kt">float</span> <span class="n">x</span><span class="p">,</span> <span class="kt">float</span> <span class="n">y</span><span class="p">,</span> <span class="kt">float</span> <span class="n">z</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">PlanktonVertex</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="cp">#endregion</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-07-addvertices'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-07-addvertices'>#</a>
+      </div>
+      <h2>AddVertices</h2>
+<p>Adds a series of new vertices to the end of the vertex list.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>vertices</em>: A list, an array or any enumerable set of .</li>
+</ul>
+<h3>Returns</h3>
+<p>Indices of the newly created vertices.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span><span class="p">[]</span> <span class="nf">AddVertices</span><span class="p">(</span><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">PlanktonXYZ</span><span class="p">&gt;</span> <span class="n">vertices</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">vertices</span><span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">v</span> <span class="p">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">v</span><span class="p">)).</span><span class="n">ToArray</span><span class="p">();</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-08-index'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-08-index'>#</a>
+      </div>
+      <h2>index</h2>
+<p>Returns the vertex at the given index.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>index</em>: 
+Index of vertex to get.
+Must be larger than or equal to zero and smaller than the Vertex Count of the mesh.</li>
+</ul>
+<h3>Returns</h3>
+<p>The vertex at the given index.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="n">PlanktonVertex</span> <span class="k">this</span><span class="p">[</span><span class="kt">int</span> <span class="n">index</span><span class="p">]</span>
+        <span class="p">{</span>
+            <span class="k">get</span>
+            <span class="p">{</span>
+                <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">_list</span><span class="p">[</span><span class="n">index</span><span class="p">];</span>
+            <span class="p">}</span>
+            <span class="k">internal</span> <span class="k">set</span>
+            <span class="p">{</span>
+                <span class="k">this</span><span class="p">.</span><span class="n">_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="p">=</span> <span class="k">value</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-09-setvertex'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-09-setvertex'>#</a>
+      </div>
+      <h2>SetVertex</h2>
+<p>Sets or adds a vertex to the Vertex List.</p>
+<p>If [index] is less than [Count], the existing vertex at [index] will be modified.</p>
+<p>If [index] equals [Count], a new vertex is appended to the end of the vertex list.</p>
+<p>If [index] is larger than [Count], the function will return false.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>vertexIndex</em>: Index of vertex to set.</li>
+<li><em>x</em>: X component of vertex location.</li>
+<li><em>y</em>: Y component of vertex location.</li>
+<li><em>z</em>: Z component of vertex location.</li>
+</ul>
+<h3>Returns</h3>
+<p>on success,  on failure.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">bool</span> <span class="nf">SetVertex</span><span class="p">(</span><span class="kt">int</span> <span class="n">vertexIndex</span><span class="p">,</span> <span class="kt">float</span> <span class="n">x</span><span class="p">,</span> <span class="kt">float</span> <span class="n">y</span><span class="p">,</span> <span class="kt">float</span> <span class="n">z</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">vertexIndex</span> <span class="p">&gt;=</span> <span class="m">0</span> <span class="p">&amp;&amp;</span> <span class="n">vertexIndex</span> <span class="p">&lt;</span> <span class="n">_list</span><span class="p">.</span><span class="n">Count</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="kt">var</span> <span class="n">v</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">_list</span><span class="p">[</span><span class="n">vertexIndex</span><span class="p">];</span>
+                <span class="n">v</span><span class="p">.</span><span class="n">X</span> <span class="p">=</span> <span class="n">x</span><span class="p">;</span>
+                <span class="n">v</span><span class="p">.</span><span class="n">Y</span> <span class="p">=</span> <span class="n">y</span><span class="p">;</span>
+                <span class="n">v</span><span class="p">.</span><span class="n">Z</span> <span class="p">=</span> <span class="n">z</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">vertexIndex</span> <span class="p">==</span> <span class="n">_list</span><span class="p">.</span><span class="n">Count</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">this</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="k">false</span><span class="p">;</span> <span class="p">}</span>
+            
+            <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-10-setvertex'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10-setvertex'>#</a>
+      </div>
+      <h2>SetVertex</h2>
+<p>Sets or adds a vertex to the Vertex List.</p>
+<p>If [index] is less than [Count], the existing vertex at [index] will be modified.</p>
+<p>If [index] equals [Count], a new vertex is appended to the end of the vertex list.</p>
+<p>If [index] is larger than [Count], the function will return false.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>vertexIndex</em>: Index of vertex to set.</li>
+<li><em>x</em>: X component of vertex location.</li>
+<li><em>y</em>: Y component of vertex location.</li>
+<li><em>z</em>: Z component of vertex location.</li>
+</ul>
+<h3>Returns</h3>
+<p>on success,  on failure.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">bool</span> <span class="nf">SetVertex</span><span class="p">(</span><span class="kt">int</span> <span class="n">vertexIndex</span><span class="p">,</span> <span class="kt">double</span> <span class="n">x</span><span class="p">,</span> <span class="kt">double</span> <span class="n">y</span><span class="p">,</span> <span class="kt">double</span> <span class="n">z</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">vertexIndex</span> <span class="p">&gt;=</span> <span class="m">0</span> <span class="p">&amp;&amp;</span> <span class="n">vertexIndex</span> <span class="p">&lt;</span> <span class="n">_list</span><span class="p">.</span><span class="n">Count</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="kt">var</span> <span class="n">v</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">_list</span><span class="p">[</span><span class="n">vertexIndex</span><span class="p">];</span>
+                <span class="n">v</span><span class="p">.</span><span class="n">X</span> <span class="p">=</span> <span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">x</span><span class="p">;</span>
+                <span class="n">v</span><span class="p">.</span><span class="n">Y</span> <span class="p">=</span> <span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">y</span><span class="p">;</span>
+                <span class="n">v</span><span class="p">.</span><span class="n">Z</span> <span class="p">=</span> <span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">z</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">vertexIndex</span> <span class="p">==</span> <span class="n">_list</span><span class="p">.</span><span class="n">Count</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">this</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="k">false</span><span class="p">;</span> <span class="p">}</span>
+            
+            <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="cp">#endregion</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section internal' id='section-11-compacthelper'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11-compacthelper'>#</a>
+      </div>
+      <h2>CompactHelper</h2>
+<p>Helper method to remove dead vertices from the list, re-index and compact.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">internal</span> <span class="kt">int</span> <span class="nf">CompactHelper</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="kt">int</span> <span class="n">marker</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="c1">// Location where the current vertex should be moved to</span>
+            
+            <span class="c1">// Run through all the vertices</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">iter</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">iter</span> <span class="p">&lt;</span> <span class="n">_list</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span> <span class="n">iter</span><span class="p">++)</span>
+            <span class="p">{</span>
+                <span class="c1">// If vertex is alive, check if we need to shuffle it down the list</span>
+                <span class="k">if</span> <span class="p">(!</span><span class="n">_list</span><span class="p">[</span><span class="n">iter</span><span class="p">].</span><span class="n">IsUnused</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">marker</span> <span class="p">&lt;</span> <span class="n">iter</span><span class="p">)</span>
+                    <span class="p">{</span>
+                        <span class="c1">// Room to shuffle. Copy current vertex to marked slot.</span>
+                        <span class="n">_list</span><span class="p">[</span><span class="n">marker</span><span class="p">]</span> <span class="p">=</span> <span class="n">_list</span><span class="p">[</span><span class="n">iter</span><span class="p">];</span>
+                        
+                        <span class="c1">// Update all halfedges which start here</span>
+                        <span class="kt">int</span> <span class="n">first</span> <span class="p">=</span> <span class="n">_list</span><span class="p">[</span><span class="n">marker</span><span class="p">].</span><span class="n">OutgoingHalfedge</span><span class="p">;</span>
+                        <span class="k">foreach</span> <span class="p">(</span><span class="kt">int</span> <span class="n">h</span> <span class="k">in</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">GetVertexCirculator</span><span class="p">(</span><span class="n">first</span><span class="p">))</span>
+                        <span class="p">{</span>
+                            <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">StartVertex</span> <span class="p">=</span> <span class="n">marker</span><span class="p">;</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                    <span class="n">marker</span><span class="p">++;</span> <span class="c1">// That spot&#39;s filled. Advance the marker.</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            
+            <span class="c1">// Trim list down to new size</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">marker</span> <span class="p">&lt;</span> <span class="n">_list</span><span class="p">.</span><span class="n">Count</span><span class="p">)</span> <span class="p">{</span> <span class="n">_list</span><span class="p">.</span><span class="n">RemoveRange</span><span class="p">(</span><span class="n">marker</span><span class="p">,</span> <span class="n">_list</span><span class="p">.</span><span class="n">Count</span> <span class="p">-</span> <span class="n">marker</span><span class="p">);</span> <span class="p">}</span>
+            
+            <span class="k">return</span> <span class="n">_list</span><span class="p">.</span><span class="n">Count</span> <span class="p">-</span> <span class="n">marker</span><span class="p">;</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-12-cullunused'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12-cullunused'>#</a>
+      </div>
+      <h2>CullUnused</h2>
+<p>Removes all vertices that are currently not used by the Halfedge list.</p>
+<h3>Returns</h3>
+<p>The number of unused vertices that were removed.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="nf">CullUnused</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">CompactHelper</span><span class="p">();</span>
+        <span class="p">}</span>
+        
+        <span class="cp">#region traversals</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-13-[missing]'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13-[missing]'>#</a>
+      </div>
+      <h2>[missing]</h2>
+<p>Traverses the halfedge indices which originate from a vertex.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>v</em>: A vertex index.</li>
+</ul>
+<h3>Returns</h3>
+<p>An enumerable of halfedge indices incident to the specified vertex.
+Ordered clockwise around the vertex.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="na">        [Obsolete(&quot;GetHalfedgesCirculator(int) is deprecated, please use&quot; +</span>
+<span class="na">                  &quot;Halfedges.GetVertexCirculator(int) instead.&quot;)]</span>
+        <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">GetHalfedgesCirculator</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">int</span> <span class="n">he_first</span> <span class="p">=</span> <span class="k">this</span><span class="p">[</span><span class="n">v</span><span class="p">].</span><span class="n">OutgoingHalfedge</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">he_first</span> <span class="p">&lt;</span> <span class="m">0</span><span class="p">)</span> <span class="k">yield</span> <span class="k">break</span><span class="p">;</span> <span class="c1">// vertex has no connectivity, exit</span>
+            <span class="kt">int</span> <span class="n">he_current</span> <span class="p">=</span> <span class="n">he_first</span><span class="p">;</span>
+            <span class="kt">var</span> <span class="n">hs</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">;</span>
+            <span class="k">do</span>
+            <span class="p">{</span>
+                <span class="k">yield</span> <span class="k">return</span> <span class="n">he_current</span><span class="p">;</span>
+                <span class="n">he_current</span> <span class="p">=</span> <span class="n">hs</span><span class="p">[</span><span class="n">hs</span><span class="p">.</span><span class="n">GetPairHalfedge</span><span class="p">(</span><span class="n">he_current</span><span class="p">)].</span><span class="n">NextHalfedge</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">he_current</span> <span class="p">!=</span> <span class="n">he_first</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-14-[missing]'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14-[missing]'>#</a>
+      </div>
+      <h2>[missing]</h2>
+<p>Traverses the halfedge indices which originate from a vertex.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>v</em>: A vertex index.</li>
+<li><em>first</em>: A halfedge index. Halfedge must start at the specified vertex.</li>
+</ul>
+<h3>Returns</h3>
+<p>An enumerable of halfedge indices incident to the specified vertex.
+Ordered clockwise around the vertex.
+The returned enumerable will start with the specified halfedge.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="na">        [Obsolete(&quot;GetHalfedgesCirculator(int,int) is deprecated, please use&quot; +</span>
+<span class="na">            &quot;Halfedges.GetVertexCirculator(int) instead.&quot;)]</span>
+        <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">GetHalfedgesCirculator</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">,</span> <span class="kt">int</span> <span class="n">first</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">first</span><span class="p">].</span><span class="n">StartVertex</span> <span class="p">!=</span> <span class="n">v</span><span class="p">)</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentOutOfRangeException</span><span class="p">(</span><span class="s">&quot;Halfedge does not start at vertex.&quot;</span><span class="p">);</span>
+            <span class="c1">// TODO: The code below is the same as above.</span>
+            <span class="c1">// Can we refactor (without extra, unnecessary iterators)?</span>
+            <span class="kt">int</span> <span class="n">h</span> <span class="p">=</span> <span class="n">first</span><span class="p">;</span>
+            <span class="kt">var</span> <span class="n">hs</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">;</span>
+            <span class="k">do</span>
+            <span class="p">{</span>
+                <span class="k">yield</span> <span class="k">return</span> <span class="n">h</span><span class="p">;</span>
+                <span class="n">h</span> <span class="p">=</span> <span class="n">hs</span><span class="p">[</span><span class="n">hs</span><span class="p">.</span><span class="n">GetPairHalfedge</span><span class="p">(</span><span class="n">h</span><span class="p">)].</span><span class="n">NextHalfedge</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">h</span> <span class="p">!=</span> <span class="n">first</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="cp">#endregion</span>
+
+        <span class="cp">#region adjacency queries</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-15-gethalfedges'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15-gethalfedges'>#</a>
+      </div>
+      <h2>GetHalfedges</h2>
+<p>Gets the halfedges which originate from a vertex.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>v</em>: A vertex index.</li>
+</ul>
+<h3>Returns</h3>
+<p>The indices of halfedges incident to a particular vertex.
+Ordered clockwise around the vertex.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span><span class="p">[]</span> <span class="nf">GetHalfedges</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">GetVertexCirculator</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="n">v</span><span class="p">].</span><span class="n">OutgoingHalfedge</span><span class="p">).</span><span class="n">ToArray</span><span class="p">();</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-16-getincominghalfedges'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16-getincominghalfedges'>#</a>
+      </div>
+      <h2>GetIncomingHalfedges</h2>
+<p>Gets the halfedges which end at a vertex.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>v</em>: A vertex index.</li>
+</ul>
+<h3>Returns</h3>
+<p>The opposing halfedge for each returned by <a href="GetHalfedges(int).html">GetHalfedges(int).cs</a>.
+Ordered clockwise around the vertex.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span><span class="p">[]</span> <span class="nf">GetIncomingHalfedges</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">GetVertexCirculator</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="n">v</span><span class="p">].</span><span class="n">OutgoingHalfedge</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">h</span> <span class="p">=&gt;</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">GetPairHalfedge</span><span class="p">(</span><span class="n">h</span><span class="p">)).</span><span class="n">ToArray</span><span class="p">();</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-17-getvertexneighbours'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-17-getvertexneighbours'>#</a>
+      </div>
+      <h2>GetVertexNeighbours</h2>
+<p>Gets vertex neighbours (a.k.a. 1-ring).</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>f</em>: A vertex index.</li>
+</ul>
+<h3>Returns</h3>
+<p>An array of vertex indices incident to the specified vertex.
+Ordered clockwise around the vertex.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span><span class="p">[]</span> <span class="nf">GetVertexNeighbours</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">var</span> <span class="n">hs</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">;</span>
+            <span class="k">return</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">GetVertexCirculator</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="n">v</span><span class="p">].</span><span class="n">OutgoingHalfedge</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">h</span> <span class="p">=&gt;</span> <span class="n">hs</span><span class="p">[</span><span class="n">hs</span><span class="p">.</span><span class="n">GetPairHalfedge</span><span class="p">(</span><span class="n">h</span><span class="p">)].</span><span class="n">StartVertex</span><span class="p">).</span><span class="n">ToArray</span><span class="p">();</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-18-getvertexfaces'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-18-getvertexfaces'>#</a>
+      </div>
+      <h2>GetVertexFaces</h2>
+<p>Gets faces incident to a vertex.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>v</em>: A vertex index.</li>
+</ul>
+<h3>Returns</h3>
+<p>An array of face indices incident to the specified vertex.
+Ordered clockwise around the vertex</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span><span class="p">[]</span> <span class="nf">GetVertexFaces</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">GetVertexCirculator</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="n">v</span><span class="p">].</span><span class="n">OutgoingHalfedge</span><span class="p">)</span>
+                <span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">h</span> <span class="p">=&gt;</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">AdjacentFace</span><span class="p">).</span><span class="n">ToArray</span><span class="p">();</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-19-getincominghalfedge'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-19-getincominghalfedge'>#</a>
+      </div>
+      <h2>GetIncomingHalfedge</h2>
+<p>Gets the first  halfedge for a vertex.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>v</em>: A vertex index.</li>
+</ul>
+<h3>Returns</h3>
+<p>The index of the halfedge paired with the specified vertex's .</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="nf">GetIncomingHalfedge</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">GetPairHalfedge</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="n">v</span><span class="p">].</span><span class="n">OutgoingHalfedge</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="cp">#endregion</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-20-nakededgecount'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-20-nakededgecount'>#</a>
+      </div>
+      <h2>NakedEdgeCount</h2>
+<p>Gets the number of naked edges incident to this vertex.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>v</em>: A vertex index.</li>
+</ul>
+<h3>Returns</h3>
+<p>The number of incident halfedges which lie on a boundary.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="nf">NakedEdgeCount</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">int</span> <span class="n">nakedCount</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+            <span class="kt">var</span> <span class="n">hs</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">;</span>
+            <span class="k">foreach</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="k">in</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">GetVertexCirculator</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="n">v</span><span class="p">].</span><span class="n">OutgoingHalfedge</span><span class="p">))</span>
+            <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">hs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span> <span class="p">||</span> <span class="n">hs</span><span class="p">[</span><span class="n">hs</span><span class="p">.</span><span class="n">GetPairHalfedge</span><span class="p">(</span><span class="n">i</span><span class="p">)].</span><span class="n">AdjacentFace</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span><span class="p">)</span>
+                    <span class="n">nakedCount</span><span class="p">++;</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">nakedCount</span><span class="p">;</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-21-getvalence'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-21-getvalence'>#</a>
+      </div>
+      <h2>GetValence</h2>
+<p>Gets the number of edges incident to this vertex.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>v</em>: A vertex index.</li>
+</ul>
+<h3>Returns</h3>
+<p>The number of incident edges.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="nf">GetValence</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">int</span> <span class="n">h</span> <span class="p">=</span> <span class="k">this</span><span class="p">[</span><span class="n">v</span><span class="p">].</span><span class="n">OutgoingHalfedge</span><span class="p">;</span>
+            <span class="k">return</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">GetVertexCirculator</span><span class="p">(</span><span class="n">h</span><span class="p">).</span><span class="n">Count</span><span class="p">();</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-22-isboundary'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-22-isboundary'>#</a>
+      </div>
+      <h2>IsBoundary</h2>
+<p>A vertex is on a boundary if its outgoing halfedge has no adjacent face.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>index</em>: The index of a vertex.</li>
+</ul>
+<h3>Returns</h3>
+<p>if the specified vertex is on a boundary; otherwise, .
+Also returns  if the vertex is unused (i.e. no outgoing halfedge).</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">bool</span> <span class="nf">IsBoundary</span><span class="p">(</span><span class="kt">int</span> <span class="n">index</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">int</span> <span class="n">h</span> <span class="p">=</span> <span class="k">this</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="n">OutgoingHalfedge</span><span class="p">;</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">h</span> <span class="p">&lt;</span> <span class="p">-</span><span class="m">1</span> <span class="p">||</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="cp">#region Euler operators</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-23-mergevertices'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-23-mergevertices'>#</a>
+      </div>
+      <h2>MergeVertices</h2>
+<p>Merges two vertices by collapsing the pair of halfedges between them.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>halfedge</em>: The index of a halfedge between the two vertices to be merged.
+The starting vertex of this halfedge will be retained.</li>
+</ul>
+<h3>Returns</h3>
+<p>The successor of <em>index</em> around its vertex, or -1 on failure.</p>
+<h3>Remarks</h3>
+<p>The invariant  will return a,
+leaving the mesh unchanged.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="nf">MergeVertices</span><span class="p">(</span><span class="kt">int</span> <span class="n">halfedge</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">CollapseEdge</span><span class="p">(</span><span class="n">halfedge</span><span class="p">);</span>
+
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-24-splitvertex'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-24-splitvertex'>#</a>
+      </div>
+      <h2>SplitVertex</h2>
+<p>Splits the vertex into two, joined by a new pair of halfedges.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>first</em>: The index of a halfedge which starts at the vertex to split.</li>
+<li><em>second</em>: The index of a second halfedge which starts at the vertex to split.</li>
+</ul>
+<h3>Returns</h3>
+<p>The new halfedge which starts at the existing vertex.</p>
+<h3>Remarks</h3>
+<p>After the split, the <em>second</em> halfedge will be starting at the newly added vertex.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="nf">SplitVertex</span><span class="p">(</span><span class="kt">int</span> <span class="n">first</span><span class="p">,</span> <span class="kt">int</span> <span class="n">second</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">var</span> <span class="n">hs</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">;</span>
+            <span class="c1">// Check that both halfedges start at the same vertex</span>
+            <span class="kt">int</span> <span class="n">v_old</span> <span class="p">=</span> <span class="n">hs</span><span class="p">[</span><span class="n">first</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">v_old</span> <span class="p">!=</span> <span class="n">hs</span><span class="p">[</span><span class="n">second</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span> <span class="p">}</span> <span class="c1">// TODO: return ArgumentException instead?</span>
+
+            <span class="c1">// Create a copy of the existing vertex (user can move it afterwards if needs be)</span>
+            <span class="kt">int</span> <span class="n">v_new</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="n">v_old</span><span class="p">].</span><span class="n">ToXYZ</span><span class="p">());</span> <span class="c1">// copy vertex by converting to XYZ and back</span>
+
+            <span class="c1">// Go around outgoing halfedges, from &#39;second&#39; to just before &#39;first&#39;</span>
+            <span class="c1">// Set start vertex to new vertex</span>
+            <span class="kt">bool</span> <span class="n">reset_v_old</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+            <span class="k">foreach</span> <span class="p">(</span><span class="kt">int</span> <span class="n">h</span> <span class="k">in</span> <span class="n">hs</span><span class="p">.</span><span class="n">GetVertexCirculator</span><span class="p">(</span><span class="n">second</span><span class="p">))</span>
+            <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">h</span> <span class="p">==</span> <span class="n">first</span><span class="p">)</span> <span class="p">{</span> <span class="k">break</span><span class="p">;</span> <span class="p">}</span>
+                <span class="n">hs</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">StartVertex</span> <span class="p">=</span> <span class="n">v_new</span><span class="p">;</span>
+                <span class="c1">// If new vertex has no outgoing yet and current he is naked...</span>
+                <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="n">v_new</span><span class="p">].</span><span class="n">OutgoingHalfedge</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span> <span class="p">&amp;&amp;</span> <span class="n">hs</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span><span class="p">)</span>
+                    <span class="k">this</span><span class="p">[</span><span class="n">v_new</span><span class="p">].</span><span class="n">OutgoingHalfedge</span> <span class="p">=</span> <span class="n">h</span><span class="p">;</span>
+                <span class="c1">// Also check whether existing vert&#39;s he is now incident to new one</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">h</span> <span class="p">==</span> <span class="k">this</span><span class="p">[</span><span class="n">v_old</span><span class="p">].</span><span class="n">OutgoingHalfedge</span><span class="p">)</span> <span class="p">{</span> <span class="n">reset_v_old</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span> <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="c1">// If no naked halfedges, just use &#39;second&#39;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="n">v_new</span><span class="p">].</span><span class="n">OutgoingHalfedge</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span><span class="p">)</span> <span class="p">{</span> <span class="k">this</span><span class="p">[</span><span class="n">v_new</span><span class="p">].</span><span class="n">OutgoingHalfedge</span> <span class="p">=</span> <span class="n">second</span><span class="p">;</span> <span class="p">}</span>
+
+            <span class="c1">// Add the new pair of halfedges from old vertex to new</span>
+            <span class="kt">int</span> <span class="n">h_new</span> <span class="p">=</span> <span class="n">hs</span><span class="p">.</span><span class="n">AddPair</span><span class="p">(</span><span class="n">v_old</span><span class="p">,</span> <span class="n">v_new</span><span class="p">,</span> <span class="n">hs</span><span class="p">[</span><span class="n">second</span><span class="p">].</span><span class="n">AdjacentFace</span><span class="p">);</span>
+            <span class="kt">int</span> <span class="n">h_new_pair</span> <span class="p">=</span> <span class="n">hs</span><span class="p">.</span><span class="n">GetPairHalfedge</span><span class="p">(</span><span class="n">h_new</span><span class="p">);</span>
+            <span class="n">hs</span><span class="p">[</span><span class="n">h_new_pair</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">=</span> <span class="n">hs</span><span class="p">[</span><span class="n">first</span><span class="p">].</span><span class="n">AdjacentFace</span><span class="p">;</span>
+
+            <span class="c1">// Link new pair into mesh</span>
+            <span class="n">hs</span><span class="p">.</span><span class="n">MakeConsecutive</span><span class="p">(</span><span class="n">hs</span><span class="p">[</span><span class="n">first</span><span class="p">].</span><span class="n">PrevHalfedge</span><span class="p">,</span> <span class="n">h_new_pair</span><span class="p">);</span>
+            <span class="n">hs</span><span class="p">.</span><span class="n">MakeConsecutive</span><span class="p">(</span><span class="n">h_new_pair</span><span class="p">,</span> <span class="n">first</span><span class="p">);</span>
+            <span class="n">hs</span><span class="p">.</span><span class="n">MakeConsecutive</span><span class="p">(</span><span class="n">hs</span><span class="p">[</span><span class="n">second</span><span class="p">].</span><span class="n">PrevHalfedge</span><span class="p">,</span> <span class="n">h_new</span><span class="p">);</span>
+            <span class="n">hs</span><span class="p">.</span><span class="n">MakeConsecutive</span><span class="p">(</span><span class="n">h_new</span><span class="p">,</span> <span class="n">second</span><span class="p">);</span>
+
+            <span class="c1">// Re-set existing vertex&#39;s outgoing halfedge, if necessary</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">reset_v_old</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">this</span><span class="p">[</span><span class="n">v_old</span><span class="p">].</span><span class="n">OutgoingHalfedge</span> <span class="p">=</span> <span class="n">h_new</span><span class="p">;</span>
+                <span class="k">foreach</span> <span class="p">(</span><span class="kt">int</span> <span class="n">h</span> <span class="k">in</span> <span class="n">hs</span><span class="p">.</span><span class="n">GetVertexCirculator</span><span class="p">(</span><span class="n">h_new</span><span class="p">))</span>
+                <span class="p">{</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">hs</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span><span class="p">)</span> <span class="p">{</span> <span class="k">this</span><span class="p">[</span><span class="n">v_old</span><span class="p">].</span><span class="n">OutgoingHalfedge</span> <span class="p">=</span> <span class="n">h</span><span class="p">;</span> <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+            <span class="c1">// return the new vertex which starts at the existing vertex</span>
+            <span class="k">return</span> <span class="n">h_new</span><span class="p">;</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-25-erasecentervertex'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-25-erasecentervertex'>#</a>
+      </div>
+      <h2>EraseCenterVertex</h2>
+<p>Erases a vertex and all incident halfedges by merging its incident faces.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>halfedgeIndex</em>: The index of a halfedge which starts at the vertex to erase.
+The retained face will be the one adjacent to this halfedge.</li>
+</ul>
+<h3>Returns</h3>
+<p>The successor of <em>halfedgeIndex</em> around its original face.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="nf">EraseCenterVertex</span><span class="p">(</span><span class="kt">int</span> <span class="n">halfedgeIndex</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">int</span> <span class="n">vertexIndex</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">halfedgeIndex</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">;</span>
+
+            <span class="c1">// Check that the vertex is completely surrounded by faces</span>
+            <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">IsBoundary</span><span class="p">(</span><span class="n">vertexIndex</span><span class="p">))</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentException</span><span class="p">(</span><span class="s">&quot;Center vertex must not be on a boundary&quot;</span><span class="p">);</span>
+
+            <span class="c1">// Get outgoing halfedges around vertex, starting with specified halfedge</span>
+            <span class="kt">int</span><span class="p">[]</span> <span class="n">vertexHalfedges</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">GetVertexCirculator</span><span class="p">(</span><span class="n">halfedgeIndex</span><span class="p">).</span><span class="n">ToArray</span><span class="p">();</span>
+
+            <span class="c1">// Check for 2-valent vertices in the 1-ring (no antennas)</span>
+            <span class="kt">int</span> <span class="n">v</span><span class="p">;</span>
+            <span class="k">foreach</span> <span class="p">(</span><span class="kt">int</span> <span class="n">h</span> <span class="k">in</span> <span class="n">vertexHalfedges</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">v</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">EndVertex</span><span class="p">(</span><span class="n">h</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">GetHalfedges</span><span class="p">(</span><span class="n">v</span><span class="p">).</span><span class="n">Length</span> <span class="p">&lt;</span> <span class="m">3</span><span class="p">)</span>
+                    <span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentException</span><span class="p">(</span><span class="s">&quot;Vertex in 1-ring is 2-valent&quot;</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="c1">// Store face to keep and set its first halfedge</span>
+            <span class="kt">int</span> <span class="n">faceIndex</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">halfedgeIndex</span><span class="p">].</span><span class="n">AdjacentFace</span><span class="p">;</span>
+            <span class="kt">int</span> <span class="n">firstHalfedge</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">halfedgeIndex</span><span class="p">].</span><span class="n">NextHalfedge</span><span class="p">;</span>
+            <span class="n">_mesh</span><span class="p">.</span><span class="n">Faces</span><span class="p">[</span><span class="n">faceIndex</span><span class="p">].</span><span class="n">FirstHalfedge</span> <span class="p">=</span> <span class="n">firstHalfedge</span><span class="p">;</span>
+
+            <span class="c1">// Remove incident halfedges and mark faces for deletion (except first face)</span>
+            <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">RemovePairHelper</span><span class="p">(</span><span class="n">vertexHalfedges</span><span class="p">[</span><span class="m">0</span><span class="p">]);</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">1</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">vertexHalfedges</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+            <span class="p">{</span>
+                <span class="n">_mesh</span><span class="p">.</span><span class="n">Faces</span><span class="p">[</span><span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">vertexHalfedges</span><span class="p">[</span><span class="n">i</span><span class="p">]].</span><span class="n">AdjacentFace</span><span class="p">]</span> <span class="p">=</span> <span class="n">PlanktonFace</span><span class="p">.</span><span class="n">Unset</span><span class="p">;</span>
+                <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">RemovePairHelper</span><span class="p">(</span><span class="n">vertexHalfedges</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+            <span class="p">}</span>
+
+            <span class="c1">// Set adjacent face for all halfedges in hole</span>
+            <span class="k">foreach</span> <span class="p">(</span><span class="kt">int</span> <span class="n">h</span> <span class="k">in</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">GetFaceCirculator</span><span class="p">(</span><span class="n">firstHalfedge</span><span class="p">))</span>
+            <span class="p">{</span>
+                <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">=</span> <span class="n">faceIndex</span><span class="p">;</span>
+            <span class="p">}</span>
+
+            <span class="c1">// Mark center vertex for deletion</span>
+            <span class="k">this</span><span class="p">[</span><span class="n">vertexIndex</span><span class="p">]</span> <span class="p">=</span> <span class="n">PlanktonVertex</span><span class="p">.</span><span class="n">Unset</span><span class="p">;</span>
+
+            <span class="k">return</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Faces</span><span class="p">[</span><span class="n">faceIndex</span><span class="p">].</span><span class="n">FirstHalfedge</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="cp">#endregion</span>
+        <span class="cp">#endregion</span>
+        
+        <span class="cp">#region IEnumerable implementation</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-26-getenumerator'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-26-getenumerator'>#</a>
+      </div>
+      <h2>GetEnumerator</h2>
+<p>Gets an enumerator that yields all faces in this collection.</p>
+<h3>Returns</h3>
+<p>An enumerator.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="n">IEnumerator</span><span class="p">&lt;</span><span class="n">PlanktonVertex</span><span class="p">&gt;</span> <span class="n">GetEnumerator</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">_list</span><span class="p">.</span><span class="n">GetEnumerator</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="n">IEnumerator</span> <span class="n">IEnumerable</span><span class="p">.</span><span class="n">GetEnumerator</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">GetEnumerator</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="cp">#endregion</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
