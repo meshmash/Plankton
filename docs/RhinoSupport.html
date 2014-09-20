@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>RhinoSupport.cs</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  
+  <div id="jump_to">
+    Jump To &hellip;
+    <div id="jump_wrapper">
+      <div id="jump_page">
+          <a class="source" href="PlanktonFace.html">PlanktonFace.cs</a>
+          <a class="source" href="PlanktonFaceList.html">PlanktonFaceList.cs</a>
+          <a class="source" href="PlanktonHalfedge.html">PlanktonHalfedge.cs</a>
+          <a class="source" href="PlanktonHalfedgeList.html">PlanktonHalfedgeList.cs</a>
+          <a class="source" href="PlanktonMesh.html">PlanktonMesh.cs</a>
+          <a class="source" href="PlanktonVertex.html">PlanktonVertex.cs</a>
+          <a class="source" href="PlanktonVertexList.html">PlanktonVertexList.cs</a>
+          <a class="source" href="PlanktonXYZ.html">PlanktonXYZ.cs</a>
+          <a class="source" href="RhinoSupport.html">RhinoSupport.cs</a>
+      </div>
+    </div>
+  </div>
+  
+  <div class='section'>
+    <div class='docs'><h1>RhinoSupport.cs</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section public' id='section-00-rhinosupport'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-00-rhinosupport'>#</a>
+      </div>
+      <h2>RhinoSupport</h2>
+<p>Provides static and extension methods to add support for Rhino geometry in <a href="Plankton.html">Plankton</a>.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">using</span> <span class="nn">Plankton</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Rhino.Geometry</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+
+<span class="k">namespace</span> <span class="nn">PlanktonGh</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">RhinoSupport</span>
+    <span class="p">{</span>
+        <span class="k">public</span> <span class="k">static</span> <span class="kt">string</span> <span class="nf">HelloWorld</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="s">&quot;Hello World!&quot;</span><span class="p">;</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-01-toplanktonmesh'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-01-toplanktonmesh'>#</a>
+      </div>
+      <h2>ToPlanktonMesh</h2>
+<p>Creates a Plankton halfedge mesh from a Rhino mesh.
+Uses the topology of the Rhino mesh directly.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>source</em>: A Rhino mesh to convert from.</li>
+</ul>
+<h3>Returns</h3>
+<p>A <a href="PlanktonMesh.html">PlanktonMesh</a> which represents the topology and geometry of the source mesh.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="n">PlanktonMesh</span> <span class="nf">ToPlanktonMesh</span><span class="p">(</span><span class="k">this</span> <span class="n">Mesh</span> <span class="n">source</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">PlanktonMesh</span> <span class="n">pMesh</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PlanktonMesh</span><span class="p">();</span>
+
+            <span class="n">source</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">CombineIdentical</span><span class="p">(</span><span class="k">true</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+            <span class="n">source</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">CullUnused</span><span class="p">();</span>
+            <span class="n">source</span><span class="p">.</span><span class="n">UnifyNormals</span><span class="p">();</span>
+            <span class="n">source</span><span class="p">.</span><span class="n">Weld</span><span class="p">(</span><span class="n">Math</span><span class="p">.</span><span class="n">PI</span><span class="p">);</span>
+
+            <span class="k">foreach</span> <span class="p">(</span><span class="n">Point3f</span> <span class="n">v</span> <span class="k">in</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyVertices</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">pMesh</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">X</span><span class="p">,</span> <span class="n">v</span><span class="p">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">v</span><span class="p">.</span><span class="n">Z</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">source</span><span class="p">.</span><span class="n">Faces</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+            <span class="p">{</span>
+                <span class="n">pMesh</span><span class="p">.</span><span class="n">Faces</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">new</span> <span class="n">PlanktonFace</span><span class="p">());</span>
+            <span class="p">}</span>
+
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+            <span class="p">{</span>
+                <span class="n">PlanktonHalfedge</span> <span class="n">HalfA</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PlanktonHalfedge</span><span class="p">();</span>
+
+                <span class="n">HalfA</span><span class="p">.</span><span class="n">StartVertex</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetTopologyVertices</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">I</span><span class="p">;</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">pMesh</span><span class="p">.</span><span class="n">Vertices</span> <span class="p">[</span><span class="n">HalfA</span><span class="p">.</span><span class="n">StartVertex</span><span class="p">].</span><span class="n">OutgoingHalfedge</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">pMesh</span><span class="p">.</span><span class="n">Vertices</span> <span class="p">[</span><span class="n">HalfA</span><span class="p">.</span><span class="n">StartVertex</span><span class="p">].</span><span class="n">OutgoingHalfedge</span> <span class="p">=</span> <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span>
+                <span class="p">}</span>
+
+                <span class="n">PlanktonHalfedge</span> <span class="n">HalfB</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PlanktonHalfedge</span><span class="p">();</span>
+
+                <span class="n">HalfB</span><span class="p">.</span><span class="n">StartVertex</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetTopologyVertices</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">J</span><span class="p">;</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">pMesh</span><span class="p">.</span><span class="n">Vertices</span> <span class="p">[</span><span class="n">HalfB</span><span class="p">.</span><span class="n">StartVertex</span><span class="p">].</span><span class="n">OutgoingHalfedge</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">pMesh</span><span class="p">.</span><span class="n">Vertices</span> <span class="p">[</span><span class="n">HalfB</span><span class="p">.</span><span class="n">StartVertex</span><span class="p">].</span><span class="n">OutgoingHalfedge</span> <span class="p">=</span> <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">Count</span> <span class="p">+</span> <span class="m">1</span><span class="p">;</span>
+                <span class="p">}</span>
+
+                <span class="kt">bool</span><span class="p">[]</span> <span class="n">Match</span><span class="p">;</span>
+                <span class="kt">int</span><span class="p">[]</span> <span class="n">ConnectedFaces</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetConnectedFaces</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="k">out</span> <span class="n">Match</span><span class="p">);</span>
+
+                <span class="c1">//Note for Steve Baer : This Match bool doesn&#39;t seem to work on triangulated meshes - it often returns true</span>
+                <span class="c1">//for both faces, even for a properly oriented manifold mesh, which can&#39;t be right</span>
+                <span class="c1">//So - making our own check for matching:</span>
+                <span class="c1">//(I suspect the problem is related to C being the same as D for triangles, so best to</span>
+                <span class="c1">//deal with them separately just to make sure)</span>
+                <span class="c1">//loop through the vertices of the face until finding the one which is the same as the start of the edge</span>
+                <span class="c1">//iff the next vertex around the face is the end of the edge then it matches.</span>
+
+                <span class="n">Match</span><span class="p">[</span><span class="m">0</span><span class="p">]</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">Match</span><span class="p">.</span><span class="n">Length</span> <span class="p">&gt;</span> <span class="m">1</span><span class="p">)</span>
+                <span class="p">{</span><span class="n">Match</span><span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;}</span>
+
+                <span class="kt">int</span> <span class="n">VertA</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyVertices</span><span class="p">.</span><span class="n">TopologyVertexIndex</span><span class="p">(</span><span class="n">source</span><span class="p">.</span><span class="n">Faces</span><span class="p">[</span><span class="n">ConnectedFaces</span><span class="p">[</span><span class="m">0</span><span class="p">]].</span><span class="n">A</span><span class="p">);</span>
+                <span class="kt">int</span> <span class="n">VertB</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyVertices</span><span class="p">.</span><span class="n">TopologyVertexIndex</span><span class="p">(</span><span class="n">source</span><span class="p">.</span><span class="n">Faces</span><span class="p">[</span><span class="n">ConnectedFaces</span><span class="p">[</span><span class="m">0</span><span class="p">]].</span><span class="n">B</span><span class="p">);</span>
+                <span class="kt">int</span> <span class="n">VertC</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyVertices</span><span class="p">.</span><span class="n">TopologyVertexIndex</span><span class="p">(</span><span class="n">source</span><span class="p">.</span><span class="n">Faces</span><span class="p">[</span><span class="n">ConnectedFaces</span><span class="p">[</span><span class="m">0</span><span class="p">]].</span><span class="n">C</span><span class="p">);</span>
+                <span class="kt">int</span> <span class="n">VertD</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyVertices</span><span class="p">.</span><span class="n">TopologyVertexIndex</span><span class="p">(</span><span class="n">source</span><span class="p">.</span><span class="n">Faces</span><span class="p">[</span><span class="n">ConnectedFaces</span><span class="p">[</span><span class="m">0</span><span class="p">]].</span><span class="n">D</span><span class="p">);</span>
+
+                <span class="k">if</span> <span class="p">((</span><span class="n">VertA</span> <span class="p">==</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetTopologyVertices</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">I</span><span class="p">)</span>
+                    <span class="p">&amp;&amp;</span> <span class="p">(</span><span class="n">VertB</span> <span class="p">==</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetTopologyVertices</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">J</span><span class="p">))</span>
+                <span class="p">{</span> <span class="n">Match</span><span class="p">[</span><span class="m">0</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">if</span> <span class="p">((</span><span class="n">VertB</span> <span class="p">==</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetTopologyVertices</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">I</span><span class="p">)</span>
+                    <span class="p">&amp;&amp;</span> <span class="p">(</span><span class="n">VertC</span> <span class="p">==</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetTopologyVertices</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">J</span><span class="p">))</span>
+                <span class="p">{</span>
+                    <span class="n">Match</span><span class="p">[</span><span class="m">0</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">if</span> <span class="p">((</span><span class="n">VertC</span> <span class="p">==</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetTopologyVertices</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">I</span><span class="p">)</span>
+                    <span class="p">&amp;&amp;</span> <span class="p">(</span><span class="n">VertD</span> <span class="p">==</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetTopologyVertices</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">J</span><span class="p">))</span>
+                <span class="p">{</span>
+                    <span class="n">Match</span><span class="p">[</span><span class="m">0</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">if</span> <span class="p">((</span><span class="n">VertD</span> <span class="p">==</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetTopologyVertices</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">I</span><span class="p">)</span>
+                    <span class="p">&amp;&amp;</span> <span class="p">(</span><span class="n">VertA</span> <span class="p">==</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetTopologyVertices</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">J</span><span class="p">))</span>
+                <span class="p">{</span>
+                    <span class="n">Match</span><span class="p">[</span><span class="m">0</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="c1">//I don&#39;t think these next 2 should ever be needed, but just in case:</span>
+                <span class="k">if</span> <span class="p">((</span><span class="n">VertC</span> <span class="p">==</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetTopologyVertices</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">I</span><span class="p">)</span>
+                    <span class="p">&amp;&amp;</span> <span class="p">(</span><span class="n">VertA</span> <span class="p">==</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetTopologyVertices</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">J</span><span class="p">))</span>
+                <span class="p">{</span>
+                    <span class="n">Match</span><span class="p">[</span><span class="m">0</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">if</span> <span class="p">((</span><span class="n">VertB</span> <span class="p">==</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetTopologyVertices</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">I</span><span class="p">)</span>
+                    <span class="p">&amp;&amp;</span> <span class="p">(</span><span class="n">VertD</span> <span class="p">==</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetTopologyVertices</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">J</span><span class="p">))</span>
+                <span class="p">{</span>
+                    <span class="n">Match</span><span class="p">[</span><span class="m">0</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+                <span class="p">}</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">Match</span><span class="p">[</span><span class="m">0</span><span class="p">]</span> <span class="p">==</span> <span class="k">true</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="n">HalfA</span><span class="p">.</span><span class="n">AdjacentFace</span> <span class="p">=</span> <span class="n">ConnectedFaces</span><span class="p">[</span><span class="m">0</span><span class="p">];</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">pMesh</span><span class="p">.</span><span class="n">Faces</span><span class="p">[</span><span class="n">HalfA</span><span class="p">.</span><span class="n">AdjacentFace</span><span class="p">].</span><span class="n">FirstHalfedge</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">pMesh</span><span class="p">.</span><span class="n">Faces</span><span class="p">[</span><span class="n">HalfA</span><span class="p">.</span><span class="n">AdjacentFace</span><span class="p">].</span><span class="n">FirstHalfedge</span> <span class="p">=</span> <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span>
+                    <span class="p">}</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">ConnectedFaces</span><span class="p">.</span><span class="n">Length</span> <span class="p">&gt;</span> <span class="m">1</span><span class="p">)</span>
+                    <span class="p">{</span>
+                        <span class="n">HalfB</span><span class="p">.</span><span class="n">AdjacentFace</span> <span class="p">=</span> <span class="n">ConnectedFaces</span><span class="p">[</span><span class="m">1</span><span class="p">];</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">pMesh</span><span class="p">.</span><span class="n">Faces</span><span class="p">[</span><span class="n">HalfB</span><span class="p">.</span><span class="n">AdjacentFace</span><span class="p">].</span><span class="n">FirstHalfedge</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span><span class="p">)</span> <span class="p">{</span>
+                            <span class="n">pMesh</span><span class="p">.</span><span class="n">Faces</span><span class="p">[</span><span class="n">HalfB</span><span class="p">.</span><span class="n">AdjacentFace</span><span class="p">].</span><span class="n">FirstHalfedge</span> <span class="p">=</span> <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">Count</span> <span class="p">+</span> <span class="m">1</span><span class="p">;</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                    <span class="k">else</span>
+                    <span class="p">{</span>
+                        <span class="n">HalfB</span><span class="p">.</span><span class="n">AdjacentFace</span> <span class="p">=</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span>
+                        <span class="n">pMesh</span><span class="p">.</span><span class="n">Vertices</span><span class="p">[</span><span class="n">HalfB</span><span class="p">.</span><span class="n">StartVertex</span><span class="p">].</span><span class="n">OutgoingHalfedge</span> <span class="p">=</span> <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">Count</span> <span class="p">+</span> <span class="m">1</span><span class="p">;</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+                <span class="k">else</span>
+                <span class="p">{</span>
+                    <span class="n">HalfB</span><span class="p">.</span><span class="n">AdjacentFace</span> <span class="p">=</span> <span class="n">ConnectedFaces</span><span class="p">[</span><span class="m">0</span><span class="p">];</span>
+
+                    <span class="k">if</span> <span class="p">(</span><span class="n">pMesh</span><span class="p">.</span><span class="n">Faces</span><span class="p">[</span><span class="n">HalfB</span><span class="p">.</span><span class="n">AdjacentFace</span><span class="p">].</span><span class="n">FirstHalfedge</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">pMesh</span><span class="p">.</span><span class="n">Faces</span><span class="p">[</span><span class="n">HalfB</span><span class="p">.</span><span class="n">AdjacentFace</span><span class="p">].</span><span class="n">FirstHalfedge</span> <span class="p">=</span> <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">Count</span> <span class="p">+</span> <span class="m">1</span><span class="p">;</span>
+                    <span class="p">}</span>
+
+                    <span class="k">if</span> <span class="p">(</span><span class="n">ConnectedFaces</span><span class="p">.</span><span class="n">Length</span> <span class="p">&gt;</span> <span class="m">1</span><span class="p">)</span>
+                    <span class="p">{</span>
+                        <span class="n">HalfA</span><span class="p">.</span><span class="n">AdjacentFace</span> <span class="p">=</span> <span class="n">ConnectedFaces</span><span class="p">[</span><span class="m">1</span><span class="p">];</span>
+
+                        <span class="k">if</span> <span class="p">(</span><span class="n">pMesh</span><span class="p">.</span><span class="n">Faces</span><span class="p">[</span><span class="n">HalfA</span><span class="p">.</span><span class="n">AdjacentFace</span><span class="p">].</span><span class="n">FirstHalfedge</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span><span class="p">)</span> <span class="p">{</span>
+                            <span class="n">pMesh</span><span class="p">.</span><span class="n">Faces</span><span class="p">[</span><span class="n">HalfA</span><span class="p">.</span><span class="n">AdjacentFace</span><span class="p">].</span><span class="n">FirstHalfedge</span> <span class="p">=</span> <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                    <span class="k">else</span>
+                    <span class="p">{</span>
+                        <span class="n">HalfA</span><span class="p">.</span><span class="n">AdjacentFace</span> <span class="p">=</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span>
+                        <span class="n">pMesh</span><span class="p">.</span><span class="n">Vertices</span><span class="p">[</span><span class="n">HalfA</span><span class="p">.</span><span class="n">StartVertex</span><span class="p">].</span><span class="n">OutgoingHalfedge</span> <span class="p">=</span> <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+                <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">HalfA</span><span class="p">);</span>
+                <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">HalfB</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="p">(</span><span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">Count</span><span class="p">);</span> <span class="n">i</span> <span class="p">+=</span> <span class="m">2</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="kt">int</span><span class="p">[]</span> <span class="n">EndNeighbours</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyVertices</span><span class="p">.</span><span class="n">ConnectedTopologyVertices</span><span class="p">(</span><span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span> <span class="p">+</span> <span class="m">1</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+                <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">j</span> <span class="p">&lt;</span> <span class="n">EndNeighbours</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span> <span class="n">j</span><span class="p">++)</span>
+                <span class="p">{</span>
+                    <span class="k">if</span><span class="p">(</span><span class="n">EndNeighbours</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="p">==</span> <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">)</span>
+                    <span class="p">{</span>
+                        <span class="kt">int</span> <span class="n">EndOfNextHalfedge</span> <span class="p">=</span> <span class="n">EndNeighbours</span><span class="p">[(</span><span class="n">j</span> <span class="p">-</span> <span class="m">1</span> <span class="p">+</span> <span class="n">EndNeighbours</span><span class="p">.</span><span class="n">Length</span><span class="p">)</span> <span class="p">%</span> <span class="n">EndNeighbours</span><span class="p">.</span><span class="n">Length</span><span class="p">];</span>
+                        <span class="kt">int</span> <span class="n">StartOfPrevOfPairHalfedge</span> <span class="p">=</span> <span class="n">EndNeighbours</span><span class="p">[(</span><span class="n">j</span> <span class="p">+</span> <span class="m">1</span><span class="p">)</span> <span class="p">%</span> <span class="n">EndNeighbours</span><span class="p">.</span><span class="n">Length</span><span class="p">];</span>
+
+                        <span class="kt">int</span> <span class="n">NextEdge</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetEdgeIndex</span><span class="p">(</span><span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span> <span class="p">+</span> <span class="m">1</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">,</span><span class="n">EndOfNextHalfedge</span><span class="p">);</span>
+                        <span class="kt">int</span> <span class="n">PrevPairEdge</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetEdgeIndex</span><span class="p">(</span><span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span> <span class="p">+</span> <span class="m">1</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">,</span><span class="n">StartOfPrevOfPairHalfedge</span><span class="p">);</span>
+
+                        <span class="k">if</span> <span class="p">(</span><span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetTopologyVertices</span><span class="p">(</span><span class="n">NextEdge</span><span class="p">).</span><span class="n">I</span> <span class="p">==</span> <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span> <span class="p">+</span> <span class="m">1</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">)</span> <span class="p">{</span>
+                            <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">NextHalfedge</span> <span class="p">=</span> <span class="n">NextEdge</span> <span class="p">*</span> <span class="m">2</span><span class="p">;</span>
+                        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                            <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">NextHalfedge</span> <span class="p">=</span> <span class="n">NextEdge</span> <span class="p">*</span> <span class="m">2</span> <span class="p">+</span> <span class="m">1</span><span class="p">;</span>
+                        <span class="p">}</span>
+
+                        <span class="k">if</span> <span class="p">(</span><span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetTopologyVertices</span><span class="p">(</span><span class="n">PrevPairEdge</span><span class="p">).</span><span class="n">J</span> <span class="p">==</span> <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span> <span class="p">+</span> <span class="m">1</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">)</span> <span class="p">{</span>
+                            <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span> <span class="p">+</span> <span class="m">1</span><span class="p">].</span><span class="n">PrevHalfedge</span> <span class="p">=</span> <span class="n">PrevPairEdge</span> <span class="p">*</span> <span class="m">2</span><span class="p">;</span>
+                        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                            <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span> <span class="p">+</span> <span class="m">1</span><span class="p">].</span><span class="n">PrevHalfedge</span> <span class="p">=</span> <span class="n">PrevPairEdge</span> <span class="p">*</span> <span class="m">2</span><span class="p">+</span><span class="m">1</span><span class="p">;</span>
+                        <span class="p">}</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+
+                <span class="kt">int</span><span class="p">[]</span> <span class="n">StartNeighbours</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyVertices</span><span class="p">.</span><span class="n">ConnectedTopologyVertices</span><span class="p">(</span><span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+                <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">j</span> <span class="p">&lt;</span> <span class="n">StartNeighbours</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span> <span class="n">j</span><span class="p">++)</span>
+                <span class="p">{</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">StartNeighbours</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="p">==</span> <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span><span class="p">+</span><span class="m">1</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">)</span>
+                    <span class="p">{</span>
+                        <span class="kt">int</span> <span class="n">EndOfNextOfPairHalfedge</span> <span class="p">=</span> <span class="n">StartNeighbours</span><span class="p">[(</span><span class="n">j</span> <span class="p">-</span> <span class="m">1</span> <span class="p">+</span> <span class="n">StartNeighbours</span><span class="p">.</span><span class="n">Length</span><span class="p">)</span> <span class="p">%</span> <span class="n">StartNeighbours</span><span class="p">.</span><span class="n">Length</span><span class="p">];</span>
+                        <span class="kt">int</span> <span class="n">StartOfPrevHalfedge</span> <span class="p">=</span> <span class="n">StartNeighbours</span><span class="p">[(</span><span class="n">j</span> <span class="p">+</span> <span class="m">1</span><span class="p">)</span> <span class="p">%</span> <span class="n">StartNeighbours</span><span class="p">.</span><span class="n">Length</span><span class="p">];</span>
+
+                        <span class="kt">int</span> <span class="n">NextPairEdge</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetEdgeIndex</span><span class="p">(</span><span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">,</span> <span class="n">EndOfNextOfPairHalfedge</span><span class="p">);</span>
+                        <span class="kt">int</span> <span class="n">PrevEdge</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetEdgeIndex</span><span class="p">(</span><span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">,</span> <span class="n">StartOfPrevHalfedge</span><span class="p">);</span>
+
+                        <span class="k">if</span> <span class="p">(</span><span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetTopologyVertices</span><span class="p">(</span><span class="n">NextPairEdge</span><span class="p">).</span><span class="n">I</span> <span class="p">==</span> <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">)</span> <span class="p">{</span>
+                            <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span> <span class="p">+</span> <span class="m">1</span><span class="p">].</span><span class="n">NextHalfedge</span> <span class="p">=</span> <span class="n">NextPairEdge</span> <span class="p">*</span> <span class="m">2</span><span class="p">;</span>
+                        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                            <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span> <span class="p">+</span> <span class="m">1</span><span class="p">].</span><span class="n">NextHalfedge</span> <span class="p">=</span> <span class="n">NextPairEdge</span> <span class="p">*</span> <span class="m">2</span> <span class="p">+</span> <span class="m">1</span><span class="p">;</span>
+                        <span class="p">}</span>
+
+                        <span class="k">if</span> <span class="p">(</span><span class="n">source</span><span class="p">.</span><span class="n">TopologyEdges</span><span class="p">.</span><span class="n">GetTopologyVertices</span><span class="p">(</span><span class="n">PrevEdge</span><span class="p">).</span><span class="n">J</span> <span class="p">==</span> <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">)</span> <span class="p">{</span>
+                            <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">PrevHalfedge</span> <span class="p">=</span> <span class="n">PrevEdge</span> <span class="p">*</span> <span class="m">2</span><span class="p">;</span>
+                        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                            <span class="n">pMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">PrevHalfedge</span> <span class="p">=</span> <span class="n">PrevEdge</span> <span class="p">*</span> <span class="m">2</span> <span class="p">+</span> <span class="m">1</span><span class="p">;</span>
+                        <span class="p">}</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+            <span class="k">return</span> <span class="n">pMesh</span><span class="p">;</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-02-torhinomesh'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-02-torhinomesh'>#</a>
+      </div>
+      <h2>ToRhinoMesh</h2>
+<p>Creates a Rhino mesh from a Plankton halfedge mesh.
+Uses the face-vertex information available in the halfedge data structure.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>source</em>: A Plankton mesh to convert from.</li>
+</ul>
+<h3>Returns</h3>
+<p>A <a href="Mesh.html">Mesh</a> which represents the source mesh (as best it can).</p>
+<h3>Remarks</h3>
+<p>Any faces with five sides or more will be triangulated.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="n">Mesh</span> <span class="nf">ToRhinoMesh</span><span class="p">(</span><span class="k">this</span> <span class="n">PlanktonMesh</span> <span class="n">source</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="c1">// could add different options for triangulating ngons later</span>
+            <span class="n">Mesh</span> <span class="n">rMesh</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Mesh</span><span class="p">();</span>
+            <span class="k">foreach</span> <span class="p">(</span><span class="n">PlanktonVertex</span> <span class="n">v</span> <span class="k">in</span> <span class="n">source</span><span class="p">.</span><span class="n">Vertices</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">rMesh</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">X</span><span class="p">,</span> <span class="n">v</span><span class="p">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">v</span><span class="p">.</span><span class="n">Z</span><span class="p">);</span>       
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">source</span><span class="p">.</span><span class="n">Faces</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+            <span class="p">{</span>
+                <span class="kt">int</span><span class="p">[]</span> <span class="n">fvs</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">Faces</span><span class="p">.</span><span class="n">GetFaceVertices</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">fvs</span><span class="p">.</span><span class="n">Length</span> <span class="p">==</span> <span class="m">3</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="n">rMesh</span><span class="p">.</span><span class="n">Faces</span><span class="p">.</span><span class="n">AddFace</span><span class="p">(</span><span class="n">fvs</span><span class="p">[</span><span class="m">0</span><span class="p">],</span> <span class="n">fvs</span><span class="p">[</span><span class="m">1</span><span class="p">],</span> <span class="n">fvs</span><span class="p">[</span><span class="m">2</span><span class="p">]);</span>
+                <span class="p">}</span>
+                <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">fvs</span><span class="p">.</span><span class="n">Length</span> <span class="p">==</span> <span class="m">4</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="n">rMesh</span><span class="p">.</span><span class="n">Faces</span><span class="p">.</span><span class="n">AddFace</span><span class="p">(</span><span class="n">fvs</span><span class="p">[</span><span class="m">0</span><span class="p">],</span> <span class="n">fvs</span><span class="p">[</span><span class="m">1</span><span class="p">],</span> <span class="n">fvs</span><span class="p">[</span><span class="m">2</span><span class="p">],</span> <span class="n">fvs</span><span class="p">[</span><span class="m">3</span><span class="p">]);</span>
+                <span class="p">}</span>
+                <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">fvs</span><span class="p">.</span><span class="n">Length</span> <span class="p">&gt;</span> <span class="m">4</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="c1">// triangulate about face center (fan)</span>
+                    <span class="kt">var</span> <span class="n">fc</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">Faces</span><span class="p">.</span><span class="n">GetFaceCenter</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+                    <span class="n">rMesh</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">fc</span><span class="p">.</span><span class="n">X</span><span class="p">,</span> <span class="n">fc</span><span class="p">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">fc</span><span class="p">.</span><span class="n">Z</span><span class="p">);</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">j</span> <span class="p">&lt;</span> <span class="n">fvs</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span> <span class="n">j</span><span class="p">++)</span>
+                    <span class="p">{</span>
+                        <span class="n">rMesh</span><span class="p">.</span><span class="n">Faces</span><span class="p">.</span><span class="n">AddFace</span><span class="p">(</span><span class="n">fvs</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">fvs</span><span class="p">[(</span><span class="n">j</span> <span class="p">+</span> <span class="m">1</span><span class="p">)</span> <span class="p">%</span> <span class="n">fvs</span><span class="p">.</span><span class="n">Length</span><span class="p">],</span> <span class="n">rMesh</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">Count</span> <span class="p">-</span> <span class="m">1</span><span class="p">);</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>            
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">rMesh</span><span class="p">;</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-03-replacevertices'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-03-replacevertices'>#</a>
+      </div>
+      <h2>ReplaceVertices</h2>
+<p>Replaces the vertices of a PlanktonMesh with a new list of points</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>source</em>: A Plankton mesh.</li>
+<li><em>points</em>: A list of points.</li>
+</ul>
+<h3>Returns</h3>
+<p>A list of closed polylines representing the boundary edges of each face.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="n">PlanktonMesh</span> <span class="nf">ReplaceVertices</span><span class="p">(</span><span class="k">this</span> <span class="n">PlanktonMesh</span> <span class="n">source</span><span class="p">,</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Point3d</span><span class="p">&gt;</span> <span class="n">points</span><span class="p">)</span>
+        <span class="p">{</span>            
+            <span class="n">PlanktonMesh</span> <span class="n">pMesh</span> <span class="p">=</span> <span class="n">source</span><span class="p">;</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">points</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+            <span class="p">{</span>
+                <span class="n">pMesh</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">SetVertex</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">pMesh</span><span class="p">;</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-04-topolylines'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-04-topolylines'>#</a>
+      </div>
+      <h2>ToPolylines</h2>
+<p>Converts each face to a closed polyline.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>source</em>: A Plankton mesh.</li>
+</ul>
+<h3>Returns</h3>
+<p>A list of closed polylines representing the boundary edges of each face.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="n">Polyline</span><span class="p">[]</span> <span class="nf">ToPolylines</span><span class="p">(</span><span class="k">this</span> <span class="n">PlanktonMesh</span> <span class="n">source</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">int</span> <span class="n">n</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">Faces</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span>
+            <span class="n">Polyline</span><span class="p">[]</span> <span class="n">polylines</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Polyline</span><span class="p">[</span><span class="n">n</span><span class="p">];</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+            <span class="p">{</span>
+                <span class="n">Polyline</span> <span class="n">facePoly</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Polyline</span><span class="p">();</span>
+                <span class="kt">int</span><span class="p">[]</span> <span class="n">vs</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">Faces</span><span class="p">.</span><span class="n">GetFaceVertices</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+                <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">j</span> <span class="p">&lt;=</span> <span class="n">vs</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span> <span class="n">j</span><span class="p">++)</span>
+                <span class="p">{</span>
+                    <span class="kt">var</span> <span class="n">v</span> <span class="p">=</span> <span class="n">source</span><span class="p">.</span><span class="n">Vertices</span><span class="p">[</span><span class="n">vs</span><span class="p">[</span><span class="n">j</span> <span class="p">%</span> <span class="n">vs</span><span class="p">.</span><span class="n">Length</span><span class="p">]];</span>
+                    <span class="n">facePoly</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">X</span><span class="p">,</span> <span class="n">v</span><span class="p">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">v</span><span class="p">.</span><span class="n">Z</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="n">polylines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">=</span> <span class="n">facePoly</span><span class="p">;</span>
+            <span class="p">}</span>
+            
+            <span class="k">return</span> <span class="n">polylines</span><span class="p">;</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-05-topoint3f'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-05-topoint3f'>#</a>
+      </div>
+      <h2>ToPoint3f</h2>
+<p>Creates a Rhino Point3f from a Plankton vertex.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>vertex</em>: A Plankton vertex</li>
+</ul>
+<h3>Returns</h3>
+<p>A Point3f with the same coordinates as the vertex.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="n">Point3f</span> <span class="nf">ToPoint3f</span><span class="p">(</span><span class="k">this</span> <span class="n">PlanktonVertex</span> <span class="n">vertex</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">Point3f</span><span class="p">(</span><span class="n">vertex</span><span class="p">.</span><span class="n">X</span><span class="p">,</span> <span class="n">vertex</span><span class="p">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">vertex</span><span class="p">.</span><span class="n">Z</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-06-topoint3d'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-06-topoint3d'>#</a>
+      </div>
+      <h2>ToPoint3d</h2>
+<p>Creates a Rhino Point3d from a Plankton vertex.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>vertex</em>: A Plankton vertex</li>
+</ul>
+<h3>Returns</h3>
+<p>A Point3d with the same coordinates as the vertex.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="n">Point3d</span> <span class="nf">ToPoint3d</span><span class="p">(</span><span class="k">this</span> <span class="n">PlanktonVertex</span> <span class="n">vertex</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">Point3d</span><span class="p">(</span><span class="n">vertex</span><span class="p">.</span><span class="n">X</span><span class="p">,</span> <span class="n">vertex</span><span class="p">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">vertex</span><span class="p">.</span><span class="n">Z</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-07-topoint3f'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-07-topoint3f'>#</a>
+      </div>
+      <h2>ToPoint3f</h2>
+<p>Creates a Rhino Point3f from a Plankton vector.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>vector</em>: A Plankton vector.</li>
+</ul>
+<h3>Returns</h3>
+<p>A Point3f with the same XYZ components as the vector.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="n">Point3f</span> <span class="nf">ToPoint3f</span><span class="p">(</span><span class="k">this</span> <span class="n">PlanktonXYZ</span> <span class="n">vector</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">Point3f</span><span class="p">(</span><span class="n">vector</span><span class="p">.</span><span class="n">X</span><span class="p">,</span> <span class="n">vector</span><span class="p">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">vector</span><span class="p">.</span><span class="n">Z</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-08-topoint3d'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-08-topoint3d'>#</a>
+      </div>
+      <h2>ToPoint3d</h2>
+<p>Creates a Rhino Point3d from a Plankton vector.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>vector</em>: A Plankton vector.</li>
+</ul>
+<h3>Returns</h3>
+<p>A Point3d with the same XYZ components as the vector.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="n">Point3d</span> <span class="nf">ToPoint3d</span><span class="p">(</span><span class="k">this</span> <span class="n">PlanktonXYZ</span> <span class="n">vector</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">Point3d</span><span class="p">(</span><span class="n">vector</span><span class="p">.</span><span class="n">X</span><span class="p">,</span> <span class="n">vector</span><span class="p">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">vector</span><span class="p">.</span><span class="n">Z</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-09-tovector3f'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-09-tovector3f'>#</a>
+      </div>
+      <h2>ToVector3f</h2>
+<p>Creates a Rhino Vector3f from a Plankton vector.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>vector</em>: A Plankton vector.</li>
+</ul>
+<h3>Returns</h3>
+<p>A Vector3f with the same XYZ components as the vector.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="n">Vector3f</span> <span class="nf">ToVector3f</span><span class="p">(</span><span class="k">this</span> <span class="n">PlanktonXYZ</span> <span class="n">vector</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">Vector3f</span><span class="p">(</span><span class="n">vector</span><span class="p">.</span><span class="n">X</span><span class="p">,</span> <span class="n">vector</span><span class="p">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">vector</span><span class="p">.</span><span class="n">Z</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-10-setvertex'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10-setvertex'>#</a>
+      </div>
+      <h2>SetVertex</h2>
+<p>Sets or adds a vertex to the Vertex List.</p>
+<p>If [index] is less than [Count], the existing vertex at [index] will be modified.</p>
+<p>If [index] equals [Count], a new vertex is appended to the end of the vertex list.</p>
+<p>If [index] is larger than [Count], the function will return false.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>index</em>: Index of vertex to set.</li>
+<li><em>vertex</em>: Vertex location.</li>
+</ul>
+<h3>Returns</h3>
+<p>on success,  on failure.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="kt">bool</span> <span class="nf">SetVertex</span><span class="p">(</span><span class="k">this</span> <span class="n">PlanktonVertexList</span> <span class="n">vertexList</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">,</span> <span class="n">Point3f</span> <span class="n">vertex</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">vertexList</span><span class="p">.</span><span class="n">SetVertex</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">vertex</span><span class="p">.</span><span class="n">X</span><span class="p">,</span> <span class="n">vertex</span><span class="p">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">vertex</span><span class="p">.</span><span class="n">Z</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-11-setvertex'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11-setvertex'>#</a>
+      </div>
+      <h2>SetVertex</h2>
+<p>Sets or adds a vertex to the Vertex List.</p>
+<p>If [index] is less than [Count], the existing vertex at [index] will be modified.</p>
+<p>If [index] equals [Count], a new vertex is appended to the end of the vertex list.</p>
+<p>If [index] is larger than [Count], the function will return false.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>index</em>: Index of vertex to set.</li>
+<li><em>vertex</em>: Vertex location.</li>
+</ul>
+<h3>Returns</h3>
+<p>on success,  on failure.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="kt">bool</span> <span class="nf">SetVertex</span><span class="p">(</span><span class="k">this</span> <span class="n">PlanktonVertexList</span> <span class="n">vertexList</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">,</span> <span class="n">Point3d</span> <span class="n">vertex</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">vertexList</span><span class="p">.</span><span class="n">SetVertex</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">vertex</span><span class="p">.</span><span class="n">X</span><span class="p">,</span> <span class="n">vertex</span><span class="p">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">vertex</span><span class="p">.</span><span class="n">Z</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-12-movevertex'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12-movevertex'>#</a>
+      </div>
+      <h2>MoveVertex</h2>
+<p>Moves a vertex by a vector.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>index</em>: Index of vertex to move.</li>
+<li><em>vector</em>: Vector to move by.</li>
+</ul>
+<h3>Returns</h3>
+<p>on success,  on failure.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="kt">bool</span> <span class="nf">MoveVertex</span><span class="p">(</span><span class="k">this</span> <span class="n">PlanktonVertexList</span> <span class="n">vertexList</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">,</span> <span class="n">Vector3d</span> <span class="n">vector</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">vertexList</span><span class="p">.</span><span class="n">SetVertex</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">vertexList</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="n">X</span> <span class="p">+</span> <span class="n">vector</span><span class="p">.</span><span class="n">X</span><span class="p">,</span> <span class="n">vertexList</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="n">Y</span> <span class="p">+</span> <span class="n">vector</span><span class="p">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">vertexList</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="n">Z</span> <span class="p">+</span> <span class="n">vector</span><span class="p">.</span><span class="n">Z</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-13-add'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13-add'>#</a>
+      </div>
+      <h2>Add</h2>
+<p>Adds a new vertex to the end of the Vertex list.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>vertex</em>: Location of new vertex.</li>
+</ul>
+<h3>Returns</h3>
+<p>The index of the newly added vertex.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="kt">int</span> <span class="nf">Add</span><span class="p">(</span><span class="k">this</span> <span class="n">PlanktonVertexList</span> <span class="n">vertexList</span><span class="p">,</span> <span class="n">Point3f</span> <span class="n">vertex</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">vertexList</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">vertex</span><span class="p">.</span><span class="n">X</span><span class="p">,</span> <span class="n">vertex</span><span class="p">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">vertex</span><span class="p">.</span><span class="n">Z</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='section-14-add'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14-add'>#</a>
+      </div>
+      <h2>Add</h2>
+<p>Adds a new vertex to the end of the Vertex list.</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>vertex</em>: Location of new vertex.</li>
+</ul>
+<h3>Returns</h3>
+<p>The index of the newly added vertex.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="kt">int</span> <span class="nf">Add</span><span class="p">(</span><span class="k">this</span> <span class="n">PlanktonVertexList</span> <span class="n">vertexList</span><span class="p">,</span> <span class="n">Point3d</span> <span class="n">vertex</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">vertexList</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">vertex</span><span class="p">.</span><span class="n">X</span><span class="p">,</span> <span class="n">vertex</span><span class="p">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">vertex</span><span class="p">.</span><span class="n">Z</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
