@@ -199,6 +199,7 @@ namespace Plankton
             return D;
         }
 
+        /* Hide for the time being to avoid confusion...
         public void RefreshVertexNormals()
         {
         }
@@ -208,6 +209,7 @@ namespace Plankton
         public void RefreshEdgeNormals()
         {
         }
+        */
 
         /// <summary>
         /// Removes any unreferenced objects from arrays, reindexes as needed and shrinks arrays to minimum required size.
