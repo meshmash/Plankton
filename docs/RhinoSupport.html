@@ -30,13 +30,9 @@
     <div class='docs'><h1>RhinoSupport.cs</h1></div>
   </div>
   <div class='clearall'>
-  <div class='section public' id='section-00-rhinosupport'>
+  <div class='section public' id=''>
     <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-00-rhinosupport'>#</a>
-      </div>
-      <h2>RhinoSupport</h2>
-<p>Provides static and extension methods to add support for Rhino geometry in <a href="Plankton.html">Plankton</a>.</p>
+      <p>Provides static and extension methods to add support for Rhino geometry in <a href="Plankton.html">Plankton</a>.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">using</span> <span class="nn">Plankton</span><span class="p">;</span>
@@ -55,10 +51,10 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-01-toplanktonmesh'>
+  <div class='section public' id='ToPlanktonMesh'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-01-toplanktonmesh'>#</a>
+        <a class='octothorpe' href='#ToPlanktonMesh'>#</a>
       </div>
       <h2>ToPlanktonMesh</h2>
 <p>Creates a Plankton halfedge mesh from a Rhino mesh.
@@ -264,10 +260,10 @@ Uses the topology of the Rhino mesh directly.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-02-torhinomesh'>
+  <div class='section public' id='ToRhinoMesh'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-02-torhinomesh'>#</a>
+        <a class='octothorpe' href='#ToRhinoMesh'>#</a>
       </div>
       <h2>ToRhinoMesh</h2>
 <p>Creates a Rhino mesh from a Plankton halfedge mesh.
@@ -312,15 +308,16 @@ Uses the face-vertex information available in the halfedge data structure.</p>
                     <span class="p">}</span>
                 <span class="p">}</span>            
             <span class="p">}</span>
+            <span class="n">rMesh</span><span class="p">.</span><span class="n">Normals</span><span class="p">.</span><span class="n">ComputeNormals</span><span class="p">();</span>
             <span class="k">return</span> <span class="n">rMesh</span><span class="p">;</span>
         <span class="p">}</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-03-replacevertices'>
+  <div class='section public' id='ReplaceVertices'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-03-replacevertices'>#</a>
+        <a class='octothorpe' href='#ReplaceVertices'>#</a>
       </div>
       <h2>ReplaceVertices</h2>
 <p>Replaces the vertices of a PlanktonMesh with a new list of points</p>
@@ -345,10 +342,10 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-04-topolylines'>
+  <div class='section public' id='ToPolylines'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-04-topolylines'>#</a>
+        <a class='octothorpe' href='#ToPolylines'>#</a>
       </div>
       <h2>ToPolylines</h2>
 <p>Converts each face to a closed polyline.</p>
@@ -381,10 +378,10 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-05-topoint3f'>
+  <div class='section public' id='ToPoint3f'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-05-topoint3f'>#</a>
+        <a class='octothorpe' href='#ToPoint3f'>#</a>
       </div>
       <h2>ToPoint3f</h2>
 <p>Creates a Rhino Point3f from a Plankton vertex.</p>
@@ -403,10 +400,10 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-06-topoint3d'>
+  <div class='section public' id='ToPoint3d'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-06-topoint3d'>#</a>
+        <a class='octothorpe' href='#ToPoint3d'>#</a>
       </div>
       <h2>ToPoint3d</h2>
 <p>Creates a Rhino Point3d from a Plankton vertex.</p>
@@ -425,10 +422,10 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-07-topoint3f'>
+  <div class='section public' id='ToPoint3f'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-07-topoint3f'>#</a>
+        <a class='octothorpe' href='#ToPoint3f'>#</a>
       </div>
       <h2>ToPoint3f</h2>
 <p>Creates a Rhino Point3f from a Plankton vector.</p>
@@ -447,10 +444,10 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-08-topoint3d'>
+  <div class='section public' id='ToPoint3d'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-08-topoint3d'>#</a>
+        <a class='octothorpe' href='#ToPoint3d'>#</a>
       </div>
       <h2>ToPoint3d</h2>
 <p>Creates a Rhino Point3d from a Plankton vector.</p>
@@ -469,10 +466,10 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-09-tovector3f'>
+  <div class='section public' id='ToVector3f'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-09-tovector3f'>#</a>
+        <a class='octothorpe' href='#ToVector3f'>#</a>
       </div>
       <h2>ToVector3f</h2>
 <p>Creates a Rhino Vector3f from a Plankton vector.</p>
@@ -491,10 +488,10 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-10-setvertex'>
+  <div class='section public' id='SetVertex'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-10-setvertex'>#</a>
+        <a class='octothorpe' href='#SetVertex'>#</a>
       </div>
       <h2>SetVertex</h2>
 <p>Sets or adds a vertex to the Vertex List.</p>
@@ -517,10 +514,10 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-11-setvertex'>
+  <div class='section public' id='SetVertex'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-11-setvertex'>#</a>
+        <a class='octothorpe' href='#SetVertex'>#</a>
       </div>
       <h2>SetVertex</h2>
 <p>Sets or adds a vertex to the Vertex List.</p>
@@ -543,10 +540,10 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-12-movevertex'>
+  <div class='section public' id='MoveVertex'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-12-movevertex'>#</a>
+        <a class='octothorpe' href='#MoveVertex'>#</a>
       </div>
       <h2>MoveVertex</h2>
 <p>Moves a vertex by a vector.</p>
@@ -566,10 +563,10 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-13-add'>
+  <div class='section public' id='Add'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-13-add'>#</a>
+        <a class='octothorpe' href='#Add'>#</a>
       </div>
       <h2>Add</h2>
 <p>Adds a new vertex to the end of the Vertex list.</p>
@@ -588,10 +585,10 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-14-add'>
+  <div class='section public' id='Add'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-14-add'>#</a>
+        <a class='octothorpe' href='#Add'>#</a>
       </div>
       <h2>Add</h2>
 <p>Adds a new vertex to the end of the Vertex list.</p>

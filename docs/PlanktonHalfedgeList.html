@@ -30,13 +30,9 @@
     <div class='docs'><h1>PlanktonHalfedgeList.cs</h1></div>
   </div>
   <div class='clearall'>
-  <div class='section public' id='section-00-planktonhalfedgelist'>
+  <div class='section public' id=''>
     <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-00-planktonhalfedgelist'>#</a>
-      </div>
-      <h2>PlanktonHalfEdgeList</h2>
-<p>Provides access to the halfedges and Halfedge related functionality of a Mesh.</p>
+      <p>Provides access to the halfedges and Halfedge related functionality of a Mesh.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
@@ -53,10 +49,10 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section internal' id='section-01-planktonhalfedgelist'>
+  <div class='section internal' id='PlanktonHalfEdgeList'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-01-planktonhalfedgelist'>#</a>
+        <a class='octothorpe' href='#PlanktonHalfEdgeList'>#</a>
       </div>
       <h2>PlanktonHalfEdgeList</h2>
 <p>Initializes a new instance of the <a href="PlanktonHalfedgeList.html">PlanktonHalfedgeList</a> class.
@@ -75,10 +71,10 @@ Should be called from the mesh constructor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-02-count'>
+  <div class='section public' id='Count'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-02-count'>#</a>
+        <a class='octothorpe' href='#Count'>#</a>
       </div>
       <h2>Count</h2>
 <p>Gets the number of halfedges.</p>
@@ -97,10 +93,10 @@ Should be called from the mesh constructor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-03-add'>
+  <div class='section public' id='Add'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-03-add'>#</a>
+        <a class='octothorpe' href='#Add'>#</a>
       </div>
       <h2>Add</h2>
 <p>Adds a new halfedge to the end of the Halfedge list.</p>
@@ -121,10 +117,10 @@ Should be called from the mesh constructor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section internal' id='section-04-addpair'>
+  <div class='section internal' id='AddPair'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-04-addpair'>#</a>
+        <a class='octothorpe' href='#AddPair'>#</a>
       </div>
       <h2>AddPair</h2>
 <p>Add a pair of halfedges to the mesh.</p>
@@ -149,10 +145,10 @@ Should be called from the mesh constructor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section internal' id='section-05-removepairhelper'>
+  <div class='section internal' id='RemovePairHelper'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-05-removepairhelper'>#</a>
+        <a class='octothorpe' href='#RemovePairHelper'>#</a>
       </div>
       <h2>RemovePairHelper</h2>
 <p>Removes a pair of halfedges from the mesh.</p>
@@ -195,10 +191,10 @@ Note that this helper method doesn't update adjacent faces.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-06-index'>
+  <div class='section public' id='index'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-06-index'>#</a>
+        <a class='octothorpe' href='#index'>#</a>
       </div>
       <h2>index</h2>
 <p>Returns the halfedge at the given index.</p>
@@ -227,10 +223,10 @@ Must be larger than or equal to zero and smaller than the Halfedge Count of the 
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section internal' id='section-07-compacthelper'>
+  <div class='section internal' id='CompactHelper'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-07-compacthelper'>#</a>
+        <a class='octothorpe' href='#CompactHelper'>#</a>
       </div>
       <h2>CompactHelper</h2>
 <p>Helper method to remove dead halfedges from the list, re-index and compact.</p>
@@ -282,10 +278,10 @@ Must be larger than or equal to zero and smaller than the Halfedge Count of the 
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-08-getvertexcirculator'>
+  <div class='section public' id='GetVertexCirculator'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-08-getvertexcirculator'>#</a>
+        <a class='octothorpe' href='#GetVertexCirculator'>#</a>
       </div>
       <h2>GetVertexCirculator</h2>
 <p>Traverses clockwise around the starting vertex of a halfedge.</p>
@@ -319,10 +315,10 @@ this circulator, you'll know about it!</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-09-getfacecirculator'>
+  <div class='section public' id='GetFaceCirculator'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-09-getfacecirculator'>#</a>
+        <a class='octothorpe' href='#GetFaceCirculator'>#</a>
       </div>
       <h2>GetFaceCirculator</h2>
 <p>Traverses anticlockwise around the adjacent face of a halfedge.</p>
@@ -358,10 +354,10 @@ this circulator, you'll know about it!</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-10-findhalfedge'>
+  <div class='section public' id='FindHalfedge'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-10-findhalfedge'>#</a>
+        <a class='octothorpe' href='#FindHalfedge'>#</a>
       </div>
       <h2>FindHalfedge</h2>
 <p>Gets the halfedge index between two vertices.</p>
@@ -389,10 +385,10 @@ Otherwise -1 is returned.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-11-getpairhalfedge'>
+  <div class='section public' id='GetPairHalfedge'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-11-getpairhalfedge'>#</a>
+        <a class='octothorpe' href='#GetPairHalfedge'>#</a>
       </div>
       <h2>GetPairHalfedge</h2>
 <p>Gets the opposing halfedge in a pair.</p>
@@ -422,10 +418,10 @@ Otherwise -1 is returned.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-12-getvertices'>
+  <div class='section public' id='GetVertices'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-12-getvertices'>#</a>
+        <a class='octothorpe' href='#GetVertices'>#</a>
       </div>
       <h2>GetVertices</h2>
 <p>Gets the two vertices for a halfedge.</p>
@@ -449,12 +445,12 @@ The order follows the direction of the halfedge.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-13-[missing]'>
+  <div class='section public' id='GetNextHalfEdge'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-13-[missing]'>#</a>
+        <a class='octothorpe' href='#GetNextHalfEdge'>#</a>
       </div>
-      <h2>[missing]</h2>
+      <h2>GetNextHalfEdge</h2>
 <p>Gets the halfedge a given number of 'next's around a face from a starting halfedge</p>
 <h3>Parameters</h3>
 <ul>
@@ -479,10 +475,10 @@ The order follows the direction of the halfedge.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-14-isboundary'>
+  <div class='section public' id='IsBoundary'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-14-isboundary'>#</a>
+        <a class='octothorpe' href='#IsBoundary'>#</a>
       </div>
       <h2>IsBoundary</h2>
 <p>A halfedge is on a boundary if it only has a face on one side.</p>
@@ -504,10 +500,10 @@ The order follows the direction of the halfedge.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-15-endvertex'>
+  <div class='section public' id='EndVertex'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-15-endvertex'>#</a>
+        <a class='octothorpe' href='#EndVertex'>#</a>
       </div>
       <h2>EndVertex</h2>
 <p>Gets the index of the vertex at the  of a halfedge.</p>
@@ -540,12 +536,12 @@ The order follows the direction of the halfedge.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-16-[missing]'>
+  <div class='section public' id='GetLength'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-16-[missing]'>#</a>
+        <a class='octothorpe' href='#GetLength'>#</a>
       </div>
-      <h2>[missing]</h2>
+      <h2>GetLength</h2>
 <p>Measure the lengths of all the halfedges</p>
 <h3>Returns</h3>
 <p>An array of lengths for all halfedges, or -1 for dead ones</p>
@@ -561,18 +557,21 @@ The order follows the direction of the halfedge.</p>
             <span class="p">}</span>
             <span class="k">return</span> <span class="n">Lengths</span><span class="p">;</span>
         <span class="p">}</span>
-
         <span class="k">public</span> <span class="kt">double</span> <span class="nf">GetLength</span><span class="p">(</span><span class="kt">int</span> <span class="n">index</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-17-[missing]'>
+  <div class='section public' id='FlipEdge'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-17-[missing]'>#</a>
+        <a class='octothorpe' href='#FlipEdge'>#</a>
       </div>
-      <h2>[missing]</h2>
+      <h2>FlipEdge</h2>
 <p>Measure the length of a single halfedge</p>
+<h3>Parameters</h3>
+<ul>
+<li><em>index</em>: The index of a halfedge in the edge to be flipped.</li>
+</ul>
 <h3>Returns</h3>
 <p>The length of the halfedge, or -1 if unused</p>
     </div>
@@ -587,31 +586,9 @@ The order follows the direction of the halfedge.</p>
             <span class="p">}</span>
             <span class="k">return</span> <span class="n">EdgeLength</span><span class="p">;</span>
         <span class="p">}</span>
-
         <span class="cp">#endregion</span>
-
-        <span class="cp">#region Euler operators</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section public' id='section-18-flipedge'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-18-flipedge'>#</a>
-      </div>
-      <h2>FlipEdge</h2>
-<p>Performs an edge flip. This works by shifting the start/end vertices of the edge
-anticlockwise around their faces (by one vertex) and as such can be applied to any
-n-gon mesh, not just triangulations.</p>
-<h3>Parameters</h3>
-<ul>
-<li><em>index</em>: The index of a halfedge in the edge to be flipped.</li>
-</ul>
-<h3>Returns</h3>
-<p>True on success, otherwise false.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">bool</span> <span class="nf">FlipEdge</span><span class="p">(</span><span class="kt">int</span> <span class="n">index</span><span class="p">)</span>
+        <span class="cp">#region Euler operators</span>
+        <span class="k">public</span> <span class="kt">bool</span> <span class="nf">FlipEdge</span><span class="p">(</span><span class="kt">int</span> <span class="n">index</span><span class="p">)</span>
         <span class="p">{</span>
             <span class="c1">// Don&#39;t allow if halfedge is on a boundary</span>
             <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">&lt;</span> <span class="m">0</span> <span class="p">||</span> <span class="k">this</span><span class="p">[</span><span class="n">GetPairHalfedge</span><span class="p">(</span><span class="n">index</span><span class="p">)].</span><span class="n">AdjacentFace</span> <span class="p">&lt;</span> <span class="m">0</span><span class="p">)</span>
@@ -661,10 +638,10 @@ n-gon mesh, not just triangulations.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-19-splitedge'>
+  <div class='section public' id='SplitEdge'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-19-splitedge'>#</a>
+        <a class='octothorpe' href='#SplitEdge'>#</a>
       </div>
       <h2>SplitEdge</h2>
 <p>Creates a new vertex, and inserts it along an existing edge, splitting it in 2.</p>
@@ -712,10 +689,10 @@ n-gon mesh, not just triangulations.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-20-trianglesplitedge'>
+  <div class='section public' id='TriangleSplitEdge'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-20-trianglesplitedge'>#</a>
+        <a class='octothorpe' href='#TriangleSplitEdge'>#</a>
       </div>
       <h2>TriangleSplitEdge</h2>
 <p>Split 2 adjacent triangles into 4 by inserting a new vertex along the edge</p>
@@ -746,10 +723,10 @@ n-gon mesh, not just triangulations.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-21-collapseedge'>
+  <div class='section public' id='CollapseEdge'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-21-collapseedge'>#</a>
+        <a class='octothorpe' href='#CollapseEdge'>#</a>
       </div>
       <h2>CollapseEdge</h2>
 <p>Collapse an edge by combining 2 vertices</p>
@@ -852,10 +829,10 @@ n-gon mesh, not just triangulations.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='section-22-getenumerator'>
+  <div class='section public' id='GetEnumerator'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-22-getenumerator'>#</a>
+        <a class='octothorpe' href='#GetEnumerator'>#</a>
       </div>
       <h2>GetEnumerator</h2>
 <p>Gets an enumerator that yields all halfedges in this collection.</p>
