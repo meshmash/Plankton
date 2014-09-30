@@ -118,6 +118,182 @@ namespace Plankton
             return VolumeSum;
         }
 
+        public PlanktonMesh PlanktonDual()
+        {
+            
+            // now it handles open meshes by including boundaries, and works cleanly with closed meshes
+            // should add functionality to remove boundaries in open meshes if desired
+            // can later add options for other ways of defining face centres (barycenter/circumcenter etc)
+
+            PlanktonMesh P = this;
+            PlanktonMesh D = new PlanktonMesh();
+
+            //for every primal face, add the barycenter to the dual's vertex list
+
+            for (int i = 0; i < P.Faces.Count; i++)
+            {
+                var fc = P.Faces.GetFaceCenter(i);
+                D.Vertices.Add(new PlanktonVertex(fc.X, fc.Y, fc.Z));
+
+                int[] FaceHalfedges = P.Faces.GetHalfedges(i);
+                D.Vertices[D.Vertices.Count - 1].OutgoingHalfedge = P.Halfedges.GetPairHalfedge(FaceHalfedges[0]);
+            }
+
+            //dual vertex outgoing HE is primal face's start HE
+            //for every vertex of the primal, add a face to the dual
+            //dual face's startHE is primal vertex's outgoing's pair
+
+            for (int i = 0; i < P.Vertices.Count; i++)
+            {
+                //add all vertices as faces
+                int df = D.Faces.Add(PlanktonFace.Unset);
+                D.Faces[df].FirstHalfedge = P.Vertices[i].OutgoingHalfedge;
+            }
+
+            //dual HalfEdge Start Vertex is primal Pair's AdjacentFace
+            //dual HalfEdge AdjacentFace is primal Start Vertex
+            //dual NextHE is primal's Pair's Prev
+            //dual PrevHE is primal's Next's Pair
+
+            //halfedge pairs stay the same
+
+            //List of halfedges that define the ends of faces that
+            //need to be closed with additional Halfedge Pairs
+            List<int> FinishEdges = new List<int>();
+            //Lookup list for removing naked faces if desired
+            List<int> NakedFaces = new List<int>();
+
+            //List of new boundary Halfedges to be appended to the end of the Halfedge List
+            List<PlanktonHalfedge> NewBoundaries = new List<PlanktonHalfedge>();
+            //Index counter for newly appended Halfedges
+            int NewHECounter = P.Halfedges.Count;
+
+            for (int i = 0; i < P.Halfedges.Count; i++)
+            {
+
+                int PairIndex = P.Halfedges.GetPairHalfedge(i);
+
+                //These are internal and clean HalfEdges
+                PlanktonHalfedge DualHE = PlanktonHalfedge.Unset;
+                PlanktonHalfedge PrimalHE = P.Halfedges[i];
+
+                DualHE.StartVertex = P.Halfedges[PairIndex].AdjacentFace;
+                DualHE.AdjacentFace = PrimalHE.StartVertex;
+
+                DualHE.PrevHalfedge = P.Halfedges[PairIndex].NextHalfedge;
+
+                //The next Halfedges for primal naked edges when flipped
+                //to the dual have to be created later
+                if (PrimalHE.AdjacentFace < 0) { DualHE.NextHalfedge = -1; }
+                else { DualHE.NextHalfedge = P.Halfedges.GetPairHalfedge(PrimalHE.PrevHalfedge); }
+
+                D.Halfedges.Add(DualHE);
+
+                //treatment of halfedges whose pair in the primal halfedge
+                //is naked: 
+                //first add two new vertices:
+                // 1: at the midpoint of the primal halfedge
+                // 2: at the start vertex of the primal halfedge
+                //second add a new halfedge pair, with the 
+                //with the first halfedge Previous to the current Dual
+                // 1st HE: Starts at the primal start vertex
+                // 1st HE: Next HE is the current Dual
+                // 1st HE: Adjacent Face is the PrimalHE.StartVertex
+                // 1st HE: Previous will be created and assigned later
+                // 2nd HE: Starts at the new Midpoint Vertex
+                // 2nd HE: Adjacent Face is -1
+                // 2nd HE: Previous and Next will be created and assigned later
+
+                if (DualHE.StartVertex < 0)
+                {
+
+                    NakedFaces.Add(DualHE.AdjacentFace);
+
+                    PlanktonXYZ StartXYZ = P.Vertices[P.Halfedges[i].StartVertex].ToXYZ();
+                    PlanktonXYZ EndXYZ = P.Vertices[P.Halfedges[PairIndex].StartVertex].ToXYZ();
+
+                    //recreate the primal's Start Vertex
+                    PlanktonVertex NewSV = new PlanktonVertex((float)StartXYZ.X, (float)StartXYZ.Y, (float)StartXYZ.Z);
+                    //sets the new start vertex outgoing halfedge to be created next
+                    NewSV.OutgoingHalfedge = NewHECounter;
+                    D.Vertices.Add(NewSV);
+
+                    //Create the End Vertex
+                    PlanktonVertex NewMV = new PlanktonVertex((float)((StartXYZ.X + EndXYZ.X) * 0.5),
+                        (float)((StartXYZ.Y + EndXYZ.Y) * 0.5), (float)((StartXYZ.Z + EndXYZ.Z) * 0.5));
+                    NewMV.OutgoingHalfedge = i;
+                    D.Vertices.Add(NewMV);
+
+                    //Update the dual's Start Vertex to midpoint of the primal HE
+                    //and the dual's previous Halfedge to the one newly created
+                    DualHE.StartVertex = D.Vertices.Count - 1;
+                    DualHE.PrevHalfedge = NewHECounter;
+
+                    PlanktonHalfedge NewBoundary1 = PlanktonHalfedge.Unset;
+                    NewBoundary1.StartVertex = D.Vertices.Count - 2; //from the primal start vertex
+                    NewBoundary1.AdjacentFace = DualHE.AdjacentFace; //the current DualHE adjacent face
+                    NewBoundary1.NextHalfedge = i; //the current DualHE
+
+                    PlanktonHalfedge NewBoundary2 = PlanktonHalfedge.Unset;
+                    NewBoundary2.StartVertex = D.Vertices.Count - 1; //the first new vertex
+
+                    NewBoundaries.Add(NewBoundary1);
+                    NewBoundaries.Add(NewBoundary2);
+
+                    //Add the index for second round of updating after the first assignment of new halfedges
+                    FinishEdges.Add(NewHECounter);
+                    NewHECounter += 2;
+
+                }
+            }
+
+            foreach (PlanktonHalfedge NewBoundary in NewBoundaries) { D.Halfedges.Add(NewBoundary); }
+
+            foreach (int FinishEdge in FinishEdges)
+            {
+
+                int Exiter = 0; //fear the infinite loop
+                int WorkingEdge = D.Halfedges[FinishEdge].NextHalfedge;
+
+                //Cycle through the face until reaching the terminus
+                //at a naked vertex
+                do
+                {
+                    if (D.Halfedges[WorkingEdge].NextHalfedge < 0) { break; }
+                    else { WorkingEdge = D.Halfedges[WorkingEdge].NextHalfedge; }
+                    Exiter += 1;
+                } while (Exiter < P.Halfedges.Count);
+
+                int WorkingPair = D.Halfedges.GetPairHalfedge(WorkingEdge);
+
+                //Build the new Halfedge in the same face
+                PlanktonHalfedge NewBoundary1 = PlanktonHalfedge.Unset;
+                NewBoundary1.StartVertex = D.Halfedges[WorkingPair].StartVertex;
+                NewBoundary1.PrevHalfedge = WorkingEdge;
+                NewBoundary1.NextHalfedge = FinishEdge;
+                NewBoundary1.AdjacentFace = D.Halfedges[FinishEdge].AdjacentFace;
+
+                //Build the naked pair
+                PlanktonHalfedge NewBoundary2 = PlanktonHalfedge.Unset;
+                NewBoundary2.StartVertex = D.Halfedges[FinishEdge].StartVertex;
+                NewBoundary2.PrevHalfedge = D.Halfedges.GetPairHalfedge(FinishEdge);
+                NewBoundary2.NextHalfedge = D.Halfedges.GetPairHalfedge(D.Halfedges[WorkingPair].PrevHalfedge);
+                NewBoundary2.AdjacentFace = -1;
+
+                D.Halfedges.Add(NewBoundary1);
+                D.Halfedges.Add(NewBoundary2);
+
+                //Set the next Halfedge of terminus to the new Halfedge on the interior face
+                D.Halfedges[WorkingEdge].NextHalfedge = D.Halfedges.Count - 2;
+                //Update the naked pair of the finish edge as connected to the new naked pair
+                D.Halfedges[D.Halfedges.GetPairHalfedge(FinishEdge)].NextHalfedge = D.Halfedges.Count - 1;
+
+            }
+
+            return D;
+
+        }
+
         public PlanktonMesh Dual()
         {
             // can later add options for other ways of defining face centres (barycenter/circumcenter etc)
