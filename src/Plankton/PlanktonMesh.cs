@@ -199,6 +199,35 @@ namespace Plankton
             return D;
         }
 
+        /// <summary>
+        /// Truncates the vertices of a mesh.
+        /// </summary>
+        /// <param name="t">Optional parameter for the normalised distance along each edge to control the amount of truncation.</param>
+        /// <returns>A new mesh, the result of the truncation.</returns>
+        public PlanktonMesh Truncate(float t = 1f/3)
+        {
+            // TODO: handle special cases (t = 0.0, t = 0.5, t > 0.5)
+            var tMesh = new PlanktonMesh(this);
+
+            var vxyz = tMesh.Vertices.Select(v => v.ToXYZ()).ToArray();
+            PlanktonXYZ v0, v1, v2;
+            int[] oh;
+            for (int i = 0; i < this.Vertices.Count; i++)
+            {
+                oh = this.Vertices.GetHalfedges(i);
+                tMesh.Vertices.TruncateVertex(i);
+                foreach (var h in oh)
+                {
+                    v0 = vxyz[this.Halfedges[i].StartVertex];
+                    v1 = vxyz[this.Halfedges.EndVertex(i)];
+                    v2 = v0 + (v1 - v0) * t;
+                    tMesh.Vertices.SetVertex(tMesh.Halfedges[h].StartVertex, v2.X, v2.Y, v2.Z);
+                }
+            }
+
+            return tMesh;
+        }
+
         /* Hide for the time being to avoid confusion...
         public void RefreshVertexNormals()
         {
