@@ -203,5 +203,43 @@ namespace Plankton.Test
             
             Assert.IsFalse(pMesh.Vertices.SetVertex(3, 0, 0, 0));
         }
+
+        [Test]
+        public void CanTruncateVertex()
+        {
+            PlanktonMesh pMesh = new PlanktonMesh();
+
+            // Create 3x3 grid of vertices
+            pMesh.Vertices.Add(0, 2, 0); // 0
+            pMesh.Vertices.Add(0, 1, 0); // 1
+            pMesh.Vertices.Add(0, 0, 0); // 2
+            pMesh.Vertices.Add(1, 2, 0); // 3
+            pMesh.Vertices.Add(1, 1, 0); // 4 (center)
+            pMesh.Vertices.Add(1, 0, 0); // 5
+            pMesh.Vertices.Add(2, 2, 0); // 6
+            pMesh.Vertices.Add(2, 1, 0); // 7
+            pMesh.Vertices.Add(2, 0, 0); // 8
+
+            // Create four quadrangular faces
+            pMesh.Faces.AddFace(0, 1, 4, 3);
+            pMesh.Faces.AddFace(3, 4, 7, 6);
+            pMesh.Faces.AddFace(1, 2, 5, 4);
+            pMesh.Faces.AddFace(4, 5, 8, 7);
+
+            int vertexCount = pMesh.Vertices.Count;
+            //var originalHalfedges = pMesh.Vertices.GetHalfedges(4);
+
+            // Truncate central vertex (4)
+            var f = pMesh.Vertices.TruncateVertex(4);
+
+            // Check total vertex count
+            Assert.AreEqual(vertexCount + 3, pMesh.Vertices.Count);
+
+            // Each new vertex (adjacent to new face) should be valance-3
+            foreach (var v in pMesh.Faces.GetFaceVertices(f))
+            {
+                Assert.AreEqual(3, pMesh.Vertices.GetValence(v));
+            }
+        }
     }
 }
