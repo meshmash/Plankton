@@ -218,8 +218,8 @@ namespace Plankton
                 tMesh.Vertices.TruncateVertex(i);
                 foreach (var h in oh)
                 {
-                    v0 = vxyz[this.Halfedges[i].StartVertex];
-                    v1 = vxyz[this.Halfedges.EndVertex(i)];
+                    v0 = vxyz[this.Halfedges[h].StartVertex];
+                    v1 = vxyz[this.Halfedges.EndVertex(h)];
                     v2 = v0 + (v1 - v0) * t;
                     tMesh.Vertices.SetVertex(tMesh.Halfedges[h].StartVertex, v2.X, v2.Y, v2.Z);
                 }
