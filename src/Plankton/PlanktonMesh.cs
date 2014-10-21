@@ -204,7 +204,7 @@ namespace Plankton
         /// </summary>
         /// <param name="t">Optional parameter for the normalised distance along each edge to control the amount of truncation.</param>
         /// <returns>A new mesh, the result of the truncation.</returns>
-        public PlanktonMesh Truncate(float t = 1f/3)
+        public PlanktonMesh TruncateVertices(float t = 1f/3)
         {
             // TODO: handle special cases (t = 0.0, t = 0.5, t > 0.5)
             var tMesh = new PlanktonMesh(this);
