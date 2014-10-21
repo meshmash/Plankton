@@ -254,9 +254,11 @@ namespace Plankton.Test
 
             Assert.AreEqual(6, pMesh.Faces.Count);
 
-            var tMesh = pMesh.Truncate();
+            var tMesh = pMesh.TruncateVertices();
 
             Assert.AreEqual(pMesh.Faces.Count + pMesh.Vertices.Count, tMesh.Faces.Count);
+            
+            // TODO: geometrical check
         }
     }
 }
