@@ -1,8 +1,21 @@
-language: c
- 
+language: csharp
+sudo: false
+env:
+  global:
+  - ARTIFACTS_KEY=AKIAIJ6RNS2NO5AJFEWA
+  - secure: "Mw3VqXF6QqggRi483FQdbIfmgQRdwufgEJsSiAARWsz4Xxsk1CX8d8ZrIT+BZI4TYrdwZrQOjecPR1YXe1mQl5ZKJU8q2QMZCc1BZ9/y2mQNiCFvlLgQmAfsSv4qAkMqgFi9f1IU6ijMlFrV2Un76suvLuq95SUyCGrlxqv/vBQ="
+  - ARTIFACTS_BUCKET=meshmash
+  - ARTIFACTS_S3_REGION=eu-west-1
+  - ARTIFACTS_PERMISSIONS=public-read
+  - ARTIFACTS_TARGET_PATHS=builds
+solution: src/Plankton.sln
 install:
-  - sudo apt-get install mono-devel mono-gmcs nunit-console
-
+- nuget restore src/Plankton.sln -source https://www.nuget.org/api/v2/ -source https://pyget.herokuapp.com/
 script:
-  - xbuild /p:Configuration=Debug src/PlanktonMono.sln
-  - nunit-console bin/Debug/PlanktonTests.dll
+- xbuild /p:Configuration=Release src/Plankton.sln
+- mono src/packages/NUnit.Runners.2.6.3/tools/nunit-console.exe
+after_success:
+- zip plankton-${TRAVIS_BUILD_NUMBER}.zip LICENSE.txt README.md
+- zip -j plankton-${TRAVIS_BUILD_NUMBER}.zip bin/Release/Plankton.dll bin/Release/Plankton.gha
+- curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
+- artifacts upload plankton-${TRAVIS_BUILD_NUMBER}.zip
