@@ -506,7 +506,6 @@ namespace Plankton
         public int TruncateVertex(int v)
         {
             var hs = this.GetHalfedges(v);
-            //var vs = new int[hs.Length];
         
             // set h_new and move original vertex
             int h_new = hs[0];
@@ -516,14 +515,8 @@ namespace Plankton
             {
                 // split vertex
                 int h_tmp = this.SplitVertex(hs[i], h_new);
-
-                // store newly created vertex
-                //vs[i-1] = this._mesh.Halfedges[h_new].StartVertex;
-
                 h_new = h_tmp; // tidy-up if 'vs' is removed
             }
-
-            //vs[hs.Length-1] = v;
 
             // split face to create new truncated face
             int splitH = this._mesh.Faces.SplitFace(hs[0], h_new);
