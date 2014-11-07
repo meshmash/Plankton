@@ -1,8 +1,27 @@
-language: c
- 
-install:
-  - sudo apt-get install mono-devel mono-gmcs nunit-console
-
+language: objective-c
+env:
+  matrix:
+  - MONO_VERSION="3.10.0"
+before_install:
+- wget "http://download.mono-project.com/archive/${MONO_VERSION}/macos-10-x86/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg"
+- sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg"
+  -target /
 script:
-  - xbuild /p:Configuration=Debug src/PlanktonMono.sln
-  - nunit-console bin/Debug/PlanktonTests.dll
+- nuget restore src/Plankton.sln
+- xbuild /p:Configuration=Release src/Plankton.sln
+- mono src/packages/NUnit.Runners.2.6.3/tools/nunit-console.exe bin/Release/PlanktonTests.dll
+before_deploy:
+- mkdir -p dist
+- zip dist/plankton-${TRAVIS_BUILD_NUMBER}.zip LICENSE.txt README.md
+- zip -j dist/plankton-${TRAVIS_BUILD_NUMBER}.zip bin/Release/Plankton.dll bin/Release/Plankton.gha
+deploy:
+  provider: s3
+  access_key_id: AKIAIJ6RNS2NO5AJFEWA
+  secret_access_key:
+    secure: nUWLF3C+9In/d861ttUcAAZJFOy+PHc1LJtyY8U8RBSGqddyFCZcxFiPL5nzhOxgNFy1IWV4W+ChkTg7c8r+zHpSlIlB8z/GYdRY/PbRXqElmFbDMqB7lF+frgqPDneD1+zf/2CbwYWauJfCeOfxQ+oNp8wLmpA71QTwdSKzdsA=
+  bucket: erdos
+  skip_cleanup: true
+  local-dir: dist
+  upload-dir: builds
+  on:
+    all_branches: true
