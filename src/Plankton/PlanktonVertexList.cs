@@ -497,6 +497,32 @@ namespace Plankton
             return _mesh.Faces[faceIndex].FirstHalfedge;
         }
         #endregion
+
+        /// <summary>
+        /// Truncates a vertex by creating a face with vertices on each of the outgoing halfedges.
+        /// </summary>
+        /// <param name="v">The index of a vertex.</param>
+        /// <returns>The index of the newly created face.</returns>
+        public int TruncateVertex(int v)
+        {
+            var hs = this.GetHalfedges(v);
+        
+            // set h_new and move original vertex
+            int h_new = hs[0];
+        
+            // circulate outgoing halfedges (clockwise, skip first)
+            for (int i = 1; i < hs.Length; i++)
+            {
+                // split vertex
+                int h_tmp = this.SplitVertex(hs[i], h_new);
+                h_new = h_tmp; // tidy-up if 'vs' is removed
+            }
+
+            // split face to create new truncated face
+            int splitH = this._mesh.Faces.SplitFace(hs[0], h_new);
+
+            return this._mesh.Halfedges[this._mesh.Halfedges.GetPairHalfedge(splitH)].AdjacentFace;
+        }
         #endregion
         
         #region IEnumerable implementation
