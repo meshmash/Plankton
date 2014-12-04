@@ -1,6 +1,6 @@
 # Plankton
 
-[![Build Status](https://travis-ci.org/meshmash/Plankton.svg?branch=master)](https://travis-ci.org/Dan-Piker/Plankton)*
+[![Build Status](https://travis-ci.org/meshmash/Plankton.svg?branch=master)](https://travis-ci.org/meshmash/Plankton)*
 
 *_Core library only._
 
