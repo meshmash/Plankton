@@ -372,6 +372,32 @@ namespace Plankton
             return (h < -1 || _mesh.Halfedges[h].AdjacentFace == -1);
         }
 
+        /// <summary>
+        /// Gets the normal vector at a vertex.
+        /// </summary>
+        /// <param name="index">The index of a vertex.</param>
+        /// <returns>The area weighted vertex normal.</returns>
+        public PlanktonXYZ GetNormal(int index)
+        {
+            PlanktonXYZ vertex = this[index].ToXYZ();
+            PlanktonXYZ normal = new PlanktonXYZ();
+
+            var ring = this.GetVertexNeighbours(index);
+            int n = ring.Length;
+
+            for (int i = 0; i < n-1; i++)
+            {
+                normal += PlanktonXYZ.CrossProduct(this[ring[i]].ToXYZ() - vertex, this[ring[i+1]].ToXYZ() - vertex);
+            }
+
+            if (this.IsBoundary(index) == false)
+            {
+                normal += PlanktonXYZ.CrossProduct(this[n-1].ToXYZ() - vertex, this[0].ToXYZ() - vertex);
+            }
+
+            return normal * (-1.0f / normal.Length); // return unit vector
+        }
+
         #region Euler operators
         /// <summary>
         /// <para>Merges two vertices by collapsing the pair of halfedges between them.</para>

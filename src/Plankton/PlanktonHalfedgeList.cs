@@ -353,7 +353,7 @@ namespace Plankton
             {
                 PlanktonXYZ Start = _mesh.Vertices[this[index].StartVertex].ToXYZ();              
                 PlanktonXYZ End = _mesh.Vertices[this.EndVertex(index)].ToXYZ();
-                EdgeLength = (End - Start).Length();                
+                EdgeLength = (End - Start).Length;
             }
             return EdgeLength;
         }
