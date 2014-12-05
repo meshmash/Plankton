@@ -415,6 +415,15 @@ namespace Plankton
             return Enumerable.Range(0, this.Count).Select(i => this.GetNormal(i)).ToArray();
         }
 
+        /// <summary>
+        /// Gets the positions of all vertices.
+        /// </summary>
+        /// <returns>The positions of all vertices in the mesh.</returns>
+        public PlanktonXYZ[] GetPositions()
+        {
+            return Enumerable.Range(0, this.Count).Select(i => this[i].ToXYZ()).ToArray();
+        }
+
         #region Euler operators
         /// <summary>
         /// <para>Merges two vertices by collapsing the pair of halfedges between them.</para>
