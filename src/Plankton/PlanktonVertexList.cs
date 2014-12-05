@@ -387,15 +387,32 @@ namespace Plankton
 
             for (int i = 0; i < n-1; i++)
             {
-                normal += PlanktonXYZ.CrossProduct(this[ring[i]].ToXYZ() - vertex, this[ring[i+1]].ToXYZ() - vertex);
+                normal += PlanktonXYZ.CrossProduct(
+                    this[ring[i]].ToXYZ() - vertex, 
+                    this[ring[i+1]].ToXYZ() - vertex);
             }
 
             if (this.IsBoundary(index) == false)
             {
-                normal += PlanktonXYZ.CrossProduct(this[n-1].ToXYZ() - vertex, this[0].ToXYZ() - vertex);
+                normal += PlanktonXYZ.CrossProduct(
+                    this[n-1].ToXYZ() - vertex,
+                    this[0].ToXYZ() - vertex);
             }
 
             return normal * (-1.0f / normal.Length); // return unit vector
+        }
+
+        /// <summary>
+        /// Gets the normal vectors for all vertices in the mesh.
+        /// </summary>
+        /// <returns>The area weighted vertex normals of all vertices in the mesh.</returns>
+        /// <remarks>
+        /// This will be accurate at the time of calling but will quickly
+        /// become outdated if you start fiddling with the mesh.
+        /// </remarks>
+        public PlanktonXYZ[] GetNormals()
+        {
+            return Enumerable.Range(0, this.Count).Select(i => this.GetNormal(i)).ToArray();
         }
 
         #region Euler operators
