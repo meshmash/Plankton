@@ -2,6 +2,7 @@ using Plankton;
 using Rhino.Geometry;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PlanktonGh
 {
@@ -400,6 +401,16 @@ namespace PlanktonGh
         public static int Add(this PlanktonVertexList vertexList, Point3d vertex)
         {
             return vertexList.Add(vertex.X, vertex.Y, vertex.Z);
+        }
+
+        /// <summary>
+        /// Gets positions of vertices
+        /// </summary>
+        /// <returns>A list of Point3d</returns>
+        /// <param name="source">A Plankton mesh.</param>
+        public static IEnumerable<Point3d> GetPositions(this PlanktonMesh source)
+        {
+            return Enumerable.Range(0, source.Vertices.Count).Select(i => source.Vertices[i].ToPoint3d());          
         }
     }
 }

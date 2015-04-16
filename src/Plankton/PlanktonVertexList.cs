@@ -372,6 +372,58 @@ namespace Plankton
             return (h < -1 || _mesh.Halfedges[h].AdjacentFace == -1);
         }
 
+        /// <summary>
+        /// Gets the normal vector at a vertex.
+        /// </summary>
+        /// <param name="index">The index of a vertex.</param>
+        /// <returns>The area weighted vertex normal.</returns>
+        public PlanktonXYZ GetNormal(int index)
+        {
+            PlanktonXYZ vertex = this[index].ToXYZ();
+            PlanktonXYZ normal = new PlanktonXYZ();
+
+            var ring = this.GetVertexNeighbours(index);
+            int n = ring.Length;
+
+            for (int i = 0; i < n-1; i++)
+            {
+                normal += PlanktonXYZ.CrossProduct(
+                    this[ring[i]].ToXYZ() - vertex, 
+                    this[ring[i+1]].ToXYZ() - vertex);
+            }
+
+            if (this.IsBoundary(index) == false)
+            {
+                normal += PlanktonXYZ.CrossProduct(
+                    this[n-1].ToXYZ() - vertex,
+                    this[0].ToXYZ() - vertex);
+            }
+
+            return normal * (-1.0f / normal.Length); // return unit vector
+        }
+
+        /// <summary>
+        /// Gets the normal vectors for all vertices in the mesh.
+        /// </summary>
+        /// <returns>The area weighted vertex normals of all vertices in the mesh.</returns>
+        /// <remarks>
+        /// This will be accurate at the time of calling but will quickly
+        /// become outdated if you start fiddling with the mesh.
+        /// </remarks>
+        public PlanktonXYZ[] GetNormals()
+        {
+            return Enumerable.Range(0, this.Count).Select(i => this.GetNormal(i)).ToArray();
+        }
+
+        /// <summary>
+        /// Gets the positions of all vertices.
+        /// </summary>
+        /// <returns>The positions of all vertices in the mesh.</returns>
+        public PlanktonXYZ[] GetPositions()
+        {
+            return Enumerable.Range(0, this.Count).Select(i => this[i].ToXYZ()).ToArray();
+        }
+
         #region Euler operators
         /// <summary>
         /// <para>Merges two vertices by collapsing the pair of halfedges between them.</para>
@@ -497,6 +549,32 @@ namespace Plankton
             return _mesh.Faces[faceIndex].FirstHalfedge;
         }
         #endregion
+
+        /// <summary>
+        /// Truncates a vertex by creating a face with vertices on each of the outgoing halfedges.
+        /// </summary>
+        /// <param name="v">The index of a vertex.</param>
+        /// <returns>The index of the newly created face.</returns>
+        public int TruncateVertex(int v)
+        {
+            var hs = this.GetHalfedges(v);
+        
+            // set h_new and move original vertex
+            int h_new = hs[0];
+        
+            // circulate outgoing halfedges (clockwise, skip first)
+            for (int i = 1; i < hs.Length; i++)
+            {
+                // split vertex
+                int h_tmp = this.SplitVertex(hs[i], h_new);
+                h_new = h_tmp; // tidy-up if 'vs' is removed
+            }
+
+            // split face to create new truncated face
+            int splitH = this._mesh.Faces.SplitFace(hs[0], h_new);
+
+            return this._mesh.Halfedges[this._mesh.Halfedges.GetPairHalfedge(splitH)].AdjacentFace;
+        }
         #endregion
         
         #region IEnumerable implementation

@@ -123,12 +123,74 @@ namespace Plankton
         }
 
         /// <summary>
+        /// Computes the cross product (or vector product, or exterior product) of two vectors.
+        /// <para>This operation is not commutative.</para>
+        /// </summary>
+        /// <param name="a">First vector.</param>
+        /// <param name="b">Second vector.</param>
+        /// <returns>A new vector that is perpendicular to both a and b,
+        /// <para>has Length == a.Length * b.Length and</para>
+        /// <para>with a result that is oriented following the right hand rule.</para>
+        /// </returns>
+        public static PlanktonXYZ CrossProduct(PlanktonXYZ a, PlanktonXYZ b)
+        {
+            return new PlanktonXYZ(a._y * b._z - b._y * a._z, a._z * b._x - b._z * a._x, a._x * b._y - b._x * a._y);
+        }
+
+        /// <summary>
         /// Get the length of a vector
         /// </summary>        
         /// <returns>The length</returns>
-        public double Length()
+        public float Length
         {
-            return Math.Sqrt(this._x * this._x + this._y * this._y + this._z * this._z);
+            get { return (float)Math.Sqrt(this._x * this._x + this._y * this._y + this._z * this._z); }
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}, {1}, {2}", this._x, this._y, this._z);
+        }
+
+        /// <summary>
+        /// Determines whether two vectors have equal values.
+        /// </summary>
+        /// <param name="a">The first vector.</param>
+        /// <param name="b">The second vector.</param>
+        /// <returns>true if the components of the two vectors are exactly equal; otherwise false.</returns>
+        public static bool operator ==(PlanktonXYZ a, PlanktonXYZ b)
+        {
+            return (a._x == b._x && a._y == b._y && a._z == b._z);
+        }
+
+        /// <summary>
+        /// Determines whether two vectors have different values.
+        /// </summary>
+        /// <param name="a">The first vector.</param>
+        /// <param name="b">The second vector.</param>
+        /// <returns>true if the two vectors differ in any component; false otherwise.</returns>
+        public static bool operator !=(PlanktonXYZ a, PlanktonXYZ b)
+        {
+            return (a._x != b._x || a._y != b._y || a._z != b._z);
+        }
+
+        /// <summary>
+        /// Determines whether the specified System.Object is a Vector3f and has the same values as the present vector.
+        /// </summary>
+        /// <param name="obj">The specified object.</param>
+        /// <returns>true if obj is Vector3f and has the same components as this; otherwise false.</returns>
+        public override bool Equals(object obj)
+        {
+            return (obj is PlanktonXYZ && this == (PlanktonXYZ)obj);
+        }
+
+        /// <summary>
+        /// Determines whether the specified vector has the same values as the present vector.
+        /// </summary>
+        /// <param name="vector">The specified vector.</param>
+        /// <returns>true if vector has the same components as this; otherwise false.</returns>
+        public bool Equals(PlanktonXYZ vector)
+        {
+            return this == vector;
         }
     }
 }
