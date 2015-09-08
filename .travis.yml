@@ -1,21 +1,11 @@
-language: objective-c
+language: csharp
 env:
   global:
   - ARTIFACTS_S3_BUCKET=erdos
   - ARTIFACTS_AWS_REGION=eu-west-1
   - ARTIFACTS_AWS_ACCESS_KEY_ID=AKIAIJ6RNS2NO5AJFEWA
   - secure: "Fcch2TfSEG5YqT42JwExtS608pc395gdx4mMj++leKzVyA7vMRqoO2PLM38AGtTCTNiegIw97BPzwamDWO16WCzCYCOBQcCUKZ5N5raXhMEFr8Q4+zOniGuK/Q1G78rwC6VEafdoN/4/SFGhKl/e/WL079dwZ1oyIKeHT7ih9lE="
-  matrix:
-  - MONO_VERSION="3.10.0"
-install:
-- wget "http://download.mono-project.com/archive/${MONO_VERSION}/macos-10-x86/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg"
-- sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg"
-  -target /
-- gem install --no-rdoc --no-ri travis-artifacts
-script:
-- nuget restore src/Plankton.sln
-- xbuild /p:Configuration=Release src/Plankton.sln
-- mono src/packages/NUnit.Runners.2.6.3/tools/nunit-console.exe bin/Release/PlanktonTests.dll
+solution: src/Plankton.sln
 after_success:
 - zip plankton-${TRAVIS_BUILD_NUMBER}.zip LICENSE.txt README.md
 - zip -j plankton-${TRAVIS_BUILD_NUMBER}.zip bin/Release/Plankton.dll bin/Release/Plankton.gha
