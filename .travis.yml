@@ -6,7 +6,7 @@ env:
   - ARTIFACTS_BUCKET=erdos
 solution: src/Plankton.sln
 install:
-- nuget restore src/Plankton.sln
+- nuget restore src/Plankton.sln -source https://pyget.herokuapp.com/
 script:
 - xbuild /p:Configuration=Release src/Plankton.sln
 - mono src/packages/NUnit.Runners.2.6.3/tools/nunit-console.exe
