@@ -1,8 +1,20 @@
-language: c
- 
+language: csharp
+env:
+  global:
+  - ARTIFACTS_KEY=AKIAIJ6RNS2NO5AJFEWA
+  - secure: "BjS6rHI567Xea+fiTrK6d8NPRlkaY1AK177f6Fi58Inm850Al9i3DCaBLZjVB8oNmVa/KpHv32jM3nebIS5csB7CRDXTlhoX/cHJvTDUWugFQ8zTW+h9pNAOIPHa5FUdmC/szRDNazKB3/cDeKXxETW+QyBgsYpfjJ2MfgZcNDQ="
+  - ARTIFACTS_BUCKET=erdos
+solution: src/Plankton.sln
 install:
-  - sudo apt-get install mono-devel mono-gmcs nunit-console
-
+- nuget restore src/Plankton.sln -source https://pyget.herokuapp.com/
 script:
-  - xbuild /p:Configuration=Debug src/PlanktonMono.sln
-  - nunit-console bin/Debug/PlanktonTests.dll
+- xbuild /p:Configuration=Release src/Plankton.sln
+- mono src/packages/NUnit.Runners.2.6.3/tools/nunit-console.exe
+after_success:
+- zip plankton-${TRAVIS_BUILD_NUMBER}.zip LICENSE.txt README.md
+- zip -j plankton-${TRAVIS_BUILD_NUMBER}.zip bin/Release/Plankton.dll bin/Release/Plankton.gha
+addons:
+  artifacts: true
+  s3_region: "eu-west-1"
+  paths:
+  - plankton-${TRAVIS_BUILD_NUMBER}.zip
