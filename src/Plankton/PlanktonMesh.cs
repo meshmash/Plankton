@@ -120,6 +120,31 @@ namespace Plankton
 
         public PlanktonMesh Dual()
         {
+            // hack for open meshes
+            // TODO: improve this ugly method
+            if (this.IsClosed() == false)
+            {
+                var dual = new PlanktonMesh();
+
+                // create vertices from face centers
+                for (int i = 0; i < this.Faces.Count; i++)
+                {
+                    dual.Vertices.Add(this.Faces.GetFaceCenter(i));
+                }
+
+                // create faces from the adjacent face indices of non-boundary vertices
+                for (int i = 0; i < this.Vertices.Count; i++)
+                {
+                    if (this.Vertices.IsBoundary(i))
+                    {
+                        continue;
+                    }
+                    dual.Faces.AddFace(this.Vertices.GetVertexFaces(i));
+                }
+
+                return dual;
+            }
+
             // can later add options for other ways of defining face centres (barycenter/circumcenter etc)
             // won't work yet with naked boundaries
 
@@ -197,6 +222,18 @@ namespace Plankton
                 }
             }
             return D;
+        }
+
+        public bool IsClosed()
+        {
+            for (int i = 0; i < this.Halfedges.Count; i++)
+            {
+                if (this.Halfedges[i].AdjacentFace < 0)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         /// <summary>
