@@ -33,10 +33,10 @@ after_success:
 # - curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
 # - artifacts upload plankton-${TRAVIS_BUILD_NUMBER}.zip
 deploy:
-- provider: s3
+  provider: s3
   access_key_id: AKIAIJ6RNS2NO5AJFEWA
   secret_access_key:
-    secure: EGvqNrE2arNIyjIbiU2tuXpsz0nX5bT5SCyGqrMMrh8TybR9XrXvE5deRLaShw7gYaG8U0qiw5dA7obONAUGQDXQbm0sZbo94spW5MqIIFc7+gLdODN+eQTPSdiXbu0GbcpH5l933O4lvNAKp8HV72pUkyNeaaCUuaTjP8iCZhE=
+    secure: LaxKFOTWisPFg6nwB8vZNKQicsaWhZr3e9WEK5LDGzSR71c1UKG7a/lg7CsZiQ0rqZJ+wamWwJZEKSwfkvz2mJRJtcUGK1aoksd7gTXJuZ1Uu/kEiPF/ZlMR5c5wA3WVDICmkfljj2j6nPvXXHBKF8hfkku9zpuiTmCJ3bh3qPE=
   bucket: erdos
   skip_cleanup: true
   region: eu-west-1
