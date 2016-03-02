@@ -36,7 +36,7 @@ deploy:
 - provider: s3
   access_key_id: AKIAIJ6RNS2NO5AJFEWA
   secret_access_key:
-    secure: BjS6rHI567Xea+fiTrK6d8NPRlkaY1AK177f6Fi58Inm850Al9i3DCaBLZjVB8oNmVa/KpHv32jM3nebIS5csB7CRDXTlhoX/cHJvTDUWugFQ8zTW+h9pNAOIPHa5FUdmC/szRDNazKB3/cDeKXxETW+QyBgsYpfjJ2MfgZcNDQ=
+    secure: IoQ9+WncyXz73Q5kp8psmUjSu2ZlxVEOdpoVevbADrXMUIVsgWhzZPzYiBlEvmxYP0S3/hGHN7QT6DbVCZWfZfPsO6Ys39Sg8kvIDg0t54t7jUFFHW1Yw83nrlU1BRk4nfFPkSruhW0vnojLxbOeQPpVQz8SW77NlZF8zlaQvgA=
   bucket: erdos
   skip_cleanup: true
   region: eu-west-1
