@@ -8,6 +8,7 @@
 #   - nunit-console bin/Debug/PlanktonTests.dll
 
 language: csharp
+sudo: false
 # env:
 #   global:
 #   - ARTIFACTS_KEY=AKIAIJ6RNS2NO5AJFEWA
