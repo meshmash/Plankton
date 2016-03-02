@@ -22,9 +22,10 @@ install:
 - nuget install Grasshopper -source https://pyget.herokuapp.com/
 - cp RhinoCommon.*/lib/* lib/
 - cp Grasshopper.*/lib/* lib/
-# script:
-# - xbuild /p:Configuration=Release src/Plankton.sln
-# - mono src/packages/NUnit.Runners.2.6.3/tools/nunit-console.exe
+- nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
+script:
+- xbuild /p:Configuration=Release src/Plankton.sln
+- mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./bin/Debug/PlanktonTests.dll
 after_success:
 - mkdir dist
 - zip dist/plankton-${TRAVIS_BUILD_NUMBER}.zip LICENSE.txt README.md
