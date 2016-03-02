@@ -38,7 +38,7 @@ deploy:
   access_key_id: AKIAIJ6RNS2NO5AJFEWA
   secret_access_key:
     secure: LaxKFOTWisPFg6nwB8vZNKQicsaWhZr3e9WEK5LDGzSR71c1UKG7a/lg7CsZiQ0rqZJ+wamWwJZEKSwfkvz2mJRJtcUGK1aoksd7gTXJuZ1Uu/kEiPF/ZlMR5c5wA3WVDICmkfljj2j6nPvXXHBKF8hfkku9zpuiTmCJ3bh3qPE=
-  bucket: erdos
+  bucket: meshmash
   skip_cleanup: true
   region: eu-west-1
   local_dir: dist
