@@ -25,7 +25,7 @@ install:
 - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
 script:
 - xbuild /p:Configuration=Release src/Plankton.sln
-- mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./bin/Debug/PlanktonTests.dll
+- mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./bin/Release/PlanktonTests.dll
 after_success:
 - mkdir dist
 - zip dist/plankton-${TRAVIS_BUILD_NUMBER}.zip LICENSE.txt README.md
