@@ -1,8 +1,48 @@
-language: c
- 
-install:
-  - sudo apt-get install mono-devel mono-gmcs nunit-console
+# language: c
+#
+# install:
+#   - sudo apt-get install mono-devel mono-gmcs nunit-console
+#
+# script:
+#   - xbuild /p:Configuration=Debug src/PlanktonMono.sln
+#   - nunit-console bin/Debug/PlanktonTests.dll
 
+language: csharp
+sudo: false
+# env:
+#   global:
+#   - ARTIFACTS_KEY=AKIAIJ6RNS2NO5AJFEWA
+#   - secure: "BjS6rHI567Xea+fiTrK6d8NPRlkaY1AK177f6Fi58Inm850Al9i3DCaBLZjVB8oNmVa/KpHv32jM3nebIS5csB7CRDXTlhoX/cHJvTDUWugFQ8zTW+h9pNAOIPHa5FUdmC/szRDNazKB3/cDeKXxETW+QyBgsYpfjJ2MfgZcNDQ="
+#   - ARTIFACTS_BUCKET=erdos
+#   - ARTIFACTS_S3_REGION=eu-west-1
+#   - ARTIFACTS_PERMISSIONS=public-read
+#   - ARTIFACTS_TARGET_PATHS=builds
+solution: src/Plankton.sln
+install:
+- nuget restore src/Plankton.sln
+- nuget install Grasshopper -source https://pyget.herokuapp.com/
+- cp RhinoCommon.*/lib/* lib/
+- cp Grasshopper.*/lib/* lib/
+- nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
 script:
-  - xbuild /p:Configuration=Debug src/PlanktonMono.sln
-  - nunit-console bin/Debug/PlanktonTests.dll
+- xbuild /p:Configuration=Release src/Plankton.sln
+- mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./bin/Release/PlanktonTests.dll
+after_success:
+- mkdir dist
+- zip dist/plankton-${TRAVIS_BUILD_NUMBER}.zip LICENSE.txt README.md
+- zip -j dist/plankton-${TRAVIS_BUILD_NUMBER}.zip bin/Release/Plankton.dll bin/Release/Plankton.gha
+# - curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
+# - artifacts upload plankton-${TRAVIS_BUILD_NUMBER}.zip
+deploy:
+  provider: s3
+  access_key_id: AKIAIJ6RNS2NO5AJFEWA
+  secret_access_key:
+    secure: LaxKFOTWisPFg6nwB8vZNKQicsaWhZr3e9WEK5LDGzSR71c1UKG7a/lg7CsZiQ0rqZJ+wamWwJZEKSwfkvz2mJRJtcUGK1aoksd7gTXJuZ1Uu/kEiPF/ZlMR5c5wA3WVDICmkfljj2j6nPvXXHBKF8hfkku9zpuiTmCJ3bh3qPE=
+  bucket: meshmash
+  skip_cleanup: true
+  region: eu-west-1
+  local_dir: dist
+  upload-dir: builds
+  acl: public_read
+  on:
+    all_branches: true
