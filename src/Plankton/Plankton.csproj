@@ -40,10 +40,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalFunctions.cs" />
+    <Compile Include="PBasicVertex.cs" />
     <Compile Include="PlanktonFace.cs" />
     <Compile Include="PlanktonFaceList.cs" />
     <Compile Include="PlanktonHalfedge.cs" />
     <Compile Include="PlanktonHalfedgeList.cs" />
+    <Compile Include="PlanktonIndexPair.cs" />
+    <Compile Include="PlanktonLine.cs" />
     <Compile Include="PlanktonMesh.cs" />
     <Compile Include="PlanktonVertex.cs" />
     <Compile Include="PlanktonVertexList.cs" />

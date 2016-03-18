@@ -129,7 +129,7 @@ namespace PlanktonGeoTools
         }
         #endregion
         #region ID
-        public List<string> PrintVertices(PlanktonMesh mesh)
+        public static List<string> PrintVertices(PlanktonMesh mesh)
         {
             List<string> output = new List<string>();
             for (int i = 0; i < mesh.Vertices.Count; i++)
@@ -142,7 +142,7 @@ namespace PlanktonGeoTools
             }
             return output;
         }
-        public List<string> PrintFaces(PlanktonMesh mesh)
+        public static List<string> PrintFaces(PlanktonMesh mesh)
         {
             List<string> output = new List<string>();
             for (int i = 0; i < mesh.Faces.Count; i++)
@@ -158,7 +158,7 @@ namespace PlanktonGeoTools
             }
             return output;
         }
-        public List<string> PrintHalfedges(PlanktonMesh mesh)
+        public static List<string> PrintHalfedges(PlanktonMesh mesh)
         {
             List<string> output = new List<string>();
             output.Add("Format: StartVertex,AdjacentFace,NextHalfedge,PrevHalfedge");
@@ -173,7 +173,6 @@ namespace PlanktonGeoTools
             }
             return output;
         }
-
         #endregion
 
     }

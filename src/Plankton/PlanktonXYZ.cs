@@ -26,6 +26,28 @@ namespace Plankton
             _y = y;
             _z = z;
         }
+
+        public PlanktonXYZ(PlanktonXYZ p)
+        {
+            _x = p.X;
+            _y = p.Y;
+            _z = p.Z;
+        }
+
+        public float DistanceTo(PlanktonXYZ p)
+        {
+            float dx = this.X - p.X;
+            float dy = this.Y - p.Y;
+            float dz = this.Z - p.Z;
+            return (float)Math.Sqrt(dx * dx + dy * dy + dz * dz);
+        }
+        public static float DistanceTo(PlanktonXYZ v1, PlanktonXYZ v2)
+        {
+            float dx = v1.X - v2.X;
+            float dy = v1.Y - v2.Y;
+            float dz = v1.Z - v2.Z;
+            return (float)Math.Sqrt(dx * dx + dy * dy + dz * dz);
+        }
         #endregion
 
         #region static properties
@@ -36,7 +58,7 @@ namespace Plankton
         {
             get { return new PlanktonXYZ(); }
         }
-        
+
         /// <summary>
         /// Gets the value of the vector with components 1,0,0.
         /// </summary>
@@ -44,7 +66,7 @@ namespace Plankton
         {
             get { return new PlanktonXYZ(1f, 0f, 0f); }
         }
-        
+
         /// <summary>
         /// Gets the value of the vector with components 0,1,0.
         /// </summary>
@@ -52,7 +74,7 @@ namespace Plankton
         {
             get { return new PlanktonXYZ(0f, 1f, 0f); }
         }
-        
+
         /// <summary>
         /// Gets the value of the vector with components 0,0,1.
         /// </summary>
@@ -67,12 +89,12 @@ namespace Plankton
         /// Gets or sets the X (first) component of this vector.
         /// </summary>
         public float X { get { return _x; } set { _x = value; } }
-        
+
         /// <summary>
         /// Gets or sets the Y (second) component of this vector.
         /// </summary>
         public float Y { get { return _y; } set { _y = value; } }
-        
+
         /// <summary>
         /// Gets or sets the Z (third) component of this vector.
         /// </summary>
@@ -121,7 +143,10 @@ namespace Plankton
         {
             return new PlanktonXYZ(vector._x * t, vector._y * t, vector._z * t);
         }
-
+        public static float operator *(PlanktonXYZ v1, PlanktonXYZ v2)
+        {
+            return v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z;
+        }
         /// <summary>
         /// Computes the cross product (or vector product, or exterior product) of two vectors.
         /// <para>This operation is not commutative.</para>
