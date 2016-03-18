@@ -204,10 +204,11 @@ namespace Plankton
         }
         public float MinimumDistanceTo(PlanktonLine L)
         {
+            //公垂线
             PlanktonXYZ A, B;
             float a, b, t = 0, x = 0, d = 0;
             bool bCheckA, bCheckB;
-            bool bGoodX = ON_Intersect(this, L, out a, out b);
+            bool bGoodX = Intersect(this, L, out a, out b);
             bCheckA = true;
             if (a < 0f) a = 0f; else if (a > 1f) a = 1f; else bCheckA = !bGoodX;
             bCheckB = true;
@@ -267,7 +268,6 @@ namespace Plankton
             }
             return true;
         }
-
         public PlanktonXYZ this[int i]
         {
             get
@@ -279,7 +279,7 @@ namespace Plankton
         {
             return (this.From.GetHashCode() ^ this.To.GetHashCode());
         }
-        static bool ON_Intersect(PlanktonLine lineA, PlanktonLine lineB, out float lineA_parameter, out float lineB_parameter)
+        static bool Intersect(PlanktonLine lineA, PlanktonLine lineB, out float lineA_parameter, out float lineB_parameter)
         {
             bool rc = true;
             if (lineA.m_from == lineB.m_from)
@@ -304,13 +304,12 @@ namespace Plankton
             }
             else
             {
-                lineA_parameter = 0f;
-                lineB_parameter = 0f;
+                lineA_parameter = 0.5f;
+                lineB_parameter = 0.5f;
                 ////计算
             }
             return rc;
 
         }
-
     }
 }
