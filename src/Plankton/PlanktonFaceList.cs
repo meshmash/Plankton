@@ -286,8 +286,18 @@ namespace Plankton
             int[] fhs = this.GetHalfedges(index);
             foreach (int h in fhs)
             {
-                if (_mesh.Halfedges.IsBoundary(h)) { _mesh.Halfedges.RemovePairHelper(h); }
-                else { _mesh.Halfedges[h].AdjacentFace = -1; }
+                if (_mesh.Halfedges.IsBoundary(h))
+                {
+                  // If halfedge is on a boundary then remove the pair
+                  _mesh.Halfedges.RemovePairHelper(h);
+                }
+                else
+                {
+                  // If halfedge was not previously a boundary, it is now
+                  var heObj = _mesh.Halfedges[h];
+                  heObj.AdjacentFace = -1;
+                  _mesh.Vertices[heObj.StartVertex].OutgoingHalfedge = h;
+                }
             }
             this[index] = PlanktonFace.Unset;
         }

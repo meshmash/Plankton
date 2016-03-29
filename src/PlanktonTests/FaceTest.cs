@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace Plankton.Test
@@ -277,6 +278,85 @@ namespace Plankton.Test
             Assert.AreEqual(new int[] { 0, 1 }, retval);
             Assert.AreEqual(2, pMesh.Faces.Count);
             Assert.AreEqual(faces[1], pMesh.Faces.GetFaceVertices(1));
+        }
+
+        [Test]
+        public void CanDeleteFaceAndAddFace()
+        {
+          /*
+
+          0 - 4 - 8 - 12
+          | 0 | 3 | 6 |
+          1 - 5 - 9 - 13
+          | 1 | 4 | 7 |
+          2 - 6 - 10- 14
+          | 2 | 5 | 8 |
+          3 - 7 - 11- 15
+
+          */
+
+          PlanktonMesh pMesh = new PlanktonMesh();
+
+          // Create 4x4 grid of vertices
+          pMesh.Vertices.Add(0, 3, 0); //  0
+          pMesh.Vertices.Add(0, 2, 0); //  1
+          pMesh.Vertices.Add(0, 1, 0); //  2
+          pMesh.Vertices.Add(0, 0, 0); //  3
+          pMesh.Vertices.Add(1, 3, 0); //  4
+          pMesh.Vertices.Add(1, 2, 0); //  5
+          pMesh.Vertices.Add(1, 1, 0); //  6
+          pMesh.Vertices.Add(1, 0, 0); //  7
+          pMesh.Vertices.Add(2, 3, 0); //  8
+          pMesh.Vertices.Add(2, 2, 0); //  9
+          pMesh.Vertices.Add(2, 1, 0); // 10
+          pMesh.Vertices.Add(2, 0, 0); // 11
+          pMesh.Vertices.Add(3, 3, 0); // 12
+          pMesh.Vertices.Add(3, 2, 0); // 13
+          pMesh.Vertices.Add(3, 1, 0); // 14
+          pMesh.Vertices.Add(3, 0, 0); // 15
+
+          // Create nine quadrangular faces
+          pMesh.Faces.AddFace(0, 1, 5, 4);     // 0
+          pMesh.Faces.AddFace(1, 2, 6, 5);     // 1
+          pMesh.Faces.AddFace(2, 3, 7, 6);     // 2
+          pMesh.Faces.AddFace(4, 5, 9, 8);     // 3
+          pMesh.Faces.AddFace(5, 6, 10, 9);    // 4
+          pMesh.Faces.AddFace(6, 7, 11, 10);   // 5
+          pMesh.Faces.AddFace(8, 9, 13, 12);   // 6
+          pMesh.Faces.AddFace(9, 10, 14, 13);  // 7
+          pMesh.Faces.AddFace(10, 11, 15, 14); // 8
+
+          int id = 4; // center face
+
+          // Get old face info
+          var faceCirculator = pMesh.Halfedges.GetFaceCirculator(pMesh.Faces[id].FirstHalfedge);
+          var faceVerts = new List<int>();
+          foreach (var i in faceCirculator)
+          {
+            faceVerts.Add(pMesh.Halfedges[i].StartVertex);
+          }
+
+          // All face vertices should be internal (not boundary)
+          foreach (int i in faceVerts)
+          {
+            Assert.IsFalse(pMesh.Vertices.IsBoundary(i));
+          }
+
+          // Delete old face
+          pMesh.Faces.RemoveFace(id);
+
+          // All face vertices should now be on a boundary
+          foreach (int i in faceVerts)
+          {
+            Assert.IsTrue(pMesh.Vertices.IsBoundary(i));
+          }
+
+          // pMesh.Compact();
+
+          // Re-add face
+          var res = pMesh.Faces.AddFace(faceVerts);
+          Assert.AreNotEqual(-1, res);
+          Assert.AreEqual(9, res); // res == 8 if mesh compacted beforehand
         }
     }
 }
