@@ -35,15 +35,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GH_IO">
-      <HintPath>..\..\lib\GH_IO.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files\Common Files\McNeel\Rhinoceros\5.0\Plug-ins\Grasshopper (b45a29b1-4343-4035-989e-044e8580d9cf)\0.9.76.0\GH_IO.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Grasshopper">
-      <HintPath>..\..\lib\Grasshopper.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files\Common Files\McNeel\Rhinoceros\5.0\Plug-ins\Grasshopper (b45a29b1-4343-4035-989e-044e8580d9cf)\0.9.76.0\Grasshopper.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="RhinoCommon">
-      <HintPath>..\..\lib\RhinoCommon.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files\Rhinoceros 5 (64-bit)\System\RhinoCommon.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
