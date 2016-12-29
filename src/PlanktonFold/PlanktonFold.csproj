@@ -41,6 +41,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Grasshopper">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Common Files\McNeel\Rhinoceros\5.0\Plug-ins\Grasshopper (b45a29b1-4343-4035-989e-044e8580d9cf)\0.9.76.0\Grasshopper.dll</HintPath>
+    </Reference>
+    <Reference Include="Plankton, Version=0.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\AppData\Roaming\Grasshopper\Libraries\Plankton.dll</HintPath>
+    </Reference>
+    <Reference Include="PlanktonGh, Version=0.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\AppData\Roaming\Grasshopper\Libraries\PlanktonGh.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -50,27 +61,14 @@
       <HintPath>c:\Program Files (x86)\Rhinoceros 5\System\rhinocommon.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Grasshopper">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\Common Files\McNeel\Rhinoceros\5.0\Plug-ins\Grasshopper (b45a29b1-4343-4035-989e-044e8580d9cf)\0.9.76.0\Grasshopper.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="GH_IO">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\Common Files\McNeel\Rhinoceros\5.0\Plug-ins\Grasshopper (b45a29b1-4343-4035-989e-044e8580d9cf)\0.9.76.0\GH_IO.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PlanktonFoldComponent.cs" />
+    <Compile Include="GhcPlanktonFold.cs" />
     <Compile Include="PlanktonFoldInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Plankton\Plankton.csproj">
-      <Project>{bdd288f7-c2e2-4c2a-b083-e4d4d21f528f}</Project>
-      <Name>Plankton</Name>
-    </ProjectReference>
+    <Folder Include="Math\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

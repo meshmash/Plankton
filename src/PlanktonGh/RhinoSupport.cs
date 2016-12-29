@@ -9,7 +9,7 @@ namespace PlanktonGh
     /// <summary>
     /// Provides static and extension methods to add support for Rhino geometry in <see cref="Plankton"/>.
     /// </summary>
-    public static class RhinoSupport
+    static class RhinoSupport
     {
         public static string HelloWorld()
         {
@@ -412,6 +412,82 @@ namespace PlanktonGh
         {
             return Enumerable.Range(0, source.Vertices.Count).Select(i => source.Vertices[i].ToPoint3d());          
         }
+
+        /// <summary>
+        /// Gets area of a planar quad
+        /// </summary>
+        /// <param name="srf"></param>
+        /// <returns></returns>
+        public static double QuadArea(Surface srf)
+        {
+            double area = 0;
+            double width;
+            double height;
+
+            if (srf.GetSurfaceSize(out width, out height))
+            {
+                area = width * height;
+            }
+
+            return area;
+        }
+
+        /// <summary>
+        /// Gets the area of a triangle
+        /// </summary>
+        /// <param name="A"></param>
+        /// <param name="B"></param>
+        /// <param name="C"></param>
+        /// <returns></returns>
+        public static double TriangleArea(Point3d A, Point3d B, Point3d C)
+        {
+            double area;
+            return area = Math.Abs((A.X * (B.Y - C.Y) + B.X * (A.Y - C.Y) + C.X * (A.Y - B.Y)) / 2);
+        }
+
+        /// <summary>
+        /// Constructs a rhino mesh from a list of srfs
+        /// </summary>
+        /// <param name="srfs"></param>
+        /// <returns></returns>
+        public static Mesh SrfToRhinoMesh(List<Surface> srfs)
+        {
+            Mesh msh = new Mesh();
+
+            int vertexCounter = 0;
+            foreach (Surface srf in srfs)
+            {
+                srf.SetDomain(0, new Interval(0, 1));
+                srf.SetDomain(1, new Interval(0, 1));
+
+                Point3d cornerA = srf.PointAt(0, 0);
+                Point3d cornerB = srf.PointAt(0, 1);
+                Point3d cornerC = srf.PointAt(1, 0);
+                Point3d cornerD = srf.PointAt(1, 1);
+
+                if (RhinoSupport.QuadArea(srf) == RhinoSupport.TriangleArea(cornerA, cornerB, cornerC)) // triangle mesh face
+                {
+                    msh.Vertices.Add(cornerA);
+                    msh.Vertices.Add(cornerB);
+                    msh.Vertices.Add(cornerC);
+                    msh.Faces.AddFace(vertexCounter, vertexCounter + 1, vertexCounter + 2);
+                    vertexCounter += 3;
+                }
+
+                else // quad mesh face
+                {
+                    msh.Vertices.Add(cornerA);
+                    msh.Vertices.Add(cornerB);
+                    msh.Vertices.Add(cornerD);
+                    msh.Vertices.Add(cornerC);
+                    msh.Faces.AddFace(vertexCounter, vertexCounter + 1, vertexCounter + 2, vertexCounter + 3);
+                    vertexCounter += 4;
+                }
+            }
+
+            return msh;
+        }
+
     }
 }
 

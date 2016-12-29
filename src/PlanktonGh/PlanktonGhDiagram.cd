@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="PlanktonGh.RhinoSupport">
+    <Position X="0.5" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>QCIAAAAAECAAAAAQAAACACAAAAAACAgkCAAAACAAAAA=</HashCode>
+      <FileName>RhinoSupport.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Microsoft JhengHei UI" Size="9" />
+</ClassDiagram>

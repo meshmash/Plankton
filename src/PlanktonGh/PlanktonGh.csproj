@@ -12,7 +12,6 @@
     <AssemblyName>PlanktonGh</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <NoWin32Manifest>False</NoWin32Manifest>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -81,6 +80,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="PlanktonGhDiagram.cd" />
     <None Include="Resources\plankton.png" />
   </ItemGroup>
   <ItemGroup>
@@ -96,6 +96,10 @@
     </PostBuildEvent>
     <PostBuildEvent Condition=" '$(OS)' != 'Windows_NT' ">
       cp "$(TargetPath)" "$(TargetDir)$(SolutionName).gha"
+    </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
