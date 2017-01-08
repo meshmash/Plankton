@@ -8,10 +8,12 @@ namespace Plankton
     public class PlanktonVertex
     {
         public int OutgoingHalfedge;
-        
+        public int Index;
+
         internal PlanktonVertex()
         {
             this.OutgoingHalfedge = -1;
+            
         }
         
         internal PlanktonVertex(float x, float y, float z)

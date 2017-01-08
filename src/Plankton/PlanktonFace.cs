@@ -8,6 +8,8 @@ namespace Plankton
     public class PlanktonFace
     {
         public int FirstHalfedge;
+        public int Index;
+
         
         public PlanktonFace()
         {

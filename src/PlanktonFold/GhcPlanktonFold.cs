@@ -2,8 +2,10 @@
 using System.Linq;
 using System.Collections.Generic;
 using Plankton;
+using Grasshopper;
 using PlanktonGh;
 using Grasshopper.Kernel;
+using Grasshopper.Kernel.Data;
 using Rhino.Geometry;
 
 namespace PlanktonFold
@@ -20,60 +22,102 @@ namespace PlanktonFold
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
+            // 0
             pManager.AddSurfaceParameter("Surfaces", "Surfaces", "Surfaces as list", GH_ParamAccess.list);
+            pManager[0].Optional = true;
+
+            // 1
+            pManager.AddMeshParameter("Mesh", "Mesh", "Mesh", GH_ParamAccess.item);
+            pManager[1].Optional = true;
+
+            // 2
+            pManager.AddNumberParameter("i", "i", "i", GH_ParamAccess.item);
+            pManager[2].Optional = true;
+
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
+            // 0
             pManager.AddMeshParameter("Mesh", "Mesh", "Mesh", GH_ParamAccess.item);
-            pManager.AddGenericParameter("PMesh", "PMesh", "PMesh", GH_ParamAccess.item);
-            pManager.AddPointParameter("Vertex", "Vertex", "Vertex", GH_ParamAccess.item);
-            pManager.AddVectorParameter("Normals", "Normals", "Normals", GH_ParamAccess.list);
+
+            // 1
+            pManager.AddPointParameter("cVertices", "cVertices", "cVertices", GH_ParamAccess.list); // inner vertices with constraints
+           
+            // 2
+            pManager.AddLineParameter("NeighborEdges",  "NeighborEdges", "NeighborEdges", GH_ParamAccess.tree);
+
+            //pManager.AddVectorParameter("vNormals", "vNormals", "vertex normals", GH_ParamAccess.list);
+            //pManager.AddVectorParameter("fNormals", "fNormals", "face normals", GH_ParamAccess.list);
+            //pManager.AddPointParameter("Vertices", "Vertices", "Vertices", GH_ParamAccess.list);
+            //pManager.AddPointParameter("bVertices", "bVertices", "bVertices", GH_ParamAccess.list);
+            //pManager.AddGenericParameter("PMesh", "PMesh", "PMesh", GH_ParamAccess.item);
+            //pManager.AddLineParameter("bEdges", "bEdges", "boundary edges", GH_ParamAccess.list);
+            //pManager.AddLineParameter("iHalfEdge", "iHalfEdge", "iHalfEdge", GH_ParamAccess.item);
+            //pManager.AddLineParameter("i+1HalfEdge", "i+1HalfEdge", "i+1HalfEdge", GH_ParamAccess.item);
 
         }
+
+        Mesh M = new Mesh();
+        PlanktonMesh P = new PlanktonMesh();
 
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            
-            
+            // define M & P
             List<Surface> surfaces = new List<Surface>();
-            DA.GetDataList<Surface>("Surfaces", surfaces);
+            if (DA.GetDataList<Surface>("Surfaces", surfaces)) { M = RhinoSupport.SrfToRhinoMesh(surfaces); };
 
-            // surfaces to p-mesh
-            Mesh msh = RhinoSupport.SrfToRhinoMesh(surfaces);
+            DA.GetData<Mesh>("Mesh", ref M);
 
-            PlanktonMesh singleFold = new PlanktonMesh(RhinoSupport.ToPlanktonMesh(msh));
-           
-            
-            
-            
-            
-            
-            /*
-            int maxValence = 0;
-            for (int i = 0; i < singleFold.Vertices.Count; i++)
+            P = RhinoSupport.ToPlanktonMesh(M);
+            P.Faces.AssignFaceIndex();
+            P.Halfedges.AssignHalfEdgeIndex();
+            P.Vertices.AssignVertexIndex();
+
+            List<Point3d> cVertices = RhinoSupport.GetConstraintVertices(P);
+            List<int> cVertexIndices = RhinoSupport.GetConstraintVertexIndices(P);
+
+            double i = 0;
+            DA.GetData<double>("i", ref i);
+            //List<Line> neighbourEdges = RhinoSupport.NeighborVertexEdges(P, (int)i);
+
+            DataTree<Line> neighbourEdges = new DataTree<Line>();
+
+            for  (int j = 0; j < cVertexIndices.Count(); j++)
             {
-                int iValence = singleFold.Vertices.GetValence(i);
-                if (iValence > maxValence)
-                {
-                    maxValence = iValence;
-                    singleFold.Vertices. = new Point3d(singleFold.PMesh.Vertices[i].X, singleFold.PMesh.Vertices[i].Y, singleFold.PMesh.Vertices[i].Z);
-                }
+                GH_Path iPth = new GH_Path(j);
+                neighbourEdges.AddRange( RhinoSupport.NeighborVertexEdges(P, cVertexIndices[j]), iPth);
             }
-            */
 
-            List<PlanktonXYZ> p_normals = singleFold.Vertices.GetNormals().ToList();
-            List<Vector3f> normals = p_normals.Select(o => RhinoSupport.ToVector3f(o)).ToList();
+            DA.SetData("Mesh", RhinoSupport.ToRhinoMesh(P));
+            DA.SetDataList("cVertices", cVertices);
+            DA.SetDataTree(2, neighbourEdges);
+
+            #region unused test
+            //// Normals
+            //List<Point3d> p_vertices = P.Vertices.GetPositions().ToList()
+            //    .Select(o => RhinoSupport.ToPoint3d(o)).ToList();
+            //List<Vector3f> vertexNormals = P.Vertices.GetNormals().ToList()
+            //    .Select(o => RhinoSupport.ToVector3f(o)).ToList();
+
+            //List<Line> bEdges = RhinoSupport.GetBoundaryEdges(P);
+            //List<Point3d> bVertices = RhinoSupport.GetBoundaryVertices(P);
 
 
-            DA.SetData("Mesh", RhinoSupport.ToRhinoMesh(singleFold));
-            DA.SetData("PMesh", singleFold);
-            //DA.SetData("Vertex", singleFold.Vertex);
-            DA.SetDataList("Normals", normals);
+            //DA.SetDataList("Vertices", p_vertices);
+            //DA.SetDataList("vNormals", vertexNormals);
+            //DA.SetDataList("bVertices", bVertices);
+            //DA.SetData("PMesh", P); 
+            //DA.SetDataList("bEdges", bEdges);
+            //i =  (i > P.Halfedges.Count() - 1) ? P.Halfedges.Count() - 1 : i; 
+            //Line iLine = RhinoSupport.HalfEdgeToLine(P, P.Halfedges[(int)i]);
+            //Line nextLine = RhinoSupport.HalfEdgeToLine(P, P.Halfedges[(int)(i) + 1]);
+            //DA.SetData("iHalfEdge", iLine);
+            //DA.SetData("i+1HalfEdge", nextLine);
+            #endregion
 
         }
 
-  
         protected override System.Drawing.Bitmap Icon
         {
             get
@@ -83,7 +127,6 @@ namespace PlanktonFold
                 return null;
             }
         }
-
 
         public override Guid ComponentGuid
         {

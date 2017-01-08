@@ -355,29 +355,6 @@ namespace Plankton
             // Trim list down to new size
             if (marker < _list.Count) { _list.RemoveRange(marker, _list.Count - marker); }
         }
-        
-        #region traversals
-        /// <summary>
-        /// Traverses the halfedge indices which bound a face.
-        /// </summary>
-        /// <param name="f">A face index.</param>
-        /// <returns>An enumerable of halfedge indices incident to the specified face.
-        /// Ordered anticlockwise around the face.</returns>
-        [Obsolete("GetHalfedgesCirculator(int) is deprecated, please use" +
-            "Halfedges.GetFaceCirculator(int) instead.")]
-        public IEnumerable<int> GetHalfedgesCirculator(int f)
-        {
-            int he_first = this[f].FirstHalfedge;
-            if (he_first < 0) yield break; // face has no connectivity, exit
-            int he_current = he_first;
-            do
-            {
-                yield return he_current;
-                he_current = _mesh.Halfedges[he_current].NextHalfedge;
-            }
-            while (he_current != he_first);
-        }
-        #endregion
 
         #region adjacency queries
         /// <summary>
@@ -403,11 +380,6 @@ namespace Plankton
                 .Select(h => _mesh.Halfedges[h].StartVertex).ToArray();
         }
 
-        [Obsolete("GetVertices is deprecated, please use GetFaceVertices instead.")]
-        public int[] GetVertices(int f)
-        {
-            return this.GetFaceVertices(f);
-        }
         #endregion
 
         #region Euler operators
@@ -581,12 +553,7 @@ namespace Plankton
             return centroid;
         }
         
-        [Obsolete("FaceCentroid is deprecated, please use GetFaceCenter instead.")]
-        public PlanktonXYZ FaceCentroid(int f)
-        {
-            return this.GetFaceCenter(f);
-        }
-        
+        // !!!
         /// <summary>
         /// Gets the number of naked edges which bound this face.
         /// </summary>
@@ -601,8 +568,12 @@ namespace Plankton
             }
             return nakedCount;
         }
+
         #endregion
-        
+
+
+
+
         #region IEnumerable implementation
         /// <summary>
         /// Gets an enumerator that yields all faces in this collection.
@@ -616,6 +587,17 @@ namespace Plankton
         {
             return this.GetEnumerator();
         }
+        #endregion
+
+        #region by dyliu
+        public void AssignFaceIndex()
+        {
+            for (int i = 0; i < this.Count(); i++)
+            {
+                this[i].Index = i;
+            }
+        }
+
         #endregion
     }
 }

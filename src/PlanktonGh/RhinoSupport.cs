@@ -9,7 +9,7 @@ namespace PlanktonGh
     /// <summary>
     /// Provides static and extension methods to add support for Rhino geometry in <see cref="Plankton"/>.
     /// </summary>
-    static class RhinoSupport
+    static public class RhinoSupport
     {
         public static string HelloWorld()
         {
@@ -209,7 +209,9 @@ namespace PlanktonGh
                     }
                 }
             }
-
+             
+            pMesh.Halfedges.AssignHalfEdgeIndex(); // by dyliu
+                  
             return pMesh;
         }
 
@@ -254,6 +256,7 @@ namespace PlanktonGh
             return rMesh;
         }
 
+        // !!!
         /// <summary>
         /// Replaces the vertices of a PlanktonMesh with a new list of points
         /// </summary>
@@ -270,6 +273,7 @@ namespace PlanktonGh
             return pMesh;
         }
 
+        // !!!
         /// <summary>
         /// Converts each face to a closed polyline.
         /// </summary>
@@ -372,6 +376,7 @@ namespace PlanktonGh
             return vertexList.SetVertex(index, vertex.X, vertex.Y, vertex.Z);
         }
 
+        // !!!
         /// <summary>
         /// <para>Moves a vertex by a vector.</para>       
         /// </summary>
@@ -412,6 +417,8 @@ namespace PlanktonGh
         {
             return Enumerable.Range(0, source.Vertices.Count).Select(i => source.Vertices[i].ToPoint3d());          
         }
+
+        #region: by dyliu
 
         /// <summary>
         /// Gets area of a planar quad
@@ -488,6 +495,141 @@ namespace PlanktonGh
             return msh;
         }
 
+        /// <summary>
+        /// get the boundary endges as a list of lines
+        /// </summary>
+        /// <param name="pmsh"></param>
+        /// <returns></returns>
+        public static List<Line> GetBoundaryEdges(PlanktonMesh pmsh)
+        {
+            List<Line> bEdges = new List<Line>();
+
+            List<int> nakedEdgeIndex = pmsh.Halfedges.Where(o => o.AdjacentFace == -1).Select(o => o.Index).ToList();
+            
+            foreach (int i in nakedEdgeIndex)
+            {
+                int[] ends = pmsh.Halfedges.GetVertices(i);
+
+                Point3d p1 = pmsh.Vertices[ends.First()].ToPoint3d();
+                Point3d p2 = pmsh.Vertices[ends.Last()].ToPoint3d();
+                bEdges.Add(new Line(p1, p2));
+            }
+
+            return bEdges;
+
+
+        }
+
+        /// <summary>
+        ///  get boundary vertices as a list
+        /// </summary>
+        /// <param name="pmsh"></param>
+        /// <returns></returns>
+        public static List<Point3d> GetBoundaryVertices(PlanktonMesh pmsh)
+        {
+            List<int> bVerticesID = new List<int>();
+            List<int> nakedEdgeIndex = pmsh.Halfedges.Where(o => o.AdjacentFace == -1).Select(o => o.Index).ToList();
+
+            foreach (int i in nakedEdgeIndex)
+            {
+                int[] ends = pmsh.Halfedges.GetVertices(i);
+                bVerticesID.AddRange(ends);
+            }
+
+            bVerticesID.Distinct().ToList().Sort();
+
+            List<PlanktonVertex> bVertices = new List<PlanktonVertex>();
+            foreach (int i in bVerticesID)
+                bVertices.Add(pmsh.Vertices[i]);
+
+            return bVertices.Select(o => o.ToPoint3d()).ToList();
+        }
+
+        /// <summary>
+        /// get the inner/constraint vertices
+        /// </summary>
+        /// <param name="pmsh"></param>
+        /// <returns></returns>
+        public static List<Point3d> GetConstraintVertices(PlanktonMesh pmsh)
+        {
+
+            List<int> bVerticesID = new List<int>();
+            List<int> nakedEdgeIndex = pmsh.Halfedges.Where(o => o.AdjacentFace == -1).Select(o => o.Index).ToList();
+
+            foreach (int i in nakedEdgeIndex)
+            {
+                int[] ends = pmsh.Halfedges.GetVertices(i);
+                bVerticesID.AddRange(ends);
+            }
+
+            bVerticesID.Distinct().ToList().Sort();
+
+            List<PlanktonVertex> bVertices = new List<PlanktonVertex>();
+            foreach (int i in bVerticesID)
+                bVertices.Add(pmsh.Vertices[i]);
+
+            List<PlanktonVertex> cVertices = pmsh.Vertices.ToList().Except(bVertices).ToList();
+            return cVertices.Select(o => o.ToPoint3d()).ToList();
+        }
+
+        public static List<int> GetConstraintVertexIndices(PlanktonMesh pmsh)
+        {
+
+            List<int> bVerticesID = new List<int>();
+            List<int> nakedEdgeIndex = pmsh.Halfedges.Where(o => o.AdjacentFace == -1).Select(o => o.Index).ToList();
+
+            foreach (int i in nakedEdgeIndex)
+            {
+                int[] ends = pmsh.Halfedges.GetVertices(i);
+                bVerticesID.AddRange(ends);
+            }
+
+            bVerticesID.Distinct().ToList().Sort();
+
+            List<PlanktonVertex> bVertices = new List<PlanktonVertex>();
+            foreach (int i in bVerticesID)
+                bVertices.Add(pmsh.Vertices[i]);
+
+            List<PlanktonVertex> cVertices = pmsh.Vertices.ToList().Except(bVertices).ToList();
+            return cVertices.Select(o => o.Index).ToList();
+        }
+
+        public static List<Line> NeighborVertexEdges(PlanktonMesh pmsh, int vIndex)
+        {
+            List<int> neighborEdgesIndices = 
+                pmsh.Halfedges.GetVertexCirculator(pmsh.Vertices[vIndex].OutgoingHalfedge).ToList();
+
+            List<PlanktonHalfedge> neighborPEdges = 
+                pmsh.Halfedges.ToList().Where(o => neighborEdgesIndices.Contains(o.Index)).ToList();
+
+            List<Line> neighborEdges = new List<Line>();
+            foreach(var e in neighborPEdges)
+            {
+                neighborEdges.Add(RhinoSupport.HalfEdgeToLine(pmsh, e));
+            }
+
+            return neighborEdges;
+
+        }
+
+        /// <summary>
+        /// given pmesh and edge, gives a line of the edge
+        /// </summary>
+        /// <param name="pmsh"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public static Line HalfEdgeToLine(PlanktonMesh pmsh, PlanktonHalfedge e)
+        {
+            Point3d p1 = pmsh.Vertices[e.StartVertex].ToPoint3d();
+
+            Point3d p2 = pmsh.Vertices[pmsh.Halfedges[pmsh.Halfedges.GetPairHalfedge(e.Index)].StartVertex].ToPoint3d();
+
+            //Point3d p2 = pmsh.Vertices[pmsh.Halfedges[e.NextHalfedge].StartVertex].ToPoint3d();
+
+            return new Line(p1, p2);
+
+        }
+        #endregion
     }
 }
 

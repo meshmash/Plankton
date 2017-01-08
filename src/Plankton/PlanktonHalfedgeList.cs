@@ -22,7 +22,11 @@ namespace Plankton
         {
             this._list = new List<PlanktonHalfedge>();
             this._mesh = owner;
+            AssignHalfEdgeIndex();
+
         }
+
+
         
         /// <summary>
         /// Gets the number of halfedges.
@@ -166,6 +170,7 @@ namespace Plankton
         }
 
         #region traversals
+        // !!!
         /// <summary>
         /// Traverses clockwise around the starting vertex of a halfedge.
         /// </summary>
@@ -191,7 +196,7 @@ namespace Plankton
             }
             while (h != halfedgeIndex);
         }
-
+        //!!!
         /// <summary>
         /// Traverses anticlockwise around the adjacent face of a halfedge.
         /// </summary>
@@ -238,6 +243,7 @@ namespace Plankton
             return -1;
         }
 
+        // !!!
         /// <summary>
         /// Gets the opposing halfedge in a pair.
         /// </summary>
@@ -253,12 +259,7 @@ namespace Plankton
             return halfedgeIndex % 2 == 0 ? halfedgeIndex + 1 : halfedgeIndex - 1;
         }
 
-        [Obsolete("PairHalfedge is deprecated, pease use GetPairHalfedge instead.")]
-        public int PairHalfedge(int halfedgeIndex)
-        {
-            return this.GetPairHalfedge(halfedgeIndex);
-        }
-
+        // !!!
         /// <summary>
         /// Gets the two vertices for a halfedge.
         /// </summary>
@@ -273,6 +274,15 @@ namespace Plankton
 
             return new int[]{ I, J };
         }
+
+        //public int[] GetVertices(PlanktonHalfedge e)
+        //{
+        //    int I, J;
+        //    I = e.StartVertex;
+        //    J = this[this.GetPairHalfedge(index)].StartVertex;
+
+        //    return new int[] { I, J };
+        //}
 
         /// <summary>
         /// Gets the halfedge a given number of 'next's around a face from a starting halfedge
@@ -292,6 +302,7 @@ namespace Plankton
             return he_around;
         }
 
+        // !!!
         /// <summary>
         /// A halfedge is on a boundary if it only has a face on one side.
         /// </summary>
@@ -305,6 +316,7 @@ namespace Plankton
             return (this[index].AdjacentFace == -1 || this[pair].AdjacentFace == -1);
         }
 
+        // !!!
         /// <summary>
         /// Gets the index of the vertex at the <b>end</b> of a halfedge.
         /// </summary>
@@ -583,5 +595,29 @@ namespace Plankton
             return this.GetEnumerator();
         }
         #endregion
+
+        #region by dyliu
+
+        public void AssignHalfEdgeIndex()
+        {
+            for (int i = 0; i < this.Count(); i++)
+            {
+                this[i].Index = i;
+            }
+        }
+
+        public List<PlanktonHalfedge> GetNakedEdges()
+        {
+            List<PlanktonHalfedge> nakedEdges = new List<PlanktonHalfedge>();
+
+            foreach (PlanktonHalfedge i in this)
+                if (i.AdjacentFace == -1) nakedEdges.Add(i); 
+
+            return nakedEdges;
+        }
+
+
+        #endregion
+
     }
 }

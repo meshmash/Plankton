@@ -30,10 +30,15 @@ namespace Plankton
                                       Z = v.Z
                                   });
             }
+            this.Vertices.AssignVertexIndex();
+
             foreach (var f in source.Faces)
             {
                 this.Faces.Add(new PlanktonFace() { FirstHalfedge = f.FirstHalfedge });
             }
+            this.Faces.AssignFaceIndex();
+
+
             foreach (var h in source.Halfedges)
             {
                 this.Halfedges.Add(new PlanktonHalfedge() {
@@ -43,6 +48,8 @@ namespace Plankton
                                        PrevHalfedge = h.PrevHalfedge,
                                    });
             }
+            this.Vertices.AssignVertexIndex();
+
         }
         #endregion
 

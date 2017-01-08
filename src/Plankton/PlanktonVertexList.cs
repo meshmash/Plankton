@@ -22,6 +22,7 @@ namespace Plankton
         {
             this._list = new List<PlanktonVertex>();
             this._mesh = owner;
+
         }
         
         /// <summary>
@@ -219,6 +220,7 @@ namespace Plankton
             return this.CompactHelper();
         }
         
+        // !!!
         #region traversals
         /// <summary>
         /// Traverses the halfedge indices which originate from a vertex.
@@ -576,7 +578,21 @@ namespace Plankton
             return this._mesh.Halfedges[this._mesh.Halfedges.GetPairHalfedge(splitH)].AdjacentFace;
         }
         #endregion
-        
+
+        #region by dyliu
+        public void AssignVertexIndex()
+        {
+            for (int i = 0; i < this.Count(); i++)
+            {
+                this[i].Index = i;
+
+            }
+        }
+
+        #endregion
+
+
+
         #region IEnumerable implementation
         /// <summary>
         /// Gets an enumerator that yields all faces in this collection.
