@@ -418,7 +418,7 @@ namespace PlanktonGh
             return Enumerable.Range(0, source.Vertices.Count).Select(i => source.Vertices[i].ToPoint3d());          
         }
 
-        #region: by dyliu
+        #region by dyliu
 
         /// <summary>
         /// Gets area of a planar quad
@@ -597,11 +597,16 @@ namespace PlanktonGh
         public static List<Line> NeighborVertexEdges(PlanktonMesh pmsh, int vIndex)
         {
             List<int> neighborEdgesIndices = 
-                pmsh.Halfedges.GetVertexCirculator(pmsh.Vertices[vIndex].OutgoingHalfedge).ToList();
+                pmsh.Halfedges.GetVertexCirculator( 
+                    pmsh.Vertices[vIndex].OutgoingHalfedge) 
+                    .ToList();
 
             List<PlanktonHalfedge> neighborPEdges = 
-                pmsh.Halfedges.ToList().Where(o => neighborEdgesIndices.Contains(o.Index)).ToList();
+                pmsh.Halfedges.ToList()
+                .Where(o => neighborEdgesIndices.Contains(o.Index))
+                .ToList();
 
+            // halfedge to line
             List<Line> neighborEdges = new List<Line>();
             foreach(var e in neighborPEdges)
             {
@@ -609,7 +614,6 @@ namespace PlanktonGh
             }
 
             return neighborEdges;
-
         }
 
         /// <summary>
@@ -624,10 +628,16 @@ namespace PlanktonGh
 
             Point3d p2 = pmsh.Vertices[pmsh.Halfedges[pmsh.Halfedges.GetPairHalfedge(e.Index)].StartVertex].ToPoint3d();
 
-            //Point3d p2 = pmsh.Vertices[pmsh.Halfedges[e.NextHalfedge].StartVertex].ToPoint3d();
+            return new Line(p1, p2);
+        }
+
+        public static Line HalfEdgeToLine(PlanktonMesh pmsh, int e)
+        {
+            Point3d p1 = pmsh.Vertices[pmsh.Halfedges[e].StartVertex].ToPoint3d();
+
+            Point3d p2 = pmsh.Vertices[pmsh.Halfedges[pmsh.Halfedges.GetPairHalfedge(e)].StartVertex].ToPoint3d();
 
             return new Line(p1, p2);
-
         }
         #endregion
     }

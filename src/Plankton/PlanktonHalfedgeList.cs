@@ -274,15 +274,13 @@ namespace Plankton
 
             return new int[]{ I, J };
         }
-
-        //public int[] GetVertices(PlanktonHalfedge e)
-        //{
-        //    int I, J;
-        //    I = e.StartVertex;
-        //    J = this[this.GetPairHalfedge(index)].StartVertex;
-
-        //    return new int[] { I, J };
-        //}
+        public int[] GetVertices(PlanktonHalfedge e)
+        {
+            int I, J;
+            I = e.StartVertex;
+            J = this[this.GetPairHalfedge(e.Index)].StartVertex;
+            return new int[] { I, J };
+        }
 
         /// <summary>
         /// Gets the halfedge a given number of 'next's around a face from a starting halfedge

@@ -31,7 +31,7 @@ namespace PlanktonFold
             pManager[1].Optional = true;
 
             // 2
-            pManager.AddNumberParameter("i", "i", "i", GH_ParamAccess.item);
+            pManager.AddNumberParameter("i", "i", "i", GH_ParamAccess.item, 0);
             pManager[2].Optional = true;
 
         }
@@ -47,14 +47,27 @@ namespace PlanktonFold
             // 2
             pManager.AddLineParameter("NeighborEdges",  "NeighborEdges", "NeighborEdges", GH_ParamAccess.tree);
 
+            // 3 
+            pManager.AddNumberParameter("Sector Angles", "Sector Angles", "Sector Angles", GH_ParamAccess.tree);
+
+            // 4
+            pManager.AddCurveParameter("PolyLine", "PolyLine", "PolyLine", GH_ParamAccess.list);
+
+            // 5
+            pManager.AddCurveParameter("Edges", "Edges", "Edges", GH_ParamAccess.list);
+
             //pManager.AddVectorParameter("vNormals", "vNormals", "vertex normals", GH_ParamAccess.list);
             //pManager.AddVectorParameter("fNormals", "fNormals", "face normals", GH_ParamAccess.list);
             //pManager.AddPointParameter("Vertices", "Vertices", "Vertices", GH_ParamAccess.list);
             //pManager.AddPointParameter("bVertices", "bVertices", "bVertices", GH_ParamAccess.list);
             //pManager.AddGenericParameter("PMesh", "PMesh", "PMesh", GH_ParamAccess.item);
             //pManager.AddLineParameter("bEdges", "bEdges", "boundary edges", GH_ParamAccess.list);
-            //pManager.AddLineParameter("iHalfEdge", "iHalfEdge", "iHalfEdge", GH_ParamAccess.item);
-            //pManager.AddLineParameter("i+1HalfEdge", "i+1HalfEdge", "i+1HalfEdge", GH_ParamAccess.item);
+
+            pManager.AddLineParameter("i-1HalfEdge", "i-1HalfEdge", "i-1HalfEdge", GH_ParamAccess.item);
+
+            pManager.AddLineParameter("iHalfEdge", "iHalfEdge", "iHalfEdge", GH_ParamAccess.item);
+
+            pManager.AddLineParameter("i+1HalfEdge", "i+1HalfEdge", "i+1HalfEdge", GH_ParamAccess.item);
 
         }
 
@@ -79,7 +92,6 @@ namespace PlanktonFold
 
             double i = 0;
             DA.GetData<double>("i", ref i);
-            //List<Line> neighbourEdges = RhinoSupport.NeighborVertexEdges(P, (int)i);
 
             DataTree<Line> neighbourEdges = new DataTree<Line>();
 
@@ -89,9 +101,18 @@ namespace PlanktonFold
                 neighbourEdges.AddRange( RhinoSupport.NeighborVertexEdges(P, cVertexIndices[j]), iPth);
             }
 
+            DataTree<double> sectorAngles = new DataTree<double>();
+
             DA.SetData("Mesh", RhinoSupport.ToRhinoMesh(P));
             DA.SetDataList("cVertices", cVertices);
             DA.SetDataTree(2, neighbourEdges);
+            //DA.SetDataTree(3, );
+
+            List<Polyline> polyLines = new List<Polyline>();
+            polyLines = RhinoSupport.ToPolylines(P).ToList();
+            DA.SetDataList("PolyLine", RhinoSupport.ToPolylines(P));
+
+            DA.SetDataList("Edges", P.Halfedges.Select(o => RhinoSupport.HalfEdgeToLine(P, o)));
 
             #region unused test
             //// Normals
@@ -103,17 +124,20 @@ namespace PlanktonFold
             //List<Line> bEdges = RhinoSupport.GetBoundaryEdges(P);
             //List<Point3d> bVertices = RhinoSupport.GetBoundaryVertices(P);
 
-
             //DA.SetDataList("Vertices", p_vertices);
             //DA.SetDataList("vNormals", vertexNormals);
             //DA.SetDataList("bVertices", bVertices);
             //DA.SetData("PMesh", P); 
             //DA.SetDataList("bEdges", bEdges);
-            //i =  (i > P.Halfedges.Count() - 1) ? P.Halfedges.Count() - 1 : i; 
-            //Line iLine = RhinoSupport.HalfEdgeToLine(P, P.Halfedges[(int)i]);
-            //Line nextLine = RhinoSupport.HalfEdgeToLine(P, P.Halfedges[(int)(i) + 1]);
-            //DA.SetData("iHalfEdge", iLine);
-            //DA.SetData("i+1HalfEdge", nextLine);
+            i = (i > P.Halfedges.Count() - 1) ? P.Halfedges.Count() - 1 : i;
+            Line prevLine = RhinoSupport.HalfEdgeToLine(P, P.Halfedges[(int)i].PrevHalfedge);
+            Line iLine = RhinoSupport.HalfEdgeToLine(P, P.Halfedges[(int)i]);
+            Line nextLine = RhinoSupport.HalfEdgeToLine(P, P.Halfedges[(int)(i)].NextHalfedge);
+            DA.SetData("i-1HalfEdge", prevLine);
+            DA.SetData("iHalfEdge", iLine);
+            DA.SetData("i+1HalfEdge", nextLine);
+
+
             #endregion
 
         }
