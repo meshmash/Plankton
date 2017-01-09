@@ -214,7 +214,7 @@ namespace PlanktonGh
                   
             return pMesh;
         }
-
+        
         /// <summary>
         /// Creates a Rhino mesh from a Plankton halfedge mesh.
         /// Uses the face-vertex information available in the halfedge data structure.
@@ -594,26 +594,87 @@ namespace PlanktonGh
             return cVertices.Select(o => o.Index).ToList();
         }
 
-        public static List<Line> NeighborVertexEdges(PlanktonMesh pmsh, int vIndex)
+        /// <summary>
+        /// get the neighbour edges of a vertex
+        /// </summary>
+        /// <param name="pmsh"></param>
+        /// <param name="vIndex"></param>
+        /// <returns></returns>
+        public static List<PlanktonHalfedge> NeighbourVertexEdges(PlanktonMesh pmsh, int vIndex)
         {
-            List<int> neighborEdgesIndices = 
+            // index
+            List<int> neighborEdgesIndices =    
                 pmsh.Halfedges.GetVertexCirculator( 
                     pmsh.Vertices[vIndex].OutgoingHalfedge) 
                     .ToList();
 
+            // plankton edges
             List<PlanktonHalfedge> neighborPEdges = 
                 pmsh.Halfedges.ToList()
                 .Where(o => neighborEdgesIndices.Contains(o.Index))
                 .ToList();
 
+            // sort counterclockwise
+            List<PlanktonHalfedge> sortedNeighborPEdges = new List<PlanktonHalfedge>();
+
+            sortedNeighborPEdges = NeighbourSortingHelper(pmsh, vIndex, neighborPEdges);
+
+            return sortedNeighborPEdges;
+        }
+
+        public static List<PlanktonHalfedge> NeighbourSortingHelper(PlanktonMesh pmsh, int vIndex, List<PlanktonHalfedge> neighbourPEdges)
+        {
             // halfedge to line
-            List<Line> neighborEdges = new List<Line>();
-            foreach(var e in neighborPEdges)
+            List<Line> neighbourLines = new List<Line>();
+            foreach (var e in neighbourPEdges)
             {
-                neighborEdges.Add(RhinoSupport.HalfEdgeToLine(pmsh, e));
+                neighbourLines.Add(RhinoSupport.HalfEdgeToLine(pmsh, e));
             }
 
-            return neighborEdges;
+            // construct ref plane
+            Point3d origin = pmsh.Vertices[vIndex].ToPoint3d();
+            Vector3d v = pmsh.Vertices.GetNormal(vIndex).ToVector3f();
+            Plane refPlane = new Plane(origin, v);
+
+            // project the other end point of neighbour edges to the plane
+            neighbourLines.ForEach(o => o.Transform(Transform.PlanarProjection(refPlane)));
+
+            // look for the other end of the line other than the center vertex
+            for (int i = 0; i < neighbourLines.Count(); i++)
+            {
+                if (neighbourLines[i].PointAt(0).DistanceTo(origin) < neighbourLines[i].Length / 10000000)
+                    ;
+                else
+                    neighbourLines[i].Flip();
+            }
+
+            Vector3d refPlaneX = refPlane.XAxis;
+            Vector3d refPlaneY = refPlane.YAxis;
+            List<Vector3d> unitV = neighbourLines.Select(o => o.UnitTangent).ToList();
+            List<double> anglesToX = unitV.Select(o => Vector3d.VectorAngle(refPlaneX, o)).ToList();
+            List<double> anglesToY = unitV.Select(o => Vector3d.VectorAngle(refPlaneY, o)).ToList();
+
+            for (int i = 0; i < neighbourPEdges.Count(); i++)
+            {
+                neighbourPEdges[i].angleToX = anglesToX[i];
+                neighbourPEdges[i].angleToY = anglesToY[i];
+            }
+
+            // sort by angles to x axis
+            //Array.Sort(anglesToX.ToArray(), neighborPEdges.ToArray());
+
+            List<PlanktonHalfedge> G1 = neighbourPEdges.Where(o => o.angleToX <= Math.PI / 2 && o.angleToY <= Math.PI / 2).ToList();
+            List<PlanktonHalfedge> G2 = neighbourPEdges.Where(o => o.angleToX > Math.PI / 2 && o.angleToY < Math.PI / 2).ToList();
+            List<PlanktonHalfedge> G3 = neighbourPEdges.Where(o => o.angleToX >= Math.PI / 2 && o.angleToY >= Math.PI / 2).ToList();
+            List<PlanktonHalfedge> G4 = neighbourPEdges.Where(o => o.angleToX < Math.PI / 2 && o.angleToY > Math.PI / 2).ToList();
+
+            G1 = G1.OrderBy(o => o.angleToX).ToList();
+            G2 = G2.OrderBy(o => o.angleToX).ToList();
+            G3 = G3.OrderByDescending(o => o.angleToX).ToList();
+            G4 = G4.OrderByDescending(o => o.angleToX).ToList();
+
+            return G1.Concat(G2).Concat(G3).Concat(G4)
+                .ToList();
         }
 
         /// <summary>
@@ -639,6 +700,8 @@ namespace PlanktonGh
 
             return new Line(p1, p2);
         }
+
+
         #endregion
     }
 }

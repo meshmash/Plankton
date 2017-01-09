@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+
 namespace Plankton
 {
     /// <summary>
@@ -23,10 +24,7 @@ namespace Plankton
             this._list = new List<PlanktonHalfedge>();
             this._mesh = owner;
             AssignHalfEdgeIndex();
-
         }
-
-
         
         /// <summary>
         /// Gets the number of halfedges.
@@ -186,7 +184,7 @@ namespace Plankton
         {
             if (halfedgeIndex < 0 || halfedgeIndex > this.Count) { yield break; }
             int h = halfedgeIndex;
-            int count = 0;
+            int count = 0;  
             do
             {
                 yield return h;

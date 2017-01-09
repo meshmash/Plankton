@@ -45,7 +45,7 @@ namespace PlanktonFold
             pManager.AddPointParameter("cVertices", "cVertices", "cVertices", GH_ParamAccess.list); // inner vertices with constraints
            
             // 2
-            pManager.AddLineParameter("NeighborEdges",  "NeighborEdges", "NeighborEdges", GH_ParamAccess.tree);
+            pManager.AddGenericParameter("NeighborEdges",  "NeighborEdges", "NeighborEdges", GH_ParamAccess.tree);
 
             // 3 
             pManager.AddNumberParameter("Sector Angles", "Sector Angles", "Sector Angles", GH_ParamAccess.tree);
@@ -97,8 +97,10 @@ namespace PlanktonFold
 
             for  (int j = 0; j < cVertexIndices.Count(); j++)
             {
-                GH_Path iPth = new GH_Path(j);
-                neighbourEdges.AddRange( RhinoSupport.NeighborVertexEdges(P, cVertexIndices[j]), iPth);
+                // the j th node has the cVertex of index j
+                GH_Path jPth = new GH_Path(j);
+                neighbourEdges.AddRange(RhinoSupport.NeighbourVertexEdges(P, cVertexIndices[j])
+                    .Select(o => RhinoSupport.HalfEdgeToLine(P, o)).ToList(), jPth);
             }
 
             DataTree<double> sectorAngles = new DataTree<double>();
@@ -106,7 +108,6 @@ namespace PlanktonFold
             DA.SetData("Mesh", RhinoSupport.ToRhinoMesh(P));
             DA.SetDataList("cVertices", cVertices);
             DA.SetDataTree(2, neighbourEdges);
-            //DA.SetDataTree(3, );
 
             List<Polyline> polyLines = new List<Polyline>();
             polyLines = RhinoSupport.ToPolylines(P).ToList();
@@ -129,6 +130,8 @@ namespace PlanktonFold
             //DA.SetDataList("bVertices", bVertices);
             //DA.SetData("PMesh", P); 
             //DA.SetDataList("bEdges", bEdges);
+            #endregion
+
             i = (i > P.Halfedges.Count() - 1) ? P.Halfedges.Count() - 1 : i;
             Line prevLine = RhinoSupport.HalfEdgeToLine(P, P.Halfedges[(int)i].PrevHalfedge);
             Line iLine = RhinoSupport.HalfEdgeToLine(P, P.Halfedges[(int)i]);
@@ -136,9 +139,6 @@ namespace PlanktonFold
             DA.SetData("i-1HalfEdge", prevLine);
             DA.SetData("iHalfEdge", iLine);
             DA.SetData("i+1HalfEdge", nextLine);
-
-
-            #endregion
 
         }
 

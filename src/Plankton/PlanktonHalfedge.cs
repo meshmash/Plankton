@@ -1,5 +1,4 @@
 ﻿using System;
-using Rhino.Geometry;
 
 namespace Plankton
 {
@@ -17,6 +16,9 @@ namespace Plankton
         //public int EndVertex;
         //public int PairHalfEdge;  // either +1 or -1 
         public int Index;
+
+        public double angleToX;
+        public double angleToY;
 
 
         internal PlanktonHalfedge()
