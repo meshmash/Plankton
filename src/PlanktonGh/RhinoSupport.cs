@@ -641,12 +641,8 @@ namespace PlanktonGh
 
             // look for the other end of the line other than the center vertex
             for (int i = 0; i < neighbourLines.Count(); i++)
-            {
-                if (neighbourLines[i].PointAt(0).DistanceTo(origin) < neighbourLines[i].Length / 10000000)
-                    ;
-                else
-                    neighbourLines[i].Flip();
-            }
+                if (neighbourLines[i].PointAt(1).DistanceTo(origin) < neighbourLines[i].Length / 10000) { neighbourLines[i].Flip(); }
+
 
             Vector3d refPlaneX = refPlane.XAxis;
             Vector3d refPlaneY = refPlane.YAxis;
@@ -661,13 +657,10 @@ namespace PlanktonGh
             }
 
             // sort by angles to x axis
-            //Array.Sort(anglesToX.ToArray(), neighborPEdges.ToArray());
-
             List<PlanktonHalfedge> G1 = neighbourPEdges.Where(o => o.angleToX <= Math.PI / 2 && o.angleToY <= Math.PI / 2).ToList();
             List<PlanktonHalfedge> G2 = neighbourPEdges.Where(o => o.angleToX > Math.PI / 2 && o.angleToY < Math.PI / 2).ToList();
             List<PlanktonHalfedge> G3 = neighbourPEdges.Where(o => o.angleToX >= Math.PI / 2 && o.angleToY >= Math.PI / 2).ToList();
             List<PlanktonHalfedge> G4 = neighbourPEdges.Where(o => o.angleToX < Math.PI / 2 && o.angleToY > Math.PI / 2).ToList();
-
             G1 = G1.OrderBy(o => o.angleToX).ToList();
             G2 = G2.OrderBy(o => o.angleToX).ToList();
             G3 = G3.OrderByDescending(o => o.angleToX).ToList();
@@ -676,6 +669,55 @@ namespace PlanktonGh
             return G1.Concat(G2).Concat(G3).Concat(G4)
                 .ToList();
         }
+
+        public static List<Vector3d> EdgeUnitVector(PlanktonMesh pmsh, int vIndex, List<PlanktonHalfedge> pEdges)
+        {
+            List<Vector3d> vectors = new List<Vector3d>();
+            List<Line> lines = pEdges.Select(o => RhinoSupport.HalfEdgeToLine(pmsh, o)).ToList();
+            Point3d center = pmsh.Vertices[vIndex].ToPoint3d();
+
+            for (int i = 0; i < lines.Count(); i++)
+                if (lines[i].PointAt(1).DistanceTo(center) < lines[i].Length / 10000) { lines[i].Flip(); }
+
+            vectors = lines.Select(o => o.UnitTangent).ToList();
+            return vectors;
+        }
+
+        public static List<double> GetSectorAngles(PlanktonMesh pmsh, int vIndex, List<PlanktonHalfedge> pEdges)
+        {
+            List<double> sectorAngles = new List<double>();
+
+            List<Vector3d> unitVecters = RhinoSupport.EdgeUnitVector(pmsh, vIndex, pEdges);
+
+            for (int i = 0; i < unitVecters.Count(); i++)
+            {
+                if (i != unitVecters.Count() - 1) { sectorAngles.Add(Vector3d.VectorAngle(unitVecters[i], unitVecters[i + 1])); }
+                if (i == unitVecters.Count() - 1) { sectorAngles.Add(Vector3d.VectorAngle(unitVecters[i], unitVecters[0])); break; }
+                
+            }
+            return sectorAngles;
+        }
+
+        public static List<double> GetFoldAngles(PlanktonMesh pmsh, int vIndex, List<PlanktonHalfedge> pEdges)
+        {
+            List<double> foldAngles = new List<double>();
+
+            for (int i = 0; i < pEdges.Count(); i++)
+            {
+                PlanktonHalfedge e1 = pEdges[i];
+                PlanktonHalfedge e2 = pmsh.Halfedges[pmsh.Halfedges.GetPairHalfedge(pEdges[i].Index)];
+                int f1Index = pmsh.Faces[e1.AdjacentFace].Index;
+                int f2Index = pmsh.Faces[e2.AdjacentFace].Index;
+
+                Plane pln1 = new Plane(RhinoSupport.ToPolylines(pmsh)[f1Index].ToList()[0], RhinoSupport.ToPolylines(pmsh)[f1Index].ToList()[1], RhinoSupport.ToPolylines(pmsh)[f1Index].ToList()[2]);
+                Plane pln2 = new Plane(RhinoSupport.ToPolylines(pmsh)[f2Index].ToList()[0], RhinoSupport.ToPolylines(pmsh)[f2Index].ToList()[1], RhinoSupport.ToPolylines(pmsh)[f2Index].ToList()[2]);
+
+                foldAngles.Add(Vector3d.VectorAngle(pln1.Normal, pln2.Normal));
+            }
+
+            return foldAngles;
+        }
+
 
         /// <summary>
         /// given pmesh and edge, gives a line of the edge

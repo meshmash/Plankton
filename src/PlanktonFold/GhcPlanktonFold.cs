@@ -31,8 +31,8 @@ namespace PlanktonFold
             pManager[1].Optional = true;
 
             // 2
-            pManager.AddNumberParameter("i", "i", "i", GH_ParamAccess.item, 0);
-            pManager[2].Optional = true;
+            //pManager.AddNumberParameter("i", "i", "i", GH_ParamAccess.item, 0);
+            //pManager[2].Optional = true;
 
         }
 
@@ -48,13 +48,15 @@ namespace PlanktonFold
             pManager.AddGenericParameter("NeighborEdges",  "NeighborEdges", "NeighborEdges", GH_ParamAccess.tree);
 
             // 3 
-            pManager.AddNumberParameter("Sector Angles", "Sector Angles", "Sector Angles", GH_ParamAccess.tree);
+            pManager.AddNumberParameter("Sector Angles", "Sector Angles", "theta", GH_ParamAccess.tree);
 
             // 4
-            pManager.AddCurveParameter("PolyLine", "PolyLine", "PolyLine", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Fold Angles", "Fold Angles", "rho", GH_ParamAccess.tree);
 
             // 5
             pManager.AddCurveParameter("Edges", "Edges", "Edges", GH_ParamAccess.list);
+
+            // 6 
 
             //pManager.AddVectorParameter("vNormals", "vNormals", "vertex normals", GH_ParamAccess.list);
             //pManager.AddVectorParameter("fNormals", "fNormals", "face normals", GH_ParamAccess.list);
@@ -63,11 +65,15 @@ namespace PlanktonFold
             //pManager.AddGenericParameter("PMesh", "PMesh", "PMesh", GH_ParamAccess.item);
             //pManager.AddLineParameter("bEdges", "bEdges", "boundary edges", GH_ParamAccess.list);
 
-            pManager.AddLineParameter("i-1HalfEdge", "i-1HalfEdge", "i-1HalfEdge", GH_ParamAccess.item);
+            //pManager.AddLineParameter("i-1HalfEdge", "i-1HalfEdge", "i-1HalfEdge", GH_ParamAccess.item);
 
-            pManager.AddLineParameter("iHalfEdge", "iHalfEdge", "iHalfEdge", GH_ParamAccess.item);
+            //pManager.AddLineParameter("iHalfEdge", "iHalfEdge", "iHalfEdge", GH_ParamAccess.item);
 
-            pManager.AddLineParameter("i+1HalfEdge", "i+1HalfEdge", "i+1HalfEdge", GH_ParamAccess.item);
+            //pManager.AddLineParameter("i+1HalfEdge", "i+1HalfEdge", "i+1HalfEdge", GH_ParamAccess.item);
+
+            //pManager.AddCurveParameter("PolyLine", "PolyLine", "PolyLine", GH_ParamAccess.list);
+
+
 
         }
 
@@ -90,11 +96,10 @@ namespace PlanktonFold
             List<Point3d> cVertices = RhinoSupport.GetConstraintVertices(P);
             List<int> cVertexIndices = RhinoSupport.GetConstraintVertexIndices(P);
 
-            double i = 0;
-            DA.GetData<double>("i", ref i);
+            //double i = 0;
+            //DA.GetData<double>("i", ref i);
 
             DataTree<Line> neighbourEdges = new DataTree<Line>();
-
             for  (int j = 0; j < cVertexIndices.Count(); j++)
             {
                 // the j th node has the cVertex of index j
@@ -104,16 +109,33 @@ namespace PlanktonFold
             }
 
             DataTree<double> sectorAngles = new DataTree<double>();
+            for (int j = 0; j < cVertexIndices.Count(); j++)
+            {
+                // the j th node has the sector angles of index j
+                GH_Path jPth = new GH_Path(j);
+                sectorAngles.AddRange(RhinoSupport.GetSectorAngles(P, cVertexIndices[j],
+                    RhinoSupport.NeighbourVertexEdges(P, cVertexIndices[j]))
+                    .ToList(), jPth);
+            }
+
+            DataTree<double> foldAngles = new DataTree<double>();
+            for (int j = 0; j < cVertexIndices.Count(); j++)
+            {
+                // the j th node has the sector angles of index j
+                GH_Path jPth = new GH_Path(j);
+                foldAngles.AddRange(RhinoSupport.GetFoldAngles(P, cVertexIndices[j],
+                    RhinoSupport.NeighbourVertexEdges(P, cVertexIndices[j]))
+                    .ToList(), jPth);
+            }
 
             DA.SetData("Mesh", RhinoSupport.ToRhinoMesh(P));
             DA.SetDataList("cVertices", cVertices);
             DA.SetDataTree(2, neighbourEdges);
-
-            List<Polyline> polyLines = new List<Polyline>();
-            polyLines = RhinoSupport.ToPolylines(P).ToList();
-            DA.SetDataList("PolyLine", RhinoSupport.ToPolylines(P));
+            DA.SetDataTree(3, sectorAngles);
+            DA.SetDataTree(4, foldAngles);
 
             DA.SetDataList("Edges", P.Halfedges.Select(o => RhinoSupport.HalfEdgeToLine(P, o)));
+
 
             #region unused test
             //// Normals
@@ -130,15 +152,21 @@ namespace PlanktonFold
             //DA.SetDataList("bVertices", bVertices);
             //DA.SetData("PMesh", P); 
             //DA.SetDataList("bEdges", bEdges);
-            #endregion
 
-            i = (i > P.Halfedges.Count() - 1) ? P.Halfedges.Count() - 1 : i;
-            Line prevLine = RhinoSupport.HalfEdgeToLine(P, P.Halfedges[(int)i].PrevHalfedge);
-            Line iLine = RhinoSupport.HalfEdgeToLine(P, P.Halfedges[(int)i]);
-            Line nextLine = RhinoSupport.HalfEdgeToLine(P, P.Halfedges[(int)(i)].NextHalfedge);
-            DA.SetData("i-1HalfEdge", prevLine);
-            DA.SetData("iHalfEdge", iLine);
-            DA.SetData("i+1HalfEdge", nextLine);
+            //i = (i > P.Halfedges.Count() - 1) ? P.Halfedges.Count() - 1 : i;
+            //Line prevLine = RhinoSupport.HalfEdgeToLine(P, P.Halfedges[(int)i].PrevHalfedge);
+            //Line iLine = RhinoSupport.HalfEdgeToLine(P, P.Halfedges[(int)i]);
+            //Line nextLine = RhinoSupport.HalfEdgeToLine(P, P.Halfedges[(int)(i)].NextHalfedge);
+            //DA.SetData("i-1HalfEdge", prevLine);
+            //DA.SetData("iHalfEdge", iLine);
+            //DA.SetData("i+1HalfEdge", nextLine);
+
+            //List<Polyline> polyLines = new List<Polyline>();
+            //polyLines = RhinoSupport.ToPolylines(P).ToList();
+            //DA.SetDataList("PolyLine", RhinoSupport.ToPolylines(P));
+
+
+            #endregion
 
         }
 

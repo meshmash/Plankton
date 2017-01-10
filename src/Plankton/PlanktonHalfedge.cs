@@ -17,8 +17,16 @@ namespace Plankton
         //public int PairHalfEdge;  // either +1 or -1 
         public int Index;
 
+        // for sorting(counter-clockwise) 
         public double angleToX;
         public double angleToY;
+
+        // for folding : 
+        // -1, valey
+        // 0, cut line (naked edge)
+        // 1, mountain 
+        public int MV; 
+
 
 
         internal PlanktonHalfedge()
