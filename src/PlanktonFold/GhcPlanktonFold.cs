@@ -2,11 +2,17 @@
 using System.Linq;
 using System.Collections.Generic;
 using Plankton;
+using PlanktonFold;
 using Grasshopper;
 using PlanktonGh;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
 using Rhino.Geometry;
+using MathNet.Numerics.LinearAlgebra;
+using System.Numerics;
+using MathNet.Numerics;
+
+using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace PlanktonFold
 {
@@ -31,8 +37,8 @@ namespace PlanktonFold
             pManager[1].Optional = true;
 
             // 2
-            //pManager.AddNumberParameter("i", "i", "i", GH_ParamAccess.item, 0);
-            //pManager[2].Optional = true;
+            pManager.AddNumberParameter("i", "i", "i", GH_ParamAccess.item, 0);
+            pManager[2].Optional = true;
 
         }
 
@@ -54,9 +60,15 @@ namespace PlanktonFold
             pManager.AddNumberParameter("Fold Angles", "Fold Angles", "rho", GH_ParamAccess.tree);
 
             // 5
-            pManager.AddCurveParameter("Edges", "Edges", "Edges", GH_ParamAccess.list);
+            pManager.AddGenericParameter("F Matrix", "F Matrix", "F Matrix", GH_ParamAccess.list);
 
             // 6 
+            pManager.AddCurveParameter("Edges", "Edges", "Edges", GH_ParamAccess.list);
+
+            pManager.AddGenericParameter("test Matrix", "test Matrix", "test Matrix", GH_ParamAccess.item);
+
+            pManager.AddPlaneParameter("Pln", "Pln", "Pln", GH_ParamAccess.item);
+
 
             //pManager.AddVectorParameter("vNormals", "vNormals", "vertex normals", GH_ParamAccess.list);
             //pManager.AddVectorParameter("fNormals", "fNormals", "face normals", GH_ParamAccess.list);
@@ -72,7 +84,6 @@ namespace PlanktonFold
             //pManager.AddLineParameter("i+1HalfEdge", "i+1HalfEdge", "i+1HalfEdge", GH_ParamAccess.item);
 
             //pManager.AddCurveParameter("PolyLine", "PolyLine", "PolyLine", GH_ParamAccess.list);
-
 
 
         }
@@ -96,8 +107,8 @@ namespace PlanktonFold
             List<Point3d> cVertices = RhinoSupport.GetConstraintVertices(P);
             List<int> cVertexIndices = RhinoSupport.GetConstraintVertexIndices(P);
 
-            //double i = 0;
-            //DA.GetData<double>("i", ref i);
+            double i = 0;
+            DA.GetData<double>("i", ref i);
 
             DataTree<Line> neighbourEdges = new DataTree<Line>();
             for  (int j = 0; j < cVertexIndices.Count(); j++)
@@ -118,14 +129,53 @@ namespace PlanktonFold
                     .ToList(), jPth);
             }
 
+            // determine MV
+            List<PlanktonHalfedge> innerEdges = P.Halfedges.ToList().Where(o => o.AdjacentFace != -1 && 
+                P.Halfedges[P.Halfedges.GetPairHalfedge(o.Index)].AdjacentFace != -1
+                ).ToList();
+            foreach (PlanktonHalfedge e in innerEdges)
+            {
+                e.MV = RhinoSupport.MVDetermination(P, e.Index);
+            }
+
             DataTree<double> foldAngles = new DataTree<double>();
             for (int j = 0; j < cVertexIndices.Count(); j++)
             {
-                // the j th node has the sector angles of index j
+
+                // the j th node has the fold angles of index j
                 GH_Path jPth = new GH_Path(j);
                 foldAngles.AddRange(RhinoSupport.GetFoldAngles(P, cVertexIndices[j],
                     RhinoSupport.NeighbourVertexEdges(P, cVertexIndices[j]))
                     .ToList(), jPth);
+            }
+
+            List<Matrix<double>> FMatrix = new List<Matrix<double>>(); // in the order of inner vertex, each one has a F matrix 
+            for (int j = 0; j < cVertexIndices.Count(); j++)
+            {
+                List<PlanktonHalfedge> edges = RhinoSupport.NeighbourVertexEdges(P, cVertexIndices[j]);
+                List<double> rhos = RhinoSupport.GetFoldAngles(P, cVertexIndices[j], edges);
+                List<double> thetas = RhinoSupport.GetSectorAngles(P, cVertexIndices[j], edges);
+                FMatrix.Add(Solver.F(rhos, thetas));
+            }
+
+            Matrix<double> tMatrix = DenseMatrix.OfArray(new double[,]
+            {
+                {Trig.Cos(0), - Trig.Sin(0), 0},
+                {Trig.Sin(0), Trig.Cos(0), 0},
+                {0, 0, 1}
+
+            });
+
+            Vector3d xx = neighbourEdges.Branch(new GH_Path(0)).First().UnitTangent;
+            Vector3d zz = new Vector3d();
+            int ff = RhinoSupport.NeighbourVertexEdges(P, P.Vertices[cVertexIndices.First()].Index).First().AdjacentFace;
+            zz = RhinoSupport.GetFaceNormal(P, ff).Last().UnitTangent;
+            Plane pln = new Plane(cVertices.First(), xx, Vector3d.CrossProduct(zz, xx));
+
+            for (int j = 0; j < i; j++)
+            {
+                pln.Transform(Transform.Rotation(foldAngles.Branch(new GH_Path(0))[j], pln.XAxis, pln.Origin));
+                pln.Transform(Transform.Rotation(- sectorAngles.Branch(new GH_Path(0))[j], pln.ZAxis, pln.Origin));
             }
 
             DA.SetData("Mesh", RhinoSupport.ToRhinoMesh(P));
@@ -133,10 +183,10 @@ namespace PlanktonFold
             DA.SetDataTree(2, neighbourEdges);
             DA.SetDataTree(3, sectorAngles);
             DA.SetDataTree(4, foldAngles);
-
+            DA.SetDataList("F Matrix", FMatrix);
             DA.SetDataList("Edges", P.Halfedges.Select(o => RhinoSupport.HalfEdgeToLine(P, o)));
-
-
+            DA.SetData("test Matrix", tMatrix);
+            DA.SetData("Pln", pln);
             #region unused test
             //// Normals
             //List<Point3d> p_vertices = P.Vertices.GetPositions().ToList()

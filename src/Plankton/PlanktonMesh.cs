@@ -50,6 +50,7 @@ namespace Plankton
             }
             this.Vertices.AssignVertexIndex();
 
+            
         }
         #endregion
 

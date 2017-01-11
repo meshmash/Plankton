@@ -712,8 +712,9 @@ namespace PlanktonGh
                 Plane pln1 = new Plane(RhinoSupport.ToPolylines(pmsh)[f1Index].ToList()[0], RhinoSupport.ToPolylines(pmsh)[f1Index].ToList()[1], RhinoSupport.ToPolylines(pmsh)[f1Index].ToList()[2]);
                 Plane pln2 = new Plane(RhinoSupport.ToPolylines(pmsh)[f2Index].ToList()[0], RhinoSupport.ToPolylines(pmsh)[f2Index].ToList()[1], RhinoSupport.ToPolylines(pmsh)[f2Index].ToList()[2]);
 
-                foldAngles.Add(Vector3d.VectorAngle(pln1.Normal, pln2.Normal));
+                foldAngles.Add(Vector3d.VectorAngle(pln1.Normal, pln2.Normal) * pEdges[i].MV);
             }
+
 
             return foldAngles;
         }
@@ -743,7 +744,47 @@ namespace PlanktonGh
             return new Line(p1, p2);
         }
 
+        public static int MVDetermination(PlanktonMesh pmsh, int eIndex) 
+        {
+            Line l1_up = new Line();
+            Line l1_down = new Line();
+            Line l2_up = new Line();
+            Line l2_down = new Line();
 
+            int face1 = pmsh.Halfedges[eIndex].AdjacentFace;
+            int face2 = pmsh.Halfedges[pmsh.Halfedges.GetPairHalfedge(eIndex)].AdjacentFace;
+
+
+            l1_up = GetFaceNormal(pmsh, face1).First();
+            l1_down = GetFaceNormal(pmsh, face1).Last();
+            l2_up = GetFaceNormal(pmsh, face2).First(); // !!! face2 out of index ??? 
+            l2_down = GetFaceNormal(pmsh, face2).Last();
+
+            if (l1_up.PointAt(1).DistanceTo(l2_up.PointAt(1)) <
+                l1_down.PointAt(1).DistanceTo(l2_down.PointAt(1)))
+            {
+                return 1;
+            }
+            else
+                return -1;
+        }
+
+        public static List<Line> GetFaceNormal(PlanktonMesh pmsh, int fIndex)
+        {
+            //if (fIndex == -1) fIndex = 1;
+
+            List<Point3d> pts = RhinoSupport.ToPolylines(pmsh)[fIndex].ToList();
+
+            Point3d center = pmsh.Faces.GetFaceCenter(fIndex).ToPoint3d();
+            Vector3d v = Vector3d.CrossProduct(new Line(pts[0], pts[1]).UnitTangent, new Line(pts[1], pts[2]).UnitTangent);
+
+            List<Line> ls = new List<Line>();
+            ls.Add(new Line(center, v));
+            ls.Add(new Line(center, -v));
+
+            // lines start from center of the face, pointing up(first item) and down(second item)
+            return ls; // unit length
+        }
         #endregion
     }
 }

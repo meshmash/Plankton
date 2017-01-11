@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 
+
 namespace Plankton
 {
     /// <summary>
@@ -612,6 +613,15 @@ namespace Plankton
             return nakedEdges;
         }
 
+        //public List<int> DetermineMVs()
+        //{
+        //    List<int> MVs = new List<int>();
+        //    foreach ( PlanktonHalfedge i in this)
+        //    {
+                
+        //    }
+           
+        //}
 
         #endregion
 
