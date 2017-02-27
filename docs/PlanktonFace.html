@@ -8,7 +8,7 @@
 <body>
 <div id='container'>
   <div id="background"></div>
-  
+
   <div id="jump_to">
     Jump To &hellip;
     <div id="jump_wrapper">
@@ -25,21 +25,33 @@
       </div>
     </div>
   </div>
-  
+
   <div class='section'>
     <div class='docs'><h1>PlanktonFace.cs</h1></div>
   </div>
   <div class='clearall'>
-  <div class='section public' id=''>
+  <div class='section ' id=''>
     <div class='docs'>
-      <p>Represents a face in Plankton's halfedge mesh data structure.</p>
+      
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+      <div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
 
 <span class="k">namespace</span> <span class="nn">Plankton</span>
-<span class="p">{</span>
-    <span class="k">public</span> <span class="k">class</span> <span class="nc">PlanktonFace</span>
+<span class="p">{</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='plankton-face'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#plankton-face'>#</a>
+      </div>
+      <h2>PlanktonFace</h2>
+<p>Represents a face in Plankton's halfedge mesh data structure.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">public</span> <span class="k">class</span> <span class="nc">PlanktonFace</span>
     <span class="p">{</span>
         <span class="k">public</span> <span class="kt">int</span> <span class="n">FirstHalfedge</span><span class="p">;</span>
         
@@ -55,12 +67,12 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='Unset'>
+  <div class='section public' id='unset'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Unset'>#</a>
+        <a class='octothorpe' href='#unset'>#</a>
       </div>
-      <h2>Unset</h2>
+      <h3>Unset</h3>
 <p>Gets an unset PlanktonFace. Unset faces have -1 for their first halfedge index.</p>
     </div>
     <div class='code'>
@@ -71,12 +83,12 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='IsUnused'>
+  <div class='section public' id='is-unused'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#IsUnused'>#</a>
+        <a class='octothorpe' href='#is-unused'>#</a>
       </div>
-      <h2>IsUnused</h2>
+      <h3>IsUnused</h3>
 <p>Whether or not the face is currently being referenced in the mesh.</p>
     </div>
     <div class='code'>

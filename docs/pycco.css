@@ -1,6 +1,7 @@
 /*--------------------- Layout and Typography ----------------------------*/
 body {
-  font-family: "Helvetica", arial, freesans, clean, sans-serif;
+  /* font-family: "Helvetica", arial, freesans, clean, sans-serif; */
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
   font-size: 16px;
   line-height: 24px;
   color: #252519;
@@ -22,6 +23,9 @@ h1, h2, h3, h4, h5, h6 {
 h2, h3, h4, h5, h6 {
     margin-top: 0;
   }
+h2, h3 {
+  font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
 #container {
   background: white;
  }

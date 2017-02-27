@@ -8,7 +8,7 @@
 <body>
 <div id='container'>
   <div id="background"></div>
-  
+
   <div id="jump_to">
     Jump To &hellip;
     <div id="jump_wrapper">
@@ -25,17 +25,17 @@
       </div>
     </div>
   </div>
-  
+
   <div class='section'>
     <div class='docs'><h1>PlanktonFaceList.cs</h1></div>
   </div>
   <div class='clearall'>
-  <div class='section public' id=''>
+  <div class='section ' id=''>
     <div class='docs'>
-      <p>Provides access to the faces and Face related functionality of a Mesh.</p>
+      
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+      <div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
 <span class="k">using</span> <span class="nn">System.Collections</span><span class="p">;</span>
 <span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
 <span class="k">using</span> <span class="nn">System.Linq</span><span class="p">;</span>
@@ -43,25 +43,37 @@
 <span class="c1">//using Rhino.Geometry;</span>
 
 <span class="k">namespace</span> <span class="nn">Plankton</span>
-<span class="p">{</span>
-    <span class="k">public</span> <span class="k">class</span> <span class="nc">PlanktonFaceList</span> <span class="p">:</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">PlanktonFace</span><span class="p">&gt;</span>
+<span class="p">{</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='plankton-face-list'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#plankton-face-list'>#</a>
+      </div>
+      <h2>PlanktonFaceList</h2>
+<p>Provides access to the faces and <a href="PlanktonFace.html">PlanktonFace</a> related functionality of a Mesh.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">public</span> <span class="k">class</span> <span class="nc">PlanktonFaceList</span> <span class="p">:</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">PlanktonFace</span><span class="p">&gt;</span>
     <span class="p">{</span>
         <span class="k">private</span> <span class="k">readonly</span> <span class="n">PlanktonMesh</span> <span class="n">_mesh</span><span class="p">;</span>
         <span class="k">private</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">PlanktonFace</span><span class="p">&gt;</span> <span class="n">_list</span><span class="p">;</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section internal' id='PlanktonFaceList'>
+  <div class='section internal' id='.ctor'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#PlanktonFaceList'>#</a>
+        <a class='octothorpe' href='#.ctor'>#</a>
       </div>
-      <h2>PlanktonFaceList</h2>
+      <h3>.ctor</h3>
 <p>Initializes a new instance of the <a href="PlanktonFaceList.html">PlanktonFaceList</a> class.
 Should be called from the mesh constructor.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
-<li><em>owner</em>: The mesh to which this list of half-edges belongs.</li>
+<li><em>owner</em>: The <a href="PlanktonMesh.html">PlanktonMesh</a> to which this list of half-edges belongs.</li>
 </ul>
     </div>
     <div class='code'>
@@ -73,12 +85,12 @@ Should be called from the mesh constructor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='Count'>
+  <div class='section public' id='count'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Count'>#</a>
+        <a class='octothorpe' href='#count'>#</a>
       </div>
-      <h2>Count</h2>
+      <h3>Count</h3>
 <p>Gets the number of faces.</p>
     </div>
     <div class='code'>
@@ -95,18 +107,18 @@ Should be called from the mesh constructor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section internal' id='Add'>
+  <div class='section internal' id='add'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Add'>#</a>
+        <a class='octothorpe' href='#add'>#</a>
       </div>
-      <h2>Add</h2>
+      <h3>Add</h3>
 <p>Adds a new face to the end of the Face list.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>halfEdge</em>: Face to add.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The index of the newly added face.</p>
     </div>
     <div class='code'>
@@ -119,20 +131,20 @@ Should be called from the mesh constructor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='AddFace'>
+  <div class='section public' id='add-face'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#AddFace'>#</a>
+        <a class='octothorpe' href='#add-face'>#</a>
       </div>
-      <h2>AddFace</h2>
+      <h3>AddFace</h3>
 <p>Adds a new face to the end of the Face list. Creates any halfedge pairs that are required.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>indices</em>: The vertex indices which define the face, ordered anticlockwise.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The index of the newly added face (-1 in the case that the face could not be added).</p>
-<h3>Remarks</h3>
+<h4>Remarks</h4>
 <p>The mesh must remain 2-manifold and orientable at all times.</p>
     </div>
     <div class='code'>
@@ -320,22 +332,22 @@ Should be called from the mesh constructor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='AddFace'>
+  <div class='section public' id='add-face-1'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#AddFace'>#</a>
+        <a class='octothorpe' href='#add-face-1'>#</a>
       </div>
-      <h2>AddFace</h2>
+      <h3>AddFace</h3>
 <p>Appends a new triangular face to the end of the mesh face list. Creates any halfedge pairs that are required.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>a</em>: Index of first corner.</li>
 <li><em>b</em>: Index of second corner.</li>
 <li><em>c</em>: Index of third corner.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The index of the newly added face (-1 in the case that the face could not be added).</p>
-<h3>Remarks</h3>
+<h4>Remarks</h4>
 <p>The mesh must remain 2-manifold and orientable at all times.</p>
     </div>
     <div class='code'>
@@ -346,23 +358,23 @@ Should be called from the mesh constructor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='AddFace'>
+  <div class='section public' id='add-face-2'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#AddFace'>#</a>
+        <a class='octothorpe' href='#add-face-2'>#</a>
       </div>
-      <h2>AddFace</h2>
+      <h3>AddFace</h3>
 <p>Appends a new quadragular face to the end of the mesh face list. Creates any halfedge pairs that are required.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>a</em>: Index of first corner.</li>
 <li><em>b</em>: Index of second corner.</li>
 <li><em>c</em>: Index of third corner.</li>
 <li><em>d</em>: Index of fourth corner.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The index of the newly added face (-1 in the case that the face could not be added).</p>
-<h3>Remarks</h3>
+<h4>Remarks</h4>
 <p>The mesh must remain 2-manifold and orientable at all times.</p>
     </div>
     <div class='code'>
@@ -373,18 +385,18 @@ Should be called from the mesh constructor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='AddFaces'>
+  <div class='section public' id='add-faces'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#AddFaces'>#</a>
+        <a class='octothorpe' href='#add-faces'>#</a>
       </div>
-      <h2>AddFaces</h2>
+      <h3>AddFaces</h3>
 <p>Appends a list of faces to the end of the mesh face list.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>faces</em>: Faces to add.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>Indices of the newly created faces.</p>
     </div>
     <div class='code'>
@@ -395,15 +407,15 @@ Should be called from the mesh constructor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='RemoveFace'>
+  <div class='section public' id='remove-face'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#RemoveFace'>#</a>
+        <a class='octothorpe' href='#remove-face'>#</a>
       </div>
-      <h2>RemoveFace</h2>
+      <h3>RemoveFace</h3>
 <p>Removes a face from the mesh without affecting the remaining geometry.</p>
 <p>Ensures that the topology of the halfedge mesh remains fully intact.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>index</em>: The index of the face to be removed.</li>
 </ul>
@@ -414,8 +426,18 @@ Should be called from the mesh constructor.</p>
             <span class="kt">int</span><span class="p">[]</span> <span class="n">fhs</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">GetHalfedges</span><span class="p">(</span><span class="n">index</span><span class="p">);</span>
             <span class="k">foreach</span> <span class="p">(</span><span class="kt">int</span> <span class="n">h</span> <span class="k">in</span> <span class="n">fhs</span><span class="p">)</span>
             <span class="p">{</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">IsBoundary</span><span class="p">(</span><span class="n">h</span><span class="p">))</span> <span class="p">{</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">RemovePairHelper</span><span class="p">(</span><span class="n">h</span><span class="p">);</span> <span class="p">}</span>
-                <span class="k">else</span> <span class="p">{</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">=</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span> <span class="p">}</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">IsBoundary</span><span class="p">(</span><span class="n">h</span><span class="p">))</span>
+                <span class="p">{</span>
+                  <span class="c1">// If halfedge is on a boundary then remove the pair</span>
+                  <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">RemovePairHelper</span><span class="p">(</span><span class="n">h</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="k">else</span>
+                <span class="p">{</span>
+                  <span class="c1">// If halfedge was not previously a boundary, it is now</span>
+                  <span class="kt">var</span> <span class="n">heObj</span> <span class="p">=</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">h</span><span class="p">];</span>
+                  <span class="n">heObj</span><span class="p">.</span><span class="n">AdjacentFace</span> <span class="p">=</span> <span class="p">-</span><span class="m">1</span><span class="p">;</span>
+                  <span class="n">_mesh</span><span class="p">.</span><span class="n">Vertices</span><span class="p">[</span><span class="n">heObj</span><span class="p">.</span><span class="n">StartVertex</span><span class="p">].</span><span class="n">OutgoingHalfedge</span> <span class="p">=</span> <span class="n">h</span><span class="p">;</span>
+                <span class="p">}</span>
             <span class="p">}</span>
             <span class="k">this</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="p">=</span> <span class="n">PlanktonFace</span><span class="p">.</span><span class="n">Unset</span><span class="p">;</span>
         <span class="p">}</span></pre></div>
@@ -427,15 +449,15 @@ Should be called from the mesh constructor.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#index'>#</a>
       </div>
-      <h2>index</h2>
-<p>Returns the face at the given index.</p>
-<h3>Parameters</h3>
+      <h3>index</h3>
+<p>Returns the <a href="PlanktonFace.html">PlanktonFace</a> at the given index.</p>
+<h4>Parameters</h4>
 <ul>
 <li><em>index</em>: 
 Index of face to get.
 Must be larger than or equal to zero and smaller than the Face Count of the mesh.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The face at the given index.</p>
     </div>
     <div class='code'>
@@ -454,12 +476,12 @@ Must be larger than or equal to zero and smaller than the Face Count of the mesh
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section internal' id='CompactHelper'>
+  <div class='section internal' id='compact-helper'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#CompactHelper'>#</a>
+        <a class='octothorpe' href='#compact-helper'>#</a>
       </div>
-      <h2>CompactHelper</h2>
+      <h3>CompactHelper</h3>
 <p>Helper method to remove dead faces from the list, re-index and compact.</p>
     </div>
     <div class='code'>
@@ -497,18 +519,18 @@ Must be larger than or equal to zero and smaller than the Face Count of the mesh
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='GetHalfedgesCirculator'>
+  <div class='section public' id='get-halfedges-circulator'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#GetHalfedgesCirculator'>#</a>
+        <a class='octothorpe' href='#get-halfedges-circulator'>#</a>
       </div>
-      <h2>GetHalfedgesCirculator</h2>
+      <h3>GetHalfedgesCirculator</h3>
 <p>Traverses the halfedge indices which bound a face.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>f</em>: A face index.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>An enumerable of halfedge indices incident to the specified face.
 Ordered anticlockwise around the face.</p>
     </div>
@@ -533,18 +555,18 @@ Ordered anticlockwise around the face.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='GetHalfedges'>
+  <div class='section public' id='get-halfedges'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#GetHalfedges'>#</a>
+        <a class='octothorpe' href='#get-halfedges'>#</a>
       </div>
-      <h2>GetHalfedges</h2>
+      <h3>GetHalfedges</h3>
 <p>Gets the halfedges which bound a face.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>f</em>: A face index.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The indices of halfedges incident to a particular face.
 Ordered anticlockwise around the face.</p>
     </div>
@@ -556,18 +578,18 @@ Ordered anticlockwise around the face.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='GetFaceVertices'>
+  <div class='section public' id='get-face-vertices'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#GetFaceVertices'>#</a>
+        <a class='octothorpe' href='#get-face-vertices'>#</a>
       </div>
-      <h2>GetFaceVertices</h2>
+      <h3>GetFaceVertices</h3>
 <p>Gets vertex indices of a face.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>f</em>: A face index.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>An array of vertex indices incident to the specified face.
 Ordered anticlockwise around the face.</p>
     </div>
@@ -589,21 +611,21 @@ Ordered anticlockwise around the face.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='SplitFace'>
+  <div class='section public' id='split-face'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#SplitFace'>#</a>
+        <a class='octothorpe' href='#split-face'>#</a>
       </div>
-      <h2>SplitFace</h2>
+      <h3>SplitFace</h3>
 <p>Split a face into two faces by inserting a new edge</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>to</em>: The index of a second halfedge adjacent to the face to split.
 The new edge will end at the start of this halfedge.</li>
 <li><em>from</em>: The index of a halfedge adjacent to the face to split.
 The new edge will begin at the start of this halfedge.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The index of one of the newly created halfedges, or -1 on failure.
 The returned halfedge will be adjacent to the pre-existing face.</p>
     </div>
@@ -661,21 +683,21 @@ The returned halfedge will be adjacent to the pre-existing face.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='MergeFaces'>
+  <div class='section public' id='merge-faces'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#MergeFaces'>#</a>
+        <a class='octothorpe' href='#merge-faces'>#</a>
       </div>
-      <h2>MergeFaces</h2>
+      <h3>MergeFaces</h3>
 <p>Merges the two faces incident to the specified halfedge pair.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>index</em>: The index of a halfedge inbetween the two faces to merge.
 The face adjacent to this halfedge will be retained.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The successor of <em>index</em> around the face, or -1 on failure.</p>
-<h3>Remarks</h3>
+<h4>Remarks</h4>
 <p>The invariant  will return a,
 leaving the mesh unchanged.</p>
     </div>
@@ -719,18 +741,18 @@ leaving the mesh unchanged.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='Stellate'>
+  <div class='section public' id='stellate'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Stellate'>#</a>
+        <a class='octothorpe' href='#stellate'>#</a>
       </div>
-      <h2>Stellate</h2>
+      <h3>Stellate</h3>
 <p>Divides an n-sided face into n triangles, adding a new vertex in the center of the face.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>index</em>: The index of the face to stellate</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The index of the central vertex</p>
     </div>
     <div class='code'>
@@ -775,18 +797,18 @@ leaving the mesh unchanged.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='GetFaceCenter'>
+  <div class='section public' id='get-face-center'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#GetFaceCenter'>#</a>
+        <a class='octothorpe' href='#get-face-center'>#</a>
       </div>
-      <h2>GetFaceCenter</h2>
+      <h3>GetFaceCenter</h3>
 <p>Gets the barycenter of a face's vertices.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>f</em>: A face index.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The location of the specified face's barycenter.</p>
     </div>
     <div class='code'>
@@ -811,18 +833,18 @@ leaving the mesh unchanged.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='NakedEdgeCount'>
+  <div class='section public' id='naked-edge-count'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#NakedEdgeCount'>#</a>
+        <a class='octothorpe' href='#naked-edge-count'>#</a>
       </div>
-      <h2>NakedEdgeCount</h2>
+      <h3>NakedEdgeCount</h3>
 <p>Gets the number of naked edges which bound this face.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>f</em>: A face index.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The number of halfedges for which the opposite halfedge has no face (i.e. adjacent face index is -1).</p>
     </div>
     <div class='code'>
@@ -841,14 +863,14 @@ leaving the mesh unchanged.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='GetEnumerator'>
+  <div class='section public' id='get-enumerator'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#GetEnumerator'>#</a>
+        <a class='octothorpe' href='#get-enumerator'>#</a>
       </div>
-      <h2>GetEnumerator</h2>
+      <h3>GetEnumerator</h3>
 <p>Gets an enumerator that yields all faces in this collection.</p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>An enumerator.</p>
     </div>
     <div class='code'>

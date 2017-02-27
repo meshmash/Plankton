@@ -8,7 +8,7 @@
 <body>
 <div id='container'>
   <div id="background"></div>
-  
+
   <div id="jump_to">
     Jump To &hellip;
     <div id="jump_wrapper">
@@ -25,24 +25,37 @@
       </div>
     </div>
   </div>
-  
+
   <div class='section'>
     <div class='docs'><h1>RhinoSupport.cs</h1></div>
   </div>
   <div class='clearall'>
-  <div class='section public' id=''>
+  <div class='section ' id=''>
     <div class='docs'>
-      <p>Provides static and extension methods to add support for Rhino geometry in <a href="Plankton.html">Plankton</a>.</p>
+      
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">using</span> <span class="nn">Plankton</span><span class="p">;</span>
+      <div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">Plankton</span><span class="p">;</span>
 <span class="k">using</span> <span class="nn">Rhino.Geometry</span><span class="p">;</span>
 <span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
 <span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Linq</span><span class="p">;</span>
 
 <span class="k">namespace</span> <span class="nn">PlanktonGh</span>
-<span class="p">{</span>
-    <span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">RhinoSupport</span>
+<span class="p">{</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='rhino-support'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#rhino-support'>#</a>
+      </div>
+      <h2>RhinoSupport</h2>
+<p>Provides static and extension methods to add support for Rhino geometry in <a href="Plankton.html">Plankton</a>.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">RhinoSupport</span>
     <span class="p">{</span>
         <span class="k">public</span> <span class="k">static</span> <span class="kt">string</span> <span class="nf">HelloWorld</span><span class="p">()</span>
         <span class="p">{</span>
@@ -51,19 +64,19 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='ToPlanktonMesh'>
+  <div class='section public' id='to-plankton-mesh'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#ToPlanktonMesh'>#</a>
+        <a class='octothorpe' href='#to-plankton-mesh'>#</a>
       </div>
-      <h2>ToPlanktonMesh</h2>
+      <h3>ToPlanktonMesh</h3>
 <p>Creates a Plankton halfedge mesh from a Rhino mesh.
 Uses the topology of the Rhino mesh directly.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>source</em>: A Rhino mesh to convert from.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>A <a href="PlanktonMesh.html">PlanktonMesh</a> which represents the topology and geometry of the source mesh.</p>
     </div>
     <div class='code'>
@@ -260,21 +273,21 @@ Uses the topology of the Rhino mesh directly.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='ToRhinoMesh'>
+  <div class='section public' id='to-rhino-mesh'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#ToRhinoMesh'>#</a>
+        <a class='octothorpe' href='#to-rhino-mesh'>#</a>
       </div>
-      <h2>ToRhinoMesh</h2>
+      <h3>ToRhinoMesh</h3>
 <p>Creates a Rhino mesh from a Plankton halfedge mesh.
 Uses the face-vertex information available in the halfedge data structure.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>source</em>: A Plankton mesh to convert from.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>A <a href="Mesh.html">Mesh</a> which represents the source mesh (as best it can).</p>
-<h3>Remarks</h3>
+<h4>Remarks</h4>
 <p>Any faces with five sides or more will be triangulated.</p>
     </div>
     <div class='code'>
@@ -314,19 +327,19 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='ReplaceVertices'>
+  <div class='section public' id='replace-vertices'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#ReplaceVertices'>#</a>
+        <a class='octothorpe' href='#replace-vertices'>#</a>
       </div>
-      <h2>ReplaceVertices</h2>
+      <h3>ReplaceVertices</h3>
 <p>Replaces the vertices of a PlanktonMesh with a new list of points</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>source</em>: A Plankton mesh.</li>
 <li><em>points</em>: A list of points.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>A list of closed polylines representing the boundary edges of each face.</p>
     </div>
     <div class='code'>
@@ -342,18 +355,18 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='ToPolylines'>
+  <div class='section public' id='to-polylines'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#ToPolylines'>#</a>
+        <a class='octothorpe' href='#to-polylines'>#</a>
       </div>
-      <h2>ToPolylines</h2>
+      <h3>ToPolylines</h3>
 <p>Converts each face to a closed polyline.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>source</em>: A Plankton mesh.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>A list of closed polylines representing the boundary edges of each face.</p>
     </div>
     <div class='code'>
@@ -378,18 +391,18 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='ToPoint3f'>
+  <div class='section public' id='to-point3f'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#ToPoint3f'>#</a>
+        <a class='octothorpe' href='#to-point3f'>#</a>
       </div>
-      <h2>ToPoint3f</h2>
+      <h3>ToPoint3f</h3>
 <p>Creates a Rhino Point3f from a Plankton vertex.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>vertex</em>: A Plankton vertex</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>A Point3f with the same coordinates as the vertex.</p>
     </div>
     <div class='code'>
@@ -400,18 +413,18 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='ToPoint3d'>
+  <div class='section public' id='to-point3d'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#ToPoint3d'>#</a>
+        <a class='octothorpe' href='#to-point3d'>#</a>
       </div>
-      <h2>ToPoint3d</h2>
+      <h3>ToPoint3d</h3>
 <p>Creates a Rhino Point3d from a Plankton vertex.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>vertex</em>: A Plankton vertex</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>A Point3d with the same coordinates as the vertex.</p>
     </div>
     <div class='code'>
@@ -422,18 +435,18 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='ToPoint3f'>
+  <div class='section public' id='to-point3f-1'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#ToPoint3f'>#</a>
+        <a class='octothorpe' href='#to-point3f-1'>#</a>
       </div>
-      <h2>ToPoint3f</h2>
+      <h3>ToPoint3f</h3>
 <p>Creates a Rhino Point3f from a Plankton vector.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>vector</em>: A Plankton vector.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>A Point3f with the same XYZ components as the vector.</p>
     </div>
     <div class='code'>
@@ -444,18 +457,18 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='ToPoint3d'>
+  <div class='section public' id='to-point3d-1'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#ToPoint3d'>#</a>
+        <a class='octothorpe' href='#to-point3d-1'>#</a>
       </div>
-      <h2>ToPoint3d</h2>
+      <h3>ToPoint3d</h3>
 <p>Creates a Rhino Point3d from a Plankton vector.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>vector</em>: A Plankton vector.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>A Point3d with the same XYZ components as the vector.</p>
     </div>
     <div class='code'>
@@ -466,18 +479,18 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='ToVector3f'>
+  <div class='section public' id='to-vector3f'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#ToVector3f'>#</a>
+        <a class='octothorpe' href='#to-vector3f'>#</a>
       </div>
-      <h2>ToVector3f</h2>
+      <h3>ToVector3f</h3>
 <p>Creates a Rhino Vector3f from a Plankton vector.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>vector</em>: A Plankton vector.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>A Vector3f with the same XYZ components as the vector.</p>
     </div>
     <div class='code'>
@@ -488,22 +501,22 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='SetVertex'>
+  <div class='section public' id='set-vertex'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#SetVertex'>#</a>
+        <a class='octothorpe' href='#set-vertex'>#</a>
       </div>
-      <h2>SetVertex</h2>
+      <h3>SetVertex</h3>
 <p>Sets or adds a vertex to the Vertex List.</p>
 <p>If [index] is less than [Count], the existing vertex at [index] will be modified.</p>
 <p>If [index] equals [Count], a new vertex is appended to the end of the vertex list.</p>
 <p>If [index] is larger than [Count], the function will return false.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>index</em>: Index of vertex to set.</li>
 <li><em>vertex</em>: Vertex location.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>on success,  on failure.</p>
     </div>
     <div class='code'>
@@ -514,22 +527,22 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='SetVertex'>
+  <div class='section public' id='set-vertex-1'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#SetVertex'>#</a>
+        <a class='octothorpe' href='#set-vertex-1'>#</a>
       </div>
-      <h2>SetVertex</h2>
+      <h3>SetVertex</h3>
 <p>Sets or adds a vertex to the Vertex List.</p>
 <p>If [index] is less than [Count], the existing vertex at [index] will be modified.</p>
 <p>If [index] equals [Count], a new vertex is appended to the end of the vertex list.</p>
 <p>If [index] is larger than [Count], the function will return false.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>index</em>: Index of vertex to set.</li>
 <li><em>vertex</em>: Vertex location.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>on success,  on failure.</p>
     </div>
     <div class='code'>
@@ -540,19 +553,19 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='MoveVertex'>
+  <div class='section public' id='move-vertex'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#MoveVertex'>#</a>
+        <a class='octothorpe' href='#move-vertex'>#</a>
       </div>
-      <h2>MoveVertex</h2>
+      <h3>MoveVertex</h3>
 <p>Moves a vertex by a vector.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>index</em>: Index of vertex to move.</li>
 <li><em>vector</em>: Vector to move by.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>on success,  on failure.</p>
     </div>
     <div class='code'>
@@ -563,18 +576,18 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='Add'>
+  <div class='section public' id='add'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Add'>#</a>
+        <a class='octothorpe' href='#add'>#</a>
       </div>
-      <h2>Add</h2>
+      <h3>Add</h3>
 <p>Adds a new vertex to the end of the Vertex list.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>vertex</em>: Location of new vertex.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The index of the newly added vertex.</p>
     </div>
     <div class='code'>
@@ -585,24 +598,46 @@ Uses the face-vertex information available in the halfedge data structure.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='Add'>
+  <div class='section public' id='add-1'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Add'>#</a>
+        <a class='octothorpe' href='#add-1'>#</a>
       </div>
-      <h2>Add</h2>
+      <h3>Add</h3>
 <p>Adds a new vertex to the end of the Vertex list.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>vertex</em>: Location of new vertex.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The index of the newly added vertex.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="kt">int</span> <span class="nf">Add</span><span class="p">(</span><span class="k">this</span> <span class="n">PlanktonVertexList</span> <span class="n">vertexList</span><span class="p">,</span> <span class="n">Point3d</span> <span class="n">vertex</span><span class="p">)</span>
         <span class="p">{</span>
             <span class="k">return</span> <span class="n">vertexList</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">vertex</span><span class="p">.</span><span class="n">X</span><span class="p">,</span> <span class="n">vertex</span><span class="p">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">vertex</span><span class="p">.</span><span class="n">Z</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='get-positions'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#get-positions'>#</a>
+      </div>
+      <h3>GetPositions</h3>
+<p>Gets positions of vertices</p>
+<h4>Parameters</h4>
+<ul>
+<li><em>source</em>: A Plankton mesh.</li>
+</ul>
+<h4>Returns</h4>
+<p>A list of Point3d</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Point3d</span><span class="p">&gt;</span> <span class="n">GetPositions</span><span class="p">(</span><span class="k">this</span> <span class="n">PlanktonMesh</span> <span class="n">source</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">Enumerable</span><span class="p">.</span><span class="n">Range</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="n">source</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">Count</span><span class="p">).</span><span class="n">Select</span><span class="p">(</span><span class="n">i</span> <span class="p">=&gt;</span> <span class="n">source</span><span class="p">.</span><span class="n">Vertices</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">ToPoint3d</span><span class="p">());</span>          
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>

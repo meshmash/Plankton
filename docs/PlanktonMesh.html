@@ -8,7 +8,7 @@
 <body>
 <div id='container'>
   <div id="background"></div>
-  
+
   <div id="jump_to">
     Jump To &hellip;
     <div id="jump_wrapper">
@@ -25,35 +25,69 @@
       </div>
     </div>
   </div>
-  
+
   <div class='section'>
     <div class='docs'><h1>PlanktonMesh.cs</h1></div>
   </div>
   <div class='clearall'>
-  <div class='section public' id=''>
+  <div class='section ' id=''>
     <div class='docs'>
-      <p>Description of PlanktonMesh.</p>
+      
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="c1">//using Rhino.Geometry;</span>
-<span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+      <div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
 <span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
 <span class="k">using</span> <span class="nn">System.Linq</span><span class="p">;</span>
 
 <span class="k">namespace</span> <span class="nn">Plankton</span>
-<span class="p">{</span>
-    <span class="k">public</span> <span class="k">class</span> <span class="nc">PlanktonMesh</span>
+<span class="p">{</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='plankton-mesh'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#plankton-mesh'>#</a>
+      </div>
+      <h2>PlanktonMesh</h2>
+<p>This is the main class that describes a plankton mesh.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">public</span> <span class="k">class</span> <span class="nc">PlanktonMesh</span>
     <span class="p">{</span>
         <span class="k">private</span> <span class="n">PlanktonVertexList</span> <span class="n">_vertices</span><span class="p">;</span>
         <span class="k">private</span> <span class="n">PlanktonHalfEdgeList</span> <span class="n">_halfedges</span><span class="p">;</span>
         <span class="k">private</span> <span class="n">PlanktonFaceList</span> <span class="n">_faces</span><span class="p">;</span>
         
-        <span class="cp">#region &quot;constructors&quot;</span>
-        <span class="k">public</span> <span class="nf">PlanktonMesh</span><span class="p">()</span> <span class="c1">//blank constructor</span>
+        <span class="cp">#region &quot;constructors&quot;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='.ctor'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#.ctor'>#</a>
+      </div>
+      <h3>.ctor</h3>
+<p>Initializes a new (empty) instance of the <a href="PlanktonMesh.html">PlanktonMesh</a> class.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="nf">PlanktonMesh</span><span class="p">()</span>
         <span class="p">{</span>
-        <span class="p">}</span>
-        
-        <span class="k">public</span> <span class="nf">PlanktonMesh</span><span class="p">(</span><span class="n">PlanktonMesh</span> <span class="n">source</span><span class="p">)</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='.ctor-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#.ctor-1'>#</a>
+      </div>
+      <h3>.ctor</h3>
+<p>Initializes a new (duplicate) instance of the <a href="PlanktonMesh.html">PlanktonMesh</a> class.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="nf">PlanktonMesh</span><span class="p">(</span><span class="n">PlanktonMesh</span> <span class="n">source</span><span class="p">)</span>
         <span class="p">{</span>
             <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">v</span> <span class="k">in</span> <span class="n">source</span><span class="p">.</span><span class="n">Vertices</span><span class="p">)</span>
             <span class="p">{</span>
@@ -84,13 +118,13 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='Vertices'>
+  <div class='section public' id='vertices'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Vertices'>#</a>
+        <a class='octothorpe' href='#vertices'>#</a>
       </div>
-      <h2>Vertices</h2>
-<p>Gets access to the vertices collection in this mesh.</p>
+      <h3>Vertices</h3>
+<p>Gets access to the <a href="PlanktonVertexList.html">PlanktonVertexList</a> collection in this mesh.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>        <span class="k">public</span> <span class="n">PlanktonVertexList</span> <span class="n">Vertices</span>
@@ -100,13 +134,13 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='Halfedges'>
+  <div class='section public' id='halfedges'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Halfedges'>#</a>
+        <a class='octothorpe' href='#halfedges'>#</a>
       </div>
-      <h2>Halfedges</h2>
-<p>Gets access to the halfedges collection in this mesh.</p>
+      <h3>Halfedges</h3>
+<p>Gets access to the <a href="PlanktonHalfedgeList.html">PlanktonHalfedgeList</a> collection in this mesh.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>        <span class="k">public</span> <span class="n">PlanktonHalfEdgeList</span> <span class="n">Halfedges</span>
@@ -116,13 +150,13 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='Faces'>
+  <div class='section public' id='faces'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Faces'>#</a>
+        <a class='octothorpe' href='#faces'>#</a>
       </div>
-      <h2>Faces</h2>
-<p>Gets access to the faces collection in this mesh.</p>
+      <h3>Faces</h3>
+<p>Gets access to the <a href="PlanktonFaceList.html">PlanktonFaceList</a> collection in this mesh.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>        <span class="k">public</span> <span class="n">PlanktonFaceList</span> <span class="n">Faces</span>
@@ -135,12 +169,12 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='Volume'>
+  <div class='section public' id='volume'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Volume'>#</a>
+        <a class='octothorpe' href='#volume'>#</a>
       </div>
-      <h2>Volume</h2>
+      <h3>Volume</h3>
 <p>Calculate the volume of the mesh</p>
     </div>
     <div class='code'>
@@ -187,6 +221,31 @@
 
         <span class="k">public</span> <span class="n">PlanktonMesh</span> <span class="nf">Dual</span><span class="p">()</span>
         <span class="p">{</span>
+            <span class="c1">// hack for open meshes</span>
+            <span class="c1">// TODO: improve this ugly method</span>
+            <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">IsClosed</span><span class="p">()</span> <span class="p">==</span> <span class="k">false</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="kt">var</span> <span class="n">dual</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PlanktonMesh</span><span class="p">();</span>
+
+                <span class="c1">// create vertices from face centers</span>
+                <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="k">this</span><span class="p">.</span><span class="n">Faces</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+                <span class="p">{</span>
+                    <span class="n">dual</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">Faces</span><span class="p">.</span><span class="n">GetFaceCenter</span><span class="p">(</span><span class="n">i</span><span class="p">));</span>
+                <span class="p">}</span>
+
+                <span class="c1">// create faces from the adjacent face indices of non-boundary vertices</span>
+                <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="k">this</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+                <span class="p">{</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">IsBoundary</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+                    <span class="p">{</span>
+                        <span class="k">continue</span><span class="p">;</span>
+                    <span class="p">}</span>
+                    <span class="n">dual</span><span class="p">.</span><span class="n">Faces</span><span class="p">.</span><span class="n">AddFace</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">GetVertexFaces</span><span class="p">(</span><span class="n">i</span><span class="p">));</span>
+                <span class="p">}</span>
+
+                <span class="k">return</span> <span class="n">dual</span><span class="p">;</span>
+            <span class="p">}</span>
+
             <span class="c1">// can later add options for other ways of defining face centres (barycenter/circumcenter etc)</span>
             <span class="c1">// won&#39;t work yet with naked boundaries</span>
 
@@ -266,24 +325,79 @@
             <span class="k">return</span> <span class="n">D</span><span class="p">;</span>
         <span class="p">}</span>
 
-        <span class="k">public</span> <span class="k">void</span> <span class="nf">RefreshVertexNormals</span><span class="p">()</span>
+        <span class="k">public</span> <span class="kt">bool</span> <span class="nf">IsClosed</span><span class="p">()</span>
         <span class="p">{</span>
-        <span class="p">}</span>
-        <span class="k">public</span> <span class="k">void</span> <span class="nf">RefreshFaceNormals</span><span class="p">()</span>
-        <span class="p">{</span>
-        <span class="p">}</span>
-        <span class="k">public</span> <span class="k">void</span> <span class="nf">RefreshEdgeNormals</span><span class="p">()</span>
-        <span class="p">{</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="k">this</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+            <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">&lt;</span> <span class="m">0</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
         <span class="p">}</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='Compact'>
+  <div class='section public' id='truncate-vertices'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Compact'>#</a>
+        <a class='octothorpe' href='#truncate-vertices'>#</a>
       </div>
-      <h2>Compact</h2>
+      <h3>TruncateVertices</h3>
+<p>Truncates the vertices of a mesh.</p>
+<h4>Parameters</h4>
+<ul>
+<li><em>t</em>: Optional parameter for the normalised distance along each edge to control the amount of truncation.</li>
+</ul>
+<h4>Returns</h4>
+<p>A new mesh, the result of the truncation.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="n">PlanktonMesh</span> <span class="nf">TruncateVertices</span><span class="p">(</span><span class="kt">float</span> <span class="n">t</span> <span class="p">=</span> <span class="m">1f</span><span class="p">/</span><span class="m">3</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="c1">// TODO: handle special cases (t = 0.0, t = 0.5, t &gt; 0.5)</span>
+            <span class="kt">var</span> <span class="n">tMesh</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PlanktonMesh</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+
+            <span class="kt">var</span> <span class="n">vxyz</span> <span class="p">=</span> <span class="n">tMesh</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">v</span> <span class="p">=&gt;</span> <span class="n">v</span><span class="p">.</span><span class="n">ToXYZ</span><span class="p">()).</span><span class="n">ToArray</span><span class="p">();</span>
+            <span class="n">PlanktonXYZ</span> <span class="n">v0</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">;</span>
+            <span class="kt">int</span><span class="p">[]</span> <span class="n">oh</span><span class="p">;</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="k">this</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+            <span class="p">{</span>
+                <span class="n">oh</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">GetHalfedges</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+                <span class="n">tMesh</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">TruncateVertex</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+                <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">h</span> <span class="k">in</span> <span class="n">oh</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="n">v0</span> <span class="p">=</span> <span class="n">vxyz</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">];</span>
+                    <span class="n">v1</span> <span class="p">=</span> <span class="n">vxyz</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">EndVertex</span><span class="p">(</span><span class="n">h</span><span class="p">)];</span>
+                    <span class="n">v2</span> <span class="p">=</span> <span class="n">v0</span> <span class="p">+</span> <span class="p">(</span><span class="n">v1</span> <span class="p">-</span> <span class="n">v0</span><span class="p">)</span> <span class="p">*</span> <span class="n">t</span><span class="p">;</span>
+                    <span class="n">tMesh</span><span class="p">.</span><span class="n">Vertices</span><span class="p">.</span><span class="n">SetVertex</span><span class="p">(</span><span class="n">tMesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">StartVertex</span><span class="p">,</span> <span class="n">v2</span><span class="p">.</span><span class="n">X</span><span class="p">,</span> <span class="n">v2</span><span class="p">.</span><span class="n">Y</span><span class="p">,</span> <span class="n">v2</span><span class="p">.</span><span class="n">Z</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+            <span class="k">return</span> <span class="n">tMesh</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="cm">/* Hide for the time being to avoid confusion...</span>
+<span class="cm">        public void RefreshVertexNormals()</span>
+<span class="cm">        {</span>
+<span class="cm">        }</span>
+<span class="cm">        public void RefreshFaceNormals()</span>
+<span class="cm">        {</span>
+<span class="cm">        }</span>
+<span class="cm">        public void RefreshEdgeNormals()</span>
+<span class="cm">        {</span>
+<span class="cm">        }</span>
+<span class="cm">        */</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='compact'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#compact'>#</a>
+      </div>
+      <h3>Compact</h3>
 <p>Removes any unreferenced objects from arrays, reindexes as needed and shrinks arrays to minimum required size.</p>
     </div>
     <div class='code'>

@@ -8,7 +8,7 @@
 <body>
 <div id='container'>
   <div id="background"></div>
-  
+
   <div id="jump_to">
     Jump To &hellip;
     <div id="jump_wrapper">
@@ -25,41 +25,53 @@
       </div>
     </div>
   </div>
-  
+
   <div class='section'>
     <div class='docs'><h1>PlanktonVertexList.cs</h1></div>
   </div>
   <div class='clearall'>
-  <div class='section public' id=''>
+  <div class='section ' id=''>
     <div class='docs'>
-      <p>Provides access to the vertices and Vertex related functionality of a Mesh.</p>
+      
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+      <div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
 <span class="k">using</span> <span class="nn">System.Collections</span><span class="p">;</span>
 <span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
 <span class="k">using</span> <span class="nn">System.Linq</span><span class="p">;</span>
 
 <span class="k">namespace</span> <span class="nn">Plankton</span>
-<span class="p">{</span>
-    <span class="k">public</span> <span class="k">class</span> <span class="nc">PlanktonVertexList</span> <span class="p">:</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">PlanktonVertex</span><span class="p">&gt;</span>
+<span class="p">{</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='plankton-vertex-list'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#plankton-vertex-list'>#</a>
+      </div>
+      <h2>PlanktonVertexList</h2>
+<p>Provides access to the vertices and <a href="PlanktonVertex.html">PlanktonVertex</a> related functionality of a Mesh.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">public</span> <span class="k">class</span> <span class="nc">PlanktonVertexList</span> <span class="p">:</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">PlanktonVertex</span><span class="p">&gt;</span>
     <span class="p">{</span>
         <span class="k">private</span> <span class="k">readonly</span> <span class="n">PlanktonMesh</span> <span class="n">_mesh</span><span class="p">;</span>
         <span class="k">private</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">PlanktonVertex</span><span class="p">&gt;</span> <span class="n">_list</span><span class="p">;</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section internal' id='PlanktonVertexList'>
+  <div class='section internal' id='.ctor'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#PlanktonVertexList'>#</a>
+        <a class='octothorpe' href='#.ctor'>#</a>
       </div>
-      <h2>PlanktonVertexList</h2>
+      <h3>.ctor</h3>
 <p>Initializes a new instance of the <a href="PlanktonVertexList.html">PlanktonVertexList</a> class.
 Should be called from the mesh constructor.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
-<li><em>owner</em>: The mesh to which this list of vertices belongs.</li>
+<li><em>owner</em>: The <a href="PlanktonMesh.html">PlanktonMesh</a> to which this list of vertices belongs.</li>
 </ul>
     </div>
     <div class='code'>
@@ -71,12 +83,12 @@ Should be called from the mesh constructor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='Count'>
+  <div class='section public' id='count'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Count'>#</a>
+        <a class='octothorpe' href='#count'>#</a>
       </div>
-      <h2>Count</h2>
+      <h3>Count</h3>
 <p>Gets the number of vertices.</p>
     </div>
     <div class='code'>
@@ -94,18 +106,18 @@ Should be called from the mesh constructor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section internal' id='Add'>
+  <div class='section internal' id='add'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Add'>#</a>
+        <a class='octothorpe' href='#add'>#</a>
       </div>
-      <h2>Add</h2>
+      <h3>Add</h3>
 <p>Adds a new vertex to the end of the Vertex list.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>vertex</em>: Vertex to add.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The index of the newly added vertex.</p>
     </div>
     <div class='code'>
@@ -118,18 +130,18 @@ Should be called from the mesh constructor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section internal' id='Add'>
+  <div class='section internal' id='add-1'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Add'>#</a>
+        <a class='octothorpe' href='#add-1'>#</a>
       </div>
-      <h2>Add</h2>
+      <h3>Add</h3>
 <p>Adds a new vertex to the end of the Vertex list.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>vertex</em>: Vertex to add.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The index of the newly added vertex.</p>
     </div>
     <div class='code'>
@@ -141,20 +153,20 @@ Should be called from the mesh constructor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='Add'>
+  <div class='section public' id='add-2'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Add'>#</a>
+        <a class='octothorpe' href='#add-2'>#</a>
       </div>
-      <h2>Add</h2>
+      <h3>Add</h3>
 <p>Adds a new vertex to the end of the Vertex list.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>x</em>: X component of new vertex coordinate.</li>
 <li><em>y</em>: Y component of new vertex coordinate.</li>
 <li><em>z</em>: Z component of new vertex coordinate.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The index of the newly added vertex.</p>
     </div>
     <div class='code'>
@@ -165,20 +177,20 @@ Should be called from the mesh constructor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='Add'>
+  <div class='section public' id='add-3'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Add'>#</a>
+        <a class='octothorpe' href='#add-3'>#</a>
       </div>
-      <h2>Add</h2>
+      <h3>Add</h3>
 <p>Adds a new vertex to the end of the Vertex list.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>x</em>: X component of new vertex coordinate.</li>
 <li><em>y</em>: Y component of new vertex coordinate.</li>
 <li><em>z</em>: Z component of new vertex coordinate.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The index of the newly added vertex.</p>
     </div>
     <div class='code'>
@@ -190,18 +202,18 @@ Should be called from the mesh constructor.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='AddVertices'>
+  <div class='section public' id='add-vertices'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#AddVertices'>#</a>
+        <a class='octothorpe' href='#add-vertices'>#</a>
       </div>
-      <h2>AddVertices</h2>
+      <h3>AddVertices</h3>
 <p>Adds a series of new vertices to the end of the vertex list.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
-<li><em>vertices</em>: A list, an array or any enumerable set of .</li>
+<li><em>vertices</em>: A list, an array or any enumerable set of <a href="PlanktonXYZ.html">PlanktonXYZ</a>.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>Indices of the newly created vertices.</p>
     </div>
     <div class='code'>
@@ -217,15 +229,15 @@ Should be called from the mesh constructor.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#index'>#</a>
       </div>
-      <h2>index</h2>
-<p>Returns the vertex at the given index.</p>
-<h3>Parameters</h3>
+      <h3>index</h3>
+<p>Returns the <a href="PlanktonVertex.html">PlanktonVertex</a> at the given index.</p>
+<h4>Parameters</h4>
 <ul>
 <li><em>index</em>: 
 Index of vertex to get.
 Must be larger than or equal to zero and smaller than the Vertex Count of the mesh.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The vertex at the given index.</p>
     </div>
     <div class='code'>
@@ -243,24 +255,24 @@ Must be larger than or equal to zero and smaller than the Vertex Count of the me
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='SetVertex'>
+  <div class='section public' id='set-vertex'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#SetVertex'>#</a>
+        <a class='octothorpe' href='#set-vertex'>#</a>
       </div>
-      <h2>SetVertex</h2>
+      <h3>SetVertex</h3>
 <p>Sets or adds a vertex to the Vertex List.</p>
 <p>If [index] is less than [Count], the existing vertex at [index] will be modified.</p>
 <p>If [index] equals [Count], a new vertex is appended to the end of the vertex list.</p>
 <p>If [index] is larger than [Count], the function will return false.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>vertexIndex</em>: Index of vertex to set.</li>
 <li><em>x</em>: X component of vertex location.</li>
 <li><em>y</em>: Y component of vertex location.</li>
 <li><em>z</em>: Z component of vertex location.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>on success,  on failure.</p>
     </div>
     <div class='code'>
@@ -284,24 +296,24 @@ Must be larger than or equal to zero and smaller than the Vertex Count of the me
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='SetVertex'>
+  <div class='section public' id='set-vertex-1'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#SetVertex'>#</a>
+        <a class='octothorpe' href='#set-vertex-1'>#</a>
       </div>
-      <h2>SetVertex</h2>
+      <h3>SetVertex</h3>
 <p>Sets or adds a vertex to the Vertex List.</p>
 <p>If [index] is less than [Count], the existing vertex at [index] will be modified.</p>
 <p>If [index] equals [Count], a new vertex is appended to the end of the vertex list.</p>
 <p>If [index] is larger than [Count], the function will return false.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>vertexIndex</em>: Index of vertex to set.</li>
 <li><em>x</em>: X component of vertex location.</li>
 <li><em>y</em>: Y component of vertex location.</li>
 <li><em>z</em>: Z component of vertex location.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>on success,  on failure.</p>
     </div>
     <div class='code'>
@@ -326,12 +338,12 @@ Must be larger than or equal to zero and smaller than the Vertex Count of the me
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section internal' id='CompactHelper'>
+  <div class='section internal' id='compact-helper'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#CompactHelper'>#</a>
+        <a class='octothorpe' href='#compact-helper'>#</a>
       </div>
-      <h2>CompactHelper</h2>
+      <h3>CompactHelper</h3>
 <p>Helper method to remove dead vertices from the list, re-index and compact.</p>
     </div>
     <div class='code'>
@@ -369,14 +381,14 @@ Must be larger than or equal to zero and smaller than the Vertex Count of the me
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='CullUnused'>
+  <div class='section public' id='cull-unused'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#CullUnused'>#</a>
+        <a class='octothorpe' href='#cull-unused'>#</a>
       </div>
-      <h2>CullUnused</h2>
+      <h3>CullUnused</h3>
 <p>Removes all vertices that are currently not used by the Halfedge list.</p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The number of unused vertices that were removed.</p>
     </div>
     <div class='code'>
@@ -389,18 +401,18 @@ Must be larger than or equal to zero and smaller than the Vertex Count of the me
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='GetHalfedgesCirculator'>
+  <div class='section public' id='get-halfedges-circulator'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#GetHalfedgesCirculator'>#</a>
+        <a class='octothorpe' href='#get-halfedges-circulator'>#</a>
       </div>
-      <h2>GetHalfedgesCirculator</h2>
+      <h3>GetHalfedgesCirculator</h3>
 <p>Traverses the halfedge indices which originate from a vertex.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>v</em>: A vertex index.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>An enumerable of halfedge indices incident to the specified vertex.
 Ordered clockwise around the vertex.</p>
     </div>
@@ -423,19 +435,19 @@ Ordered clockwise around the vertex.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='GetHalfedgesCirculator'>
+  <div class='section public' id='get-halfedges-circulator-1'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#GetHalfedgesCirculator'>#</a>
+        <a class='octothorpe' href='#get-halfedges-circulator-1'>#</a>
       </div>
-      <h2>GetHalfedgesCirculator</h2>
+      <h3>GetHalfedgesCirculator</h3>
 <p>Traverses the halfedge indices which originate from a vertex.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>v</em>: A vertex index.</li>
 <li><em>first</em>: A halfedge index. Halfedge must start at the specified vertex.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>An enumerable of halfedge indices incident to the specified vertex.
 Ordered clockwise around the vertex.
 The returned enumerable will start with the specified halfedge.</p>
@@ -464,18 +476,18 @@ The returned enumerable will start with the specified halfedge.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='GetHalfedges'>
+  <div class='section public' id='get-halfedges'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#GetHalfedges'>#</a>
+        <a class='octothorpe' href='#get-halfedges'>#</a>
       </div>
-      <h2>GetHalfedges</h2>
+      <h3>GetHalfedges</h3>
 <p>Gets the halfedges which originate from a vertex.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>v</em>: A vertex index.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The indices of halfedges incident to a particular vertex.
 Ordered clockwise around the vertex.</p>
     </div>
@@ -487,18 +499,18 @@ Ordered clockwise around the vertex.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='GetIncomingHalfedges'>
+  <div class='section public' id='get-incoming-halfedges'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#GetIncomingHalfedges'>#</a>
+        <a class='octothorpe' href='#get-incoming-halfedges'>#</a>
       </div>
-      <h2>GetIncomingHalfedges</h2>
+      <h3>GetIncomingHalfedges</h3>
 <p>Gets the halfedges which end at a vertex.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>v</em>: A vertex index.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The opposing halfedge for each returned by <a href="GetHalfedges(int).html">GetHalfedges(int)</a>.
 Ordered clockwise around the vertex.</p>
     </div>
@@ -511,18 +523,18 @@ Ordered clockwise around the vertex.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='GetVertexNeighbours'>
+  <div class='section public' id='get-vertex-neighbours'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#GetVertexNeighbours'>#</a>
+        <a class='octothorpe' href='#get-vertex-neighbours'>#</a>
       </div>
-      <h2>GetVertexNeighbours</h2>
+      <h3>GetVertexNeighbours</h3>
 <p>Gets vertex neighbours (a.k.a. 1-ring).</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>f</em>: A vertex index.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>An array of vertex indices incident to the specified vertex.
 Ordered clockwise around the vertex.</p>
     </div>
@@ -536,18 +548,18 @@ Ordered clockwise around the vertex.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='GetVertexFaces'>
+  <div class='section public' id='get-vertex-faces'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#GetVertexFaces'>#</a>
+        <a class='octothorpe' href='#get-vertex-faces'>#</a>
       </div>
-      <h2>GetVertexFaces</h2>
+      <h3>GetVertexFaces</h3>
 <p>Gets faces incident to a vertex.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>v</em>: A vertex index.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>An array of face indices incident to the specified vertex.
 Ordered clockwise around the vertex</p>
     </div>
@@ -560,18 +572,18 @@ Ordered clockwise around the vertex</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='GetIncomingHalfedge'>
+  <div class='section public' id='get-incoming-halfedge'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#GetIncomingHalfedge'>#</a>
+        <a class='octothorpe' href='#get-incoming-halfedge'>#</a>
       </div>
-      <h2>GetIncomingHalfedge</h2>
+      <h3>GetIncomingHalfedge</h3>
 <p>Gets the first  halfedge for a vertex.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>v</em>: A vertex index.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The index of the halfedge paired with the specified vertex's .</p>
     </div>
     <div class='code'>
@@ -583,18 +595,18 @@ Ordered clockwise around the vertex</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='NakedEdgeCount'>
+  <div class='section public' id='naked-edge-count'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#NakedEdgeCount'>#</a>
+        <a class='octothorpe' href='#naked-edge-count'>#</a>
       </div>
-      <h2>NakedEdgeCount</h2>
+      <h3>NakedEdgeCount</h3>
 <p>Gets the number of naked edges incident to this vertex.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>v</em>: A vertex index.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The number of incident halfedges which lie on a boundary.</p>
     </div>
     <div class='code'>
@@ -612,18 +624,18 @@ Ordered clockwise around the vertex</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='GetValence'>
+  <div class='section public' id='get-valence'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#GetValence'>#</a>
+        <a class='octothorpe' href='#get-valence'>#</a>
       </div>
-      <h2>GetValence</h2>
+      <h3>GetValence</h3>
 <p>Gets the number of edges incident to this vertex.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>v</em>: A vertex index.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The number of incident edges.</p>
     </div>
     <div class='code'>
@@ -635,18 +647,18 @@ Ordered clockwise around the vertex</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='IsBoundary'>
+  <div class='section public' id='is-boundary'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#IsBoundary'>#</a>
+        <a class='octothorpe' href='#is-boundary'>#</a>
       </div>
-      <h2>IsBoundary</h2>
+      <h3>IsBoundary</h3>
 <p>A vertex is on a boundary if its outgoing halfedge has no adjacent face.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>index</em>: The index of a vertex.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>if the specified vertex is on a boundary; otherwise, .
 Also returns  if the vertex is unused (i.e. no outgoing halfedge).</p>
     </div>
@@ -655,27 +667,108 @@ Also returns  if the vertex is unused (i.e. no outgoing halfedge).</p>
         <span class="p">{</span>
             <span class="kt">int</span> <span class="n">h</span> <span class="p">=</span> <span class="k">this</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="n">OutgoingHalfedge</span><span class="p">;</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">h</span> <span class="p">&lt;</span> <span class="p">-</span><span class="m">1</span> <span class="p">||</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="n">h</span><span class="p">].</span><span class="n">AdjacentFace</span> <span class="p">==</span> <span class="p">-</span><span class="m">1</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='get-normal'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#get-normal'>#</a>
+      </div>
+      <h3>GetNormal</h3>
+<p>Gets the normal vector at a vertex.</p>
+<h4>Parameters</h4>
+<ul>
+<li><em>index</em>: The index of a vertex.</li>
+</ul>
+<h4>Returns</h4>
+<p>The area weighted vertex normal.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="n">PlanktonXYZ</span> <span class="nf">GetNormal</span><span class="p">(</span><span class="kt">int</span> <span class="n">index</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">PlanktonXYZ</span> <span class="n">vertex</span> <span class="p">=</span> <span class="k">this</span><span class="p">[</span><span class="n">index</span><span class="p">].</span><span class="n">ToXYZ</span><span class="p">();</span>
+            <span class="n">PlanktonXYZ</span> <span class="n">normal</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PlanktonXYZ</span><span class="p">();</span>
+
+            <span class="kt">var</span> <span class="n">ring</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">GetVertexNeighbours</span><span class="p">(</span><span class="n">index</span><span class="p">);</span>
+            <span class="kt">int</span> <span class="n">n</span> <span class="p">=</span> <span class="n">ring</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span>
+
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">n</span><span class="p">-</span><span class="m">1</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+            <span class="p">{</span>
+                <span class="n">normal</span> <span class="p">+=</span> <span class="n">PlanktonXYZ</span><span class="p">.</span><span class="n">CrossProduct</span><span class="p">(</span>
+                    <span class="k">this</span><span class="p">[</span><span class="n">ring</span><span class="p">[</span><span class="n">i</span><span class="p">]].</span><span class="n">ToXYZ</span><span class="p">()</span> <span class="p">-</span> <span class="n">vertex</span><span class="p">,</span> 
+                    <span class="k">this</span><span class="p">[</span><span class="n">ring</span><span class="p">[</span><span class="n">i</span><span class="p">+</span><span class="m">1</span><span class="p">]].</span><span class="n">ToXYZ</span><span class="p">()</span> <span class="p">-</span> <span class="n">vertex</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">IsBoundary</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="p">==</span> <span class="k">false</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">normal</span> <span class="p">+=</span> <span class="n">PlanktonXYZ</span><span class="p">.</span><span class="n">CrossProduct</span><span class="p">(</span>
+                    <span class="k">this</span><span class="p">[</span><span class="n">n</span><span class="p">-</span><span class="m">1</span><span class="p">].</span><span class="n">ToXYZ</span><span class="p">()</span> <span class="p">-</span> <span class="n">vertex</span><span class="p">,</span>
+                    <span class="k">this</span><span class="p">[</span><span class="m">0</span><span class="p">].</span><span class="n">ToXYZ</span><span class="p">()</span> <span class="p">-</span> <span class="n">vertex</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="k">return</span> <span class="n">normal</span> <span class="p">*</span> <span class="p">(-</span><span class="m">1.0f</span> <span class="p">/</span> <span class="n">normal</span><span class="p">.</span><span class="n">Length</span><span class="p">);</span> <span class="c1">// return unit vector</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='get-normals'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#get-normals'>#</a>
+      </div>
+      <h3>GetNormals</h3>
+<p>Gets the normal vectors for all vertices in the mesh.</p>
+<h4>Returns</h4>
+<p>The area weighted vertex normals of all vertices in the mesh.</p>
+<h4>Remarks</h4>
+<p>This will be accurate at the time of calling but will quickly
+become outdated if you start fiddling with the mesh.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="n">PlanktonXYZ</span><span class="p">[]</span> <span class="nf">GetNormals</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">Enumerable</span><span class="p">.</span><span class="n">Range</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="n">Count</span><span class="p">).</span><span class="n">Select</span><span class="p">(</span><span class="n">i</span> <span class="p">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="n">GetNormal</span><span class="p">(</span><span class="n">i</span><span class="p">)).</span><span class="n">ToArray</span><span class="p">();</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='get-positions'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#get-positions'>#</a>
+      </div>
+      <h3>GetPositions</h3>
+<p>Gets the positions of all vertices.</p>
+<h4>Returns</h4>
+<p>The positions of all vertices in the mesh.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="n">PlanktonXYZ</span><span class="p">[]</span> <span class="nf">GetPositions</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">Enumerable</span><span class="p">.</span><span class="n">Range</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="n">Count</span><span class="p">).</span><span class="n">Select</span><span class="p">(</span><span class="n">i</span> <span class="p">=&gt;</span> <span class="k">this</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">ToXYZ</span><span class="p">()).</span><span class="n">ToArray</span><span class="p">();</span>
         <span class="p">}</span>
 
         <span class="cp">#region Euler operators</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='MergeVertices'>
+  <div class='section public' id='merge-vertices'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#MergeVertices'>#</a>
+        <a class='octothorpe' href='#merge-vertices'>#</a>
       </div>
-      <h2>MergeVertices</h2>
+      <h3>MergeVertices</h3>
 <p>Merges two vertices by collapsing the pair of halfedges between them.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>halfedge</em>: The index of a halfedge between the two vertices to be merged.
 The starting vertex of this halfedge will be retained.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The successor of <em>index</em> around its vertex, or -1 on failure.</p>
-<h3>Remarks</h3>
+<h4>Remarks</h4>
 <p>The invariant  will return a,
 leaving the mesh unchanged.</p>
     </div>
@@ -688,21 +781,21 @@ leaving the mesh unchanged.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='SplitVertex'>
+  <div class='section public' id='split-vertex'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#SplitVertex'>#</a>
+        <a class='octothorpe' href='#split-vertex'>#</a>
       </div>
-      <h2>SplitVertex</h2>
+      <h3>SplitVertex</h3>
 <p>Splits the vertex into two, joined by a new pair of halfedges.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>first</em>: The index of a halfedge which starts at the vertex to split.</li>
 <li><em>second</em>: The index of a second halfedge which starts at the vertex to split.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The new halfedge which starts at the existing vertex.</p>
-<h3>Remarks</h3>
+<h4>Remarks</h4>
 <p>After the split, the <em>second</em> halfedge will be starting at the newly added vertex.</p>
     </div>
     <div class='code'>
@@ -759,19 +852,19 @@ leaving the mesh unchanged.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='EraseCenterVertex'>
+  <div class='section public' id='erase-center-vertex'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#EraseCenterVertex'>#</a>
+        <a class='octothorpe' href='#erase-center-vertex'>#</a>
       </div>
-      <h2>EraseCenterVertex</h2>
+      <h3>EraseCenterVertex</h3>
 <p>Erases a vertex and all incident halfedges by merging its incident faces.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>halfedgeIndex</em>: The index of a halfedge which starts at the vertex to erase.
 The retained face will be the one adjacent to this halfedge.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The successor of <em>halfedgeIndex</em> around its original face.</p>
     </div>
     <div class='code'>
@@ -819,21 +912,59 @@ The retained face will be the one adjacent to this halfedge.</li>
 
             <span class="k">return</span> <span class="n">_mesh</span><span class="p">.</span><span class="n">Faces</span><span class="p">[</span><span class="n">faceIndex</span><span class="p">].</span><span class="n">FirstHalfedge</span><span class="p">;</span>
         <span class="p">}</span>
-        <span class="cp">#endregion</span>
+        <span class="cp">#endregion</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='truncate-vertex'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#truncate-vertex'>#</a>
+      </div>
+      <h3>TruncateVertex</h3>
+<p>Truncates a vertex by creating a face with vertices on each of the outgoing halfedges.</p>
+<h4>Parameters</h4>
+<ul>
+<li><em>v</em>: The index of a vertex.</li>
+</ul>
+<h4>Returns</h4>
+<p>The index of the newly created face.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">int</span> <span class="nf">TruncateVertex</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">var</span> <span class="n">hs</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">GetHalfedges</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+        
+            <span class="c1">// set h_new and move original vertex</span>
+            <span class="kt">int</span> <span class="n">h_new</span> <span class="p">=</span> <span class="n">hs</span><span class="p">[</span><span class="m">0</span><span class="p">];</span>
+        
+            <span class="c1">// circulate outgoing halfedges (clockwise, skip first)</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">1</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">hs</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+            <span class="p">{</span>
+                <span class="c1">// split vertex</span>
+                <span class="kt">int</span> <span class="n">h_tmp</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">SplitVertex</span><span class="p">(</span><span class="n">hs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">h_new</span><span class="p">);</span>
+                <span class="n">h_new</span> <span class="p">=</span> <span class="n">h_tmp</span><span class="p">;</span> <span class="c1">// tidy-up if &#39;vs&#39; is removed</span>
+            <span class="p">}</span>
+
+            <span class="c1">// split face to create new truncated face</span>
+            <span class="kt">int</span> <span class="n">splitH</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">_mesh</span><span class="p">.</span><span class="n">Faces</span><span class="p">.</span><span class="n">SplitFace</span><span class="p">(</span><span class="n">hs</span><span class="p">[</span><span class="m">0</span><span class="p">],</span> <span class="n">h_new</span><span class="p">);</span>
+
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="n">_mesh</span><span class="p">.</span><span class="n">Halfedges</span><span class="p">.</span><span class="n">GetPairHalfedge</span><span class="p">(</span><span class="n">splitH</span><span class="p">)].</span><span class="n">AdjacentFace</span><span class="p">;</span>
+        <span class="p">}</span>
         <span class="cp">#endregion</span>
         
         <span class="cp">#region IEnumerable implementation</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='GetEnumerator'>
+  <div class='section public' id='get-enumerator'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#GetEnumerator'>#</a>
+        <a class='octothorpe' href='#get-enumerator'>#</a>
       </div>
-      <h2>GetEnumerator</h2>
+      <h3>GetEnumerator</h3>
 <p>Gets an enumerator that yields all faces in this collection.</p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>An enumerator.</p>
     </div>
     <div class='code'>

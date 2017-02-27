@@ -8,7 +8,7 @@
 <body>
 <div id='container'>
   <div id="background"></div>
-  
+
   <div id="jump_to">
     Jump To &hellip;
     <div id="jump_wrapper">
@@ -25,21 +25,33 @@
       </div>
     </div>
   </div>
-  
+
   <div class='section'>
     <div class='docs'><h1>PlanktonXYZ.cs</h1></div>
   </div>
   <div class='clearall'>
-  <div class='section public' id=''>
+  <div class='section ' id=''>
     <div class='docs'>
-      <p>Represents a vector in Euclidean space.</p>
+      
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+      <div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
 
 <span class="k">namespace</span> <span class="nn">Plankton</span>
-<span class="p">{</span>
-    <span class="k">public</span> <span class="k">struct</span> <span class="nc">PlanktonXYZ</span>
+<span class="p">{</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='plankton-xyz'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#plankton-xyz'>#</a>
+      </div>
+      <h2>PlanktonXYZ</h2>
+<p>Represents a vector in Euclidean space.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">public</span> <span class="k">struct</span> <span class="nc">PlanktonXYZ</span>
     <span class="p">{</span>
         <span class="cp">#region members</span>
         <span class="k">internal</span> <span class="kt">float</span> <span class="n">_x</span><span class="p">;</span>
@@ -51,14 +63,14 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='PlanktonXYZ'>
+  <div class='section public' id='.ctor'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#PlanktonXYZ'>#</a>
+        <a class='octothorpe' href='#.ctor'>#</a>
       </div>
-      <h2>PlanktonXYZ</h2>
+      <h3>.ctor</h3>
 <p>Constructs a new vector from 3 single precision numbers.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>x</em>: X component of vector.</li>
 <li><em>y</em>: Y component of vector.</li>
@@ -78,12 +90,12 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='Zero'>
+  <div class='section public' id='zero'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Zero'>#</a>
+        <a class='octothorpe' href='#zero'>#</a>
       </div>
-      <h2>Zero</h2>
+      <h3>Zero</h3>
 <p>Gets the value of the vector with components 0,0,0.</p>
     </div>
     <div class='code'>
@@ -94,12 +106,12 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='XAxis'>
+  <div class='section public' id='x-axis'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#XAxis'>#</a>
+        <a class='octothorpe' href='#x-axis'>#</a>
       </div>
-      <h2>XAxis</h2>
+      <h3>XAxis</h3>
 <p>Gets the value of the vector with components 1,0,0.</p>
     </div>
     <div class='code'>
@@ -110,12 +122,12 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='YAxis'>
+  <div class='section public' id='y-axis'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#YAxis'>#</a>
+        <a class='octothorpe' href='#y-axis'>#</a>
       </div>
-      <h2>YAxis</h2>
+      <h3>YAxis</h3>
 <p>Gets the value of the vector with components 0,1,0.</p>
     </div>
     <div class='code'>
@@ -126,12 +138,12 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='ZAxis'>
+  <div class='section public' id='z-axis'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#ZAxis'>#</a>
+        <a class='octothorpe' href='#z-axis'>#</a>
       </div>
-      <h2>ZAxis</h2>
+      <h3>ZAxis</h3>
 <p>Gets the value of the vector with components 0,0,1.</p>
     </div>
     <div class='code'>
@@ -145,12 +157,12 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='X'>
+  <div class='section public' id='x'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#X'>#</a>
+        <a class='octothorpe' href='#x'>#</a>
       </div>
-      <h2>X</h2>
+      <h3>X</h3>
 <p>Gets or sets the X (first) component of this vector.</p>
     </div>
     <div class='code'>
@@ -158,12 +170,12 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='Y'>
+  <div class='section public' id='y'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Y'>#</a>
+        <a class='octothorpe' href='#y'>#</a>
       </div>
-      <h2>Y</h2>
+      <h3>Y</h3>
 <p>Gets or sets the Y (second) component of this vector.</p>
     </div>
     <div class='code'>
@@ -171,12 +183,12 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='Z'>
+  <div class='section public' id='z'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Z'>#</a>
+        <a class='octothorpe' href='#z'>#</a>
       </div>
-      <h2>Z</h2>
+      <h3>Z</h3>
 <p>Gets or sets the Z (third) component of this vector.</p>
     </div>
     <div class='code'>
@@ -185,14 +197,14 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='GetHashCode'>
+  <div class='section public' id='get-hash-code'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#GetHashCode'>#</a>
+        <a class='octothorpe' href='#get-hash-code'>#</a>
       </div>
-      <h2>GetHashCode</h2>
+      <h3>GetHashCode</h3>
 <p>Computes a hash number that represents the current vector.</p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>A hash code that is not unique for each vector.</p>
     </div>
     <div class='code'>
@@ -209,14 +221,14 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#operator'>#</a>
       </div>
-      <h2>operator</h2>
+      <h3>operator</h3>
 <p>Sums up two vectors.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>v1</em>: A vector.</li>
 <li><em>v2</em>: A second vector.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>A new vector that results from the componentwise addition of the two vectors.</p>
     </div>
     <div class='code'>
@@ -227,19 +239,19 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='operator'>
+  <div class='section public' id='operator-1'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#operator'>#</a>
+        <a class='octothorpe' href='#operator-1'>#</a>
       </div>
-      <h2>operator</h2>
+      <h3>operator</h3>
 <p>Subtracts one vector from another.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>v1</em>: A vector.</li>
 <li><em>v2</em>: A second vector.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The first vector minus the second vector</p>
     </div>
     <div class='code'>
@@ -250,19 +262,19 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='operator'>
+  <div class='section public' id='operator-2'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#operator'>#</a>
+        <a class='octothorpe' href='#operator-2'>#</a>
       </div>
-      <h2>operator</h2>
+      <h3>operator</h3>
 <p>Multiplies a vector by a number, having the effect of scaling it.</p>
-<h3>Parameters</h3>
+<h4>Parameters</h4>
 <ul>
 <li><em>vector</em>: A vector.</li>
 <li><em>t</em>: A number.</li>
 </ul>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>A new vector that is the original vector coordinatewise multiplied by t.</p>
     </div>
     <div class='code'>
@@ -273,20 +285,141 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section public' id='Length'>
+  <div class='section public' id='cross-product'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#Length'>#</a>
+        <a class='octothorpe' href='#cross-product'>#</a>
       </div>
-      <h2>Length</h2>
+      <h3>CrossProduct</h3>
+<p>Computes the cross product (or vector product, or exterior product) of two vectors.
+This operation is not commutative.</p>
+<h4>Parameters</h4>
+<ul>
+<li><em>a</em>: First vector.</li>
+<li><em>b</em>: Second vector.</li>
+</ul>
+<h4>Returns</h4>
+<p>A new vector that is perpendicular to both a and b,
+has Length == a.Length * b.Length and</p>
+<p>with a result that is oriented following the right hand rule.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="n">PlanktonXYZ</span> <span class="nf">CrossProduct</span><span class="p">(</span><span class="n">PlanktonXYZ</span> <span class="n">a</span><span class="p">,</span> <span class="n">PlanktonXYZ</span> <span class="n">b</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">PlanktonXYZ</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">_y</span> <span class="p">*</span> <span class="n">b</span><span class="p">.</span><span class="n">_z</span> <span class="p">-</span> <span class="n">b</span><span class="p">.</span><span class="n">_y</span> <span class="p">*</span> <span class="n">a</span><span class="p">.</span><span class="n">_z</span><span class="p">,</span> <span class="n">a</span><span class="p">.</span><span class="n">_z</span> <span class="p">*</span> <span class="n">b</span><span class="p">.</span><span class="n">_x</span> <span class="p">-</span> <span class="n">b</span><span class="p">.</span><span class="n">_z</span> <span class="p">*</span> <span class="n">a</span><span class="p">.</span><span class="n">_x</span><span class="p">,</span> <span class="n">a</span><span class="p">.</span><span class="n">_x</span> <span class="p">*</span> <span class="n">b</span><span class="p">.</span><span class="n">_y</span> <span class="p">-</span> <span class="n">b</span><span class="p">.</span><span class="n">_x</span> <span class="p">*</span> <span class="n">a</span><span class="p">.</span><span class="n">_y</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='length'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#length'>#</a>
+      </div>
+      <h3>Length</h3>
 <p>Get the length of a vector</p>
-<h3>Returns</h3>
+<h4>Returns</h4>
 <p>The length</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">double</span> <span class="nf">Length</span><span class="p">()</span>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">float</span> <span class="n">Length</span>
         <span class="p">{</span>
-            <span class="k">return</span> <span class="n">Math</span><span class="p">.</span><span class="n">Sqrt</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">_x</span> <span class="p">*</span> <span class="k">this</span><span class="p">.</span><span class="n">_x</span> <span class="p">+</span> <span class="k">this</span><span class="p">.</span><span class="n">_y</span> <span class="p">*</span> <span class="k">this</span><span class="p">.</span><span class="n">_y</span> <span class="p">+</span> <span class="k">this</span><span class="p">.</span><span class="n">_z</span> <span class="p">*</span> <span class="k">this</span><span class="p">.</span><span class="n">_z</span><span class="p">);</span>
+            <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">Math</span><span class="p">.</span><span class="n">Sqrt</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">_x</span> <span class="p">*</span> <span class="k">this</span><span class="p">.</span><span class="n">_x</span> <span class="p">+</span> <span class="k">this</span><span class="p">.</span><span class="n">_y</span> <span class="p">*</span> <span class="k">this</span><span class="p">.</span><span class="n">_y</span> <span class="p">+</span> <span class="k">this</span><span class="p">.</span><span class="n">_z</span> <span class="p">*</span> <span class="k">this</span><span class="p">.</span><span class="n">_z</span><span class="p">);</span> <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">ToString</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="kt">string</span><span class="p">.</span><span class="n">Format</span><span class="p">(</span><span class="s">&quot;{0}, {1}, {2}&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="n">_x</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="n">_y</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="n">_z</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='operator-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#operator-3'>#</a>
+      </div>
+      <h3>operator</h3>
+<p>Determines whether two vectors have equal values.</p>
+<h4>Parameters</h4>
+<ul>
+<li><em>a</em>: The first vector.</li>
+<li><em>b</em>: The second vector.</li>
+</ul>
+<h4>Returns</h4>
+<p>true if the components of the two vectors are exactly equal; otherwise false.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="kt">bool</span> <span class="k">operator</span> <span class="p">==(</span><span class="n">PlanktonXYZ</span> <span class="n">a</span><span class="p">,</span> <span class="n">PlanktonXYZ</span> <span class="n">b</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">_x</span> <span class="p">==</span> <span class="n">b</span><span class="p">.</span><span class="n">_x</span> <span class="p">&amp;&amp;</span> <span class="n">a</span><span class="p">.</span><span class="n">_y</span> <span class="p">==</span> <span class="n">b</span><span class="p">.</span><span class="n">_y</span> <span class="p">&amp;&amp;</span> <span class="n">a</span><span class="p">.</span><span class="n">_z</span> <span class="p">==</span> <span class="n">b</span><span class="p">.</span><span class="n">_z</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='operator-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#operator-4'>#</a>
+      </div>
+      <h3>operator</h3>
+<p>Determines whether two vectors have different values.</p>
+<h4>Parameters</h4>
+<ul>
+<li><em>a</em>: The first vector.</li>
+<li><em>b</em>: The second vector.</li>
+</ul>
+<h4>Returns</h4>
+<p>true if the two vectors differ in any component; false otherwise.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">static</span> <span class="kt">bool</span> <span class="k">operator</span> <span class="p">!=(</span><span class="n">PlanktonXYZ</span> <span class="n">a</span><span class="p">,</span> <span class="n">PlanktonXYZ</span> <span class="n">b</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">_x</span> <span class="p">!=</span> <span class="n">b</span><span class="p">.</span><span class="n">_x</span> <span class="p">||</span> <span class="n">a</span><span class="p">.</span><span class="n">_y</span> <span class="p">!=</span> <span class="n">b</span><span class="p">.</span><span class="n">_y</span> <span class="p">||</span> <span class="n">a</span><span class="p">.</span><span class="n">_z</span> <span class="p">!=</span> <span class="n">b</span><span class="p">.</span><span class="n">_z</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='equals'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#equals'>#</a>
+      </div>
+      <h3>Equals</h3>
+<p>Determines whether the specified System.Object is a Vector3f and has the same values as the present vector.</p>
+<h4>Parameters</h4>
+<ul>
+<li><em>obj</em>: The specified object.</li>
+</ul>
+<h4>Returns</h4>
+<p>true if obj is Vector3f and has the same components as this; otherwise false.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="k">override</span> <span class="kt">bool</span> <span class="nf">Equals</span><span class="p">(</span><span class="kt">object</span> <span class="n">obj</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">obj</span> <span class="k">is</span> <span class="n">PlanktonXYZ</span> <span class="p">&amp;&amp;</span> <span class="k">this</span> <span class="p">==</span> <span class="p">(</span><span class="n">PlanktonXYZ</span><span class="p">)</span><span class="n">obj</span><span class="p">);</span>
+        <span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section public' id='equals-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#equals-1'>#</a>
+      </div>
+      <h3>Equals</h3>
+<p>Determines whether the specified vector has the same values as the present vector.</p>
+<h4>Parameters</h4>
+<ul>
+<li><em>vector</em>: The specified vector.</li>
+</ul>
+<h4>Returns</h4>
+<p>true if vector has the same components as this; otherwise false.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">public</span> <span class="kt">bool</span> <span class="nf">Equals</span><span class="p">(</span><span class="n">PlanktonXYZ</span> <span class="n">vector</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">this</span> <span class="p">==</span> <span class="n">vector</span><span class="p">;</span>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
