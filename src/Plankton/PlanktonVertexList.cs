@@ -6,7 +6,7 @@ using System.Linq;
 namespace Plankton
 {
     /// <summary>
-    /// Provides access to the vertices and Vertex related functionality of a Mesh.
+    /// Provides access to the vertices and <see cref="PlanktonVertex"/> related functionality of a Mesh.
     /// </summary>
     public class PlanktonVertexList : IEnumerable<PlanktonVertex>
     {
@@ -17,7 +17,7 @@ namespace Plankton
         /// Initializes a new instance of the <see cref="PlanktonVertexList"/> class.
         /// Should be called from the mesh constructor.
         /// </summary>
-        /// <param name="owner">The mesh to which this list of vertices belongs.</param>
+        /// <param name="owner">The <see cref="PlanktonMesh"/> to which this list of vertices belongs.</param>
         internal PlanktonVertexList(PlanktonMesh owner)
         {
             this._list = new List<PlanktonVertex>();
@@ -97,7 +97,7 @@ namespace Plankton
         }
         
         /// <summary>
-        /// Returns the vertex at the given index.
+        /// Returns the <see cref="PlanktonVertex"/> at the given index.
         /// </summary>
         /// <param name="index">
         /// Index of vertex to get.

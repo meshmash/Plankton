@@ -1,12 +1,11 @@
-﻿//using Rhino.Geometry;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Plankton
 {
     /// <summary>
-    /// Description of PlanktonMesh.
+    /// This is the main class that describes a plankton mesh.
     /// </summary>
     public class PlanktonMesh
     {
@@ -15,10 +14,16 @@ namespace Plankton
         private PlanktonFaceList _faces;
         
         #region "constructors"
-        public PlanktonMesh() //blank constructor
+        /// <summary>
+        /// Initializes a new (empty) instance of the <see cref="PlanktonMesh"/> class.
+        /// </summary>
+        public PlanktonMesh()
         {
         }
-        
+
+        /// <summary>
+        /// Initializes a new (duplicate) instance of the <see cref="PlanktonMesh"/> class.
+        /// </summary>
         public PlanktonMesh(PlanktonMesh source)
         {
             foreach (var v in source.Vertices)
@@ -48,7 +53,7 @@ namespace Plankton
 
         #region "properties"
         /// <summary>
-        /// Gets access to the vertices collection in this mesh.
+        /// Gets access to the <see cref="PlanktonVertexList"/> collection in this mesh.
         /// </summary>
         public PlanktonVertexList Vertices
         {
@@ -56,7 +61,7 @@ namespace Plankton
         }
         
         /// <summary>
-        /// Gets access to the halfedges collection in this mesh.
+        /// Gets access to the <see cref="PlanktonHalfedgeList"/> collection in this mesh.
         /// </summary>
         public PlanktonHalfEdgeList Halfedges
         {
@@ -64,7 +69,7 @@ namespace Plankton
         }
         
         /// <summary>
-        /// Gets access to the faces collection in this mesh.
+        /// Gets access to the <see cref="PlanktonFaceList"/> collection in this mesh.
         /// </summary>
         public PlanktonFaceList Faces
         {

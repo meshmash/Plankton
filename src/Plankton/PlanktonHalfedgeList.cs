@@ -6,7 +6,7 @@ using System.Linq;
 namespace Plankton
 {
     /// <summary>
-    /// Provides access to the halfedges and Halfedge related functionality of a Mesh.
+    /// Provides access to the halfedges and <see cref="PlanktonHalfedge"/> related functionality of a Mesh.
     /// </summary>
     public class PlanktonHalfEdgeList : IEnumerable<PlanktonHalfedge>
     {
@@ -17,7 +17,7 @@ namespace Plankton
         /// Initializes a new instance of the <see cref="PlanktonHalfedgeList"/> class.
         /// Should be called from the mesh constructor.
         /// </summary>
-        /// <param name="owner">The mesh to which this list of halfedges belongs.</param>
+        /// <param name="owner">The <see cref="PlanktonMesh"/> to which this list of halfedges belongs.</param>
         internal PlanktonHalfEdgeList(PlanktonMesh owner)
         {
             this._list = new List<PlanktonHalfedge>();
@@ -100,7 +100,7 @@ namespace Plankton
         }
 
         /// <summary>
-        /// Returns the halfedge at the given index.
+        /// Returns the <see cref="PlanktonHalfedge"/> at the given index.
         /// </summary>
         /// <param name="index">
         /// Index of halfedge to get.

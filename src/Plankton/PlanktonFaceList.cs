@@ -8,7 +8,7 @@ using System.Linq;
 namespace Plankton
 {
     /// <summary>
-    /// Provides access to the faces and Face related functionality of a Mesh.
+    /// Provides access to the faces and <see cref="PlanktonFace"/> related functionality of a Mesh.
     /// </summary>
     public class PlanktonFaceList : IEnumerable<PlanktonFace>
     {
@@ -19,7 +19,7 @@ namespace Plankton
         /// Initializes a new instance of the <see cref="PlanktonFaceList"/> class.
         /// Should be called from the mesh constructor.
         /// </summary>
-        /// <param name="owner">The mesh to which this list of half-edges belongs.</param>
+        /// <param name="owner">The <see cref="PlanktonMesh"/> to which this list of half-edges belongs.</param>
         internal PlanktonFaceList(PlanktonMesh owner)
         {
             this._list = new List<PlanktonFace>();
@@ -303,7 +303,7 @@ namespace Plankton
         }
         
         /// <summary>
-        /// Returns the face at the given index.
+        /// Returns the <see cref="PlanktonFace"/> at the given index.
         /// </summary>
         /// <param name="index">
         /// Index of face to get.
