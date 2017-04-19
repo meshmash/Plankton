@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Collections.Generic;
 using Plankton;
-using PlanktonFold;
 using Grasshopper;
 using PlanktonGh;
 using Grasshopper.Kernel;
@@ -11,7 +10,6 @@ using Rhino.Geometry;
 using MathNet.Numerics.LinearAlgebra;
 using System.Numerics;
 using MathNet.Numerics;
-
 using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace PlanktonFold
@@ -22,7 +20,7 @@ namespace PlanktonFold
         public GhcPlanktonFold()
           : base("PlanktonFold", "PlanktonFold",
               "folding simulation with plankton mesh structure",
-              "MT", "PlanktonFold")
+              "MT", "Analysis")
         {
         }
 
@@ -37,7 +35,7 @@ namespace PlanktonFold
             pManager[1].Optional = true;
 
             // 2
-            pManager.AddNumberParameter("i", "i", "i", GH_ParamAccess.item, 0);
+            pManager.AddGenericParameter("PlanktonMesh", "PlanktonMesh", "PlanktonMesh", GH_ParamAccess.item);
             pManager[2].Optional = true;
 
         }
@@ -63,29 +61,12 @@ namespace PlanktonFold
             pManager.AddGenericParameter("F Matrix", "F Matrix", "F Matrix", GH_ParamAccess.list);
 
             // 6 
-            pManager.AddCurveParameter("Edges", "Edges", "Edges", GH_ParamAccess.list);
+            pManager.AddPlaneParameter("Pln", "Pln", "Pln", GH_ParamAccess.tree);
 
-            pManager.AddGenericParameter("test Matrix", "test Matrix", "test Matrix", GH_ParamAccess.item);
-
-            pManager.AddPlaneParameter("Pln", "Pln", "Pln", GH_ParamAccess.item);
-
-
-            //pManager.AddVectorParameter("vNormals", "vNormals", "vertex normals", GH_ParamAccess.list);
-            //pManager.AddVectorParameter("fNormals", "fNormals", "face normals", GH_ParamAccess.list);
-            //pManager.AddPointParameter("Vertices", "Vertices", "Vertices", GH_ParamAccess.list);
-            //pManager.AddPointParameter("bVertices", "bVertices", "bVertices", GH_ParamAccess.list);
+            // 7 
             //pManager.AddGenericParameter("PMesh", "PMesh", "PMesh", GH_ParamAccess.item);
-            //pManager.AddLineParameter("bEdges", "bEdges", "boundary edges", GH_ParamAccess.list);
 
-            //pManager.AddLineParameter("i-1HalfEdge", "i-1HalfEdge", "i-1HalfEdge", GH_ParamAccess.item);
-
-            //pManager.AddLineParameter("iHalfEdge", "iHalfEdge", "iHalfEdge", GH_ParamAccess.item);
-
-            //pManager.AddLineParameter("i+1HalfEdge", "i+1HalfEdge", "i+1HalfEdge", GH_ParamAccess.item);
-
-            //pManager.AddCurveParameter("PolyLine", "PolyLine", "PolyLine", GH_ParamAccess.list);
-
-
+            
         }
 
         Mesh M = new Mesh();
@@ -93,63 +74,63 @@ namespace PlanktonFold
 
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            // define M & P
+            // define Mesh(M) & PlanktonMesh(P)
             List<Surface> surfaces = new List<Surface>();
+            Mesh mesh = new Mesh();
             if (DA.GetDataList<Surface>("Surfaces", surfaces)) { M = RhinoSupport.SrfToRhinoMesh(surfaces); };
-
-            DA.GetData<Mesh>("Mesh", ref M);
-
+            if (DA.GetData<Mesh>("Mesh", ref mesh)) { M = mesh; };
+            //if (DA.GetData<PlanktonMesh>("PlanktonMesh", ref )) { M = mesh; };
             P = RhinoSupport.ToPlanktonMesh(M);
+
+            // assaign index to faces, half edges and vertices of the planktonmesh, so that it's easier to query from lists
             P.Faces.AssignFaceIndex();
             P.Halfedges.AssignHalfEdgeIndex();
             P.Vertices.AssignVertexIndex();
 
+            // get the inner vertices as index and point
             List<Point3d> cVertices = RhinoSupport.GetConstraintVertices(P);
             List<int> cVertexIndices = RhinoSupport.GetConstraintVertexIndices(P);
 
-            double i = 0;
-            DA.GetData<double>("i", ref i);
-
+            // get the neighbour edges of all inner vertices in a datatree
             DataTree<Line> neighbourEdges = new DataTree<Line>();
-            for  (int j = 0; j < cVertexIndices.Count(); j++)
+            for (int j = 0; j < cVertexIndices.Count(); j++)
             {
-                // the j th node has the cVertex of index j
                 GH_Path jPth = new GH_Path(j);
                 neighbourEdges.AddRange(RhinoSupport.NeighbourVertexEdges(P, cVertexIndices[j])
                     .Select(o => RhinoSupport.HalfEdgeToLine(P, o)).ToList(), jPth);
             }
 
+            // get the sector angles of all inner vertices in a datatree
             DataTree<double> sectorAngles = new DataTree<double>();
             for (int j = 0; j < cVertexIndices.Count(); j++)
             {
-                // the j th node has the sector angles of index j
                 GH_Path jPth = new GH_Path(j);
                 sectorAngles.AddRange(RhinoSupport.GetSectorAngles(P, cVertexIndices[j],
                     RhinoSupport.NeighbourVertexEdges(P, cVertexIndices[j]))
                     .ToList(), jPth);
             }
 
-            // determine MV
-            List<PlanktonHalfedge> innerEdges = P.Halfedges.ToList().Where(o => o.AdjacentFace != -1 && 
-                P.Halfedges[P.Halfedges.GetPairHalfedge(o.Index)].AdjacentFace != -1
-                ).ToList();
-            foreach (PlanktonHalfedge e in innerEdges)
-            {
-                e.MV = RhinoSupport.MVDetermination(P, e.Index);
-            }
-
+            // get the fold angles of all inner vertices in a datatree
             DataTree<double> foldAngles = new DataTree<double>();
             for (int j = 0; j < cVertexIndices.Count(); j++)
             {
-
-                // the j th node has the fold angles of index j
                 GH_Path jPth = new GH_Path(j);
                 foldAngles.AddRange(RhinoSupport.GetFoldAngles(P, cVertexIndices[j],
                     RhinoSupport.NeighbourVertexEdges(P, cVertexIndices[j]))
                     .ToList(), jPth);
             }
 
-            List<Matrix<double>> FMatrix = new List<Matrix<double>>(); // in the order of inner vertex, each one has a F matrix 
+            // select all inner edges of the mesh (boundary edges don't have MV properties)
+            List<PlanktonHalfedge> innerEdges = P.Halfedges.ToList().Where(o => o.AdjacentFace != -1 && 
+                P.Halfedges[P.Halfedges.GetPairHalfedge(o.Index)].AdjacentFace != -1
+                ).ToList();
+            // determine MV
+            foreach (PlanktonHalfedge e in innerEdges)
+                e.MV = RhinoSupport.MVDetermination(P, e.Index);
+
+            // compute F matrices for all inner vertices 
+            // in the order of inner vertex, each one has a F matrix. A F matrix is a indentity matrix when this constraint is satisfied
+            List<Matrix<double>> FMatrix = new List<Matrix<double>>(); 
             for (int j = 0; j < cVertexIndices.Count(); j++)
             {
                 List<PlanktonHalfedge> edges = RhinoSupport.NeighbourVertexEdges(P, cVertexIndices[j]);
@@ -157,67 +138,51 @@ namespace PlanktonFold
                 List<double> thetas = RhinoSupport.GetSectorAngles(P, cVertexIndices[j], edges);
                 FMatrix.Add(Solver.F(rhos, thetas));
             }
-
-            Matrix<double> tMatrix = DenseMatrix.OfArray(new double[,]
+            
+            // the coordinate system of all constraint vertices 
+            DataTree<Plane> pln = new DataTree<Plane>();
+            for (int i = 0; i < cVertexIndices.Count; i++)
             {
-                {Trig.Cos(0), - Trig.Sin(0), 0},
-                {Trig.Sin(0), Trig.Cos(0), 0},
-                {0, 0, 1}
+                int neighbourEdgeCount =
+                    RhinoSupport.NeighbourVertexEdges(P, cVertexIndices[i]).Count;
+                GH_Path iPth = new GH_Path(i);
+                // xx pointing outwards along one foldline
+                List<Vector3d> xx = neighbourEdges.Branch(iPth).Select(o => o.UnitTangent).ToList();
+                // ff are the index of adjacent faces of a cVertice
+                List<int> ff = RhinoSupport.NeighbourVertexEdges(P, P.Vertices[cVertexIndices[i]].Index).Select(o => o.AdjacentFace).ToList();
+                // zz are the face normals 
+                List<Vector3d> zz = ff.Select(o => RhinoSupport.GetFaceNormal(P, o).Last().UnitTangent).ToList();
 
-            });
+                List<Plane> iPlanes = new List<Plane>();
+                for (int j = 0; j < neighbourEdgeCount; j++)
+                {
+                    Plane jPln = new Plane(cVertices[i], xx[j], Vector3d.CrossProduct(zz[j], xx[j]));
+                    iPlanes.Add(jPln);
+                }
+                pln.AddRange(iPlanes, iPth);
 
-            Vector3d xx = neighbourEdges.Branch(new GH_Path(0)).First().UnitTangent;
-            Vector3d zz = new Vector3d();
-            int ff = RhinoSupport.NeighbourVertexEdges(P, P.Vertices[cVertexIndices.First()].Index).First().AdjacentFace;
-            zz = RhinoSupport.GetFaceNormal(P, ff).Last().UnitTangent;
-            Plane pln = new Plane(cVertices.First(), xx, Vector3d.CrossProduct(zz, xx));
-
-            for (int j = 0; j < i; j++)
-            {
-                pln.Transform(Transform.Rotation(foldAngles.Branch(new GH_Path(0))[j], pln.XAxis, pln.Origin));
-                pln.Transform(Transform.Rotation(- sectorAngles.Branch(new GH_Path(0))[j], pln.ZAxis, pln.Origin));
+                //for (int j = 0; j < neighbourEdgeCount; j++)
+                //{
+                //    Plane jPln = new Plane(cVertices[i], xx[j], Vector3d.CrossProduct(zz[j], xx[j]));
+                //    // this line has exception issue!!
+                //    jPln.Transform(Transform.Rotation(foldAngles.Branch(new GH_Path(0))[j], pln.XAxis, pln.Origin));
+                //    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                //    jPln.Transform(Transform.Rotation(-sectorAngles.Branch(new GH_Path(0))[j], pln.ZAxis, pln.Origin));
+                //}
             }
-
+            
             DA.SetData("Mesh", RhinoSupport.ToRhinoMesh(P));
             DA.SetDataList("cVertices", cVertices);
             DA.SetDataTree(2, neighbourEdges);
             DA.SetDataTree(3, sectorAngles);
             DA.SetDataTree(4, foldAngles);
             DA.SetDataList("F Matrix", FMatrix);
-            DA.SetDataList("Edges", P.Halfedges.Select(o => RhinoSupport.HalfEdgeToLine(P, o)));
-            DA.SetData("test Matrix", tMatrix);
-            DA.SetData("Pln", pln);
+            DA.SetDataTree(6, pln);
+            DA.SetData(7, P);
+
             #region unused test
-            //// Normals
-            //List<Point3d> p_vertices = P.Vertices.GetPositions().ToList()
-            //    .Select(o => RhinoSupport.ToPoint3d(o)).ToList();
-            //List<Vector3f> vertexNormals = P.Vertices.GetNormals().ToList()
-            //    .Select(o => RhinoSupport.ToVector3f(o)).ToList();
-
-            //List<Line> bEdges = RhinoSupport.GetBoundaryEdges(P);
-            //List<Point3d> bVertices = RhinoSupport.GetBoundaryVertices(P);
-
-            //DA.SetDataList("Vertices", p_vertices);
-            //DA.SetDataList("vNormals", vertexNormals);
-            //DA.SetDataList("bVertices", bVertices);
-            //DA.SetData("PMesh", P); 
-            //DA.SetDataList("bEdges", bEdges);
-
-            //i = (i > P.Halfedges.Count() - 1) ? P.Halfedges.Count() - 1 : i;
-            //Line prevLine = RhinoSupport.HalfEdgeToLine(P, P.Halfedges[(int)i].PrevHalfedge);
-            //Line iLine = RhinoSupport.HalfEdgeToLine(P, P.Halfedges[(int)i]);
-            //Line nextLine = RhinoSupport.HalfEdgeToLine(P, P.Halfedges[(int)(i)].NextHalfedge);
-            //DA.SetData("i-1HalfEdge", prevLine);
-            //DA.SetData("iHalfEdge", iLine);
-            //DA.SetData("i+1HalfEdge", nextLine);
-
-            //List<Polyline> polyLines = new List<Polyline>();
-            //polyLines = RhinoSupport.ToPolylines(P).ToList();
-            //DA.SetDataList("PolyLine", RhinoSupport.ToPolylines(P));
-
 
             #endregion
-
         }
 
         protected override System.Drawing.Bitmap Icon

@@ -3,6 +3,7 @@ using Rhino.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Grasshopper.Kernel.Types;
 
 namespace PlanktonGh
 {
@@ -256,6 +257,47 @@ namespace PlanktonGh
             return rMesh;
         }
 
+        /// <summary>
+        /// in GH c# component, output planktonMesh as a ObjectWrapper, its value is a what we need. this method cast to it's value
+        /// </summary>
+        /// <param name="objWrapper"></param>
+        /// <returns></returns>
+        public static Mesh ToRhinoMesh(GH_ObjectWrapper objWrapper)
+        {
+            // could add different options for triangulating ngons later
+            PlanktonMesh source = objWrapper.Value as PlanktonMesh;
+            Mesh rMesh = new Mesh();
+            foreach (PlanktonVertex v in source.Vertices)
+            {
+                rMesh.Vertices.Add(v.X, v.Y, v.Z);
+            }
+            for (int i = 0; i < source.Faces.Count; i++)
+            {
+                int[] fvs = source.Faces.GetFaceVertices(i);
+                if (fvs.Length == 3)
+                {
+                    rMesh.Faces.AddFace(fvs[0], fvs[1], fvs[2]);
+                }
+                else if (fvs.Length == 4)
+                {
+                    rMesh.Faces.AddFace(fvs[0], fvs[1], fvs[2], fvs[3]);
+                }
+                else if (fvs.Length > 4)
+                {
+                    // triangulate about face center (fan)
+                    var fc = source.Faces.GetFaceCenter(i);
+                    rMesh.Vertices.Add(fc.X, fc.Y, fc.Z);
+                    for (int j = 0; j < fvs.Length; j++)
+                    {
+                        rMesh.Faces.AddFace(fvs[j], fvs[(j + 1) % fvs.Length], rMesh.Vertices.Count - 1);
+                    }
+                }
+            }
+            rMesh.Normals.ComputeNormals();
+            return rMesh;
+        }
+
+
         // !!!
         /// <summary>
         /// Replaces the vertices of a PlanktonMesh with a new list of points
@@ -273,7 +315,7 @@ namespace PlanktonGh
             return pMesh;
         }
 
-        // !!!
+        
         /// <summary>
         /// Converts each face to a closed polyline.
         /// </summary>
@@ -298,6 +340,20 @@ namespace PlanktonGh
             return polylines;
         }
         
+        public static List<Polyline> RhinoMeshToPolylines(Mesh mesh)
+        {
+            List<Polyline> polylines = new List<Polyline>();
+            for (int i = 0; i < mesh.Faces.Count; i++)
+            {
+                List<int> iVertexIDs = mesh.Faces.GetTopologicalVertices(i).ToList();
+                Polyline iPolyline = new Polyline(
+                  iVertexIDs.Select(o => mesh.Vertices.ToPoint3dArray().ToList()[o]));
+                polylines.Add(iPolyline);
+
+            }
+            return polylines;
+        }
+
         /// <summary>
         /// Creates a Rhino Point3f from a Plankton vertex.
         /// </summary>
@@ -317,7 +373,26 @@ namespace PlanktonGh
         {
             return new Point3d(vertex.X, vertex.Y, vertex.Z);
         }
+
+        /// <summary>
+        /// Creates a list of Rhino Point3d from a Plankton vertex list.
+        /// </summary>
+        /// <param name="l"></param>
+        /// <returns></returns>
+        public static List<Point3d> VertexListToPoint3d(PlanktonVertexList l)
+        {
+            return l.Select(o => RhinoSupport.ToPoint3d(o)).ToList();
+        }
         
+        public static PlanktonXYZ ToPlanktonXYZ(Point3d pt)
+        {
+            return new Plankton.PlanktonXYZ((float)pt.X, (float)pt.Y, (float)pt.Z);
+        }
+
+        public static PlanktonXYZ ToPlanktonXYZ(PlanktonVertex v)
+        {
+            return new PlanktonXYZ((float)v.ToPoint3d().X, (float)v.ToPoint3d().Y, (float)v.ToPoint3d().Z);
+        }
         /// <summary>
         /// Creates a Rhino Point3f from a Plankton vector.
         /// </summary>
@@ -516,8 +591,6 @@ namespace PlanktonGh
             }
 
             return bEdges;
-
-
         }
 
         /// <summary>
@@ -572,9 +645,13 @@ namespace PlanktonGh
             return cVertices.Select(o => o.ToPoint3d()).ToList();
         }
 
+        /// <summary>
+        /// get the indices of inner vertices of a pmesh
+        /// </summary>
+        /// <param name="pmsh"></param>
+        /// <returns></returns>
         public static List<int> GetConstraintVertexIndices(PlanktonMesh pmsh)
         {
-
             List<int> bVerticesID = new List<int>();
             List<int> nakedEdgeIndex = pmsh.Halfedges.Where(o => o.AdjacentFace == -1).Select(o => o.Index).ToList();
 
@@ -622,6 +699,14 @@ namespace PlanktonGh
             return sortedNeighborPEdges;
         }
 
+        ///!!!
+        /// <summary>
+        /// Sort the neighbour edges in a counterclockwise order
+        /// </summary>
+        /// <param name="pmsh"></param>
+        /// <param name="vIndex"></param>
+        /// <param name="neighbourPEdges"></param>
+        /// <returns></returns>
         public static List<PlanktonHalfedge> NeighbourSortingHelper(PlanktonMesh pmsh, int vIndex, List<PlanktonHalfedge> neighbourPEdges)
         {
             // halfedge to line
@@ -642,7 +727,6 @@ namespace PlanktonGh
             // look for the other end of the line other than the center vertex
             for (int i = 0; i < neighbourLines.Count(); i++)
                 if (neighbourLines[i].PointAt(1).DistanceTo(origin) < neighbourLines[i].Length / 10000) { neighbourLines[i].Flip(); }
-
 
             Vector3d refPlaneX = refPlane.XAxis;
             Vector3d refPlaneY = refPlane.YAxis;
@@ -670,6 +754,13 @@ namespace PlanktonGh
                 .ToList();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pmsh"></param>
+        /// <param name="vIndex"></param>
+        /// <param name="pEdges"></param>
+        /// <returns></returns>
         public static List<Vector3d> EdgeUnitVector(PlanktonMesh pmsh, int vIndex, List<PlanktonHalfedge> pEdges)
         {
             List<Vector3d> vectors = new List<Vector3d>();
@@ -683,6 +774,13 @@ namespace PlanktonGh
             return vectors;
         }
 
+        /// <summary>
+        /// get the sector angles of a inner vertex
+        /// </summary>
+        /// <param name="pmsh"></param>
+        /// <param name="vIndex"></param>
+        /// <param name="pEdges"></param>
+        /// <returns></returns>
         public static List<double> GetSectorAngles(PlanktonMesh pmsh, int vIndex, List<PlanktonHalfedge> pEdges)
         {
             List<double> sectorAngles = new List<double>();
@@ -698,6 +796,13 @@ namespace PlanktonGh
             return sectorAngles;
         }
 
+        /// <summary>
+        /// get the fold angles of a inner vertex
+        /// </summary>
+        /// <param name="pmsh"></param>
+        /// <param name="vIndex"></param>
+        /// <param name="pEdges"></param>
+        /// <returns></returns>
         public static List<double> GetFoldAngles(PlanktonMesh pmsh, int vIndex, List<PlanktonHalfedge> pEdges)
         {
             List<double> foldAngles = new List<double>();
@@ -714,11 +819,8 @@ namespace PlanktonGh
 
                 foldAngles.Add(Vector3d.VectorAngle(pln1.Normal, pln2.Normal) * pEdges[i].MV);
             }
-
-
             return foldAngles;
         }
-
 
         /// <summary>
         /// given pmesh and edge, gives a line of the edge
@@ -734,7 +836,6 @@ namespace PlanktonGh
 
             return new Line(p1, p2);
         }
-
         public static Line HalfEdgeToLine(PlanktonMesh pmsh, int e)
         {
             Point3d p1 = pmsh.Vertices[pmsh.Halfedges[e].StartVertex].ToPoint3d();
@@ -744,6 +845,12 @@ namespace PlanktonGh
             return new Line(p1, p2);
         }
 
+        /// <summary>
+        /// dertermine if one edge is valley or mountain. Mountain as 1, and valley as -1 
+        /// </summary>
+        /// <param name="pmsh"></param>
+        /// <param name="eIndex"></param>
+        /// <returns></returns>
         public static int MVDetermination(PlanktonMesh pmsh, int eIndex) 
         {
             Line l1_up = new Line();
@@ -753,7 +860,6 @@ namespace PlanktonGh
 
             int face1 = pmsh.Halfedges[eIndex].AdjacentFace;
             int face2 = pmsh.Halfedges[pmsh.Halfedges.GetPairHalfedge(eIndex)].AdjacentFace;
-
 
             l1_up = GetFaceNormal(pmsh, face1).First();
             l1_down = GetFaceNormal(pmsh, face1).Last();
@@ -769,10 +875,17 @@ namespace PlanktonGh
                 return -1;
         }
 
+        /// <summary>
+        /// get 2 normal verters(both direction) as 2 lines 
+        /// </summary>
+        /// <param name="pmsh"></param>
+        /// <param name="fIndex"></param>
+        /// <returns></returns>
         public static List<Line> GetFaceNormal(PlanktonMesh pmsh, int fIndex)
         {
             //if (fIndex == -1) fIndex = 1;
-
+            
+            // get the vertices of a face in  
             List<Point3d> pts = RhinoSupport.ToPolylines(pmsh)[fIndex].ToList();
 
             Point3d center = pmsh.Faces.GetFaceCenter(fIndex).ToPoint3d();
@@ -785,7 +898,320 @@ namespace PlanktonGh
             // lines start from center of the face, pointing up(first item) and down(second item)
             return ls; // unit length
         }
-        #endregion
+
+        #region subdivision
+
+        /// <summary>
+        /// check if the planktonMesh is fine enough, if yes
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="fixPts"></param>
+        /// <returns></returns>
+        public static bool CheckFixPointVertex(PlanktonMesh p, List<Point3d> fixPts, double tolerance, out List<int> vertexIdsToBeMoved)
+        {
+            bool fineEnough = false;
+
+            // convert all the vertices of plankton mesh into a list of points
+            List<Point3d> meshVertices = p.Vertices.ToList().Select(o => RhinoSupport.ToPoint3d(o)).ToList();
+
+            // check if each point of the input list of pts find one unique vertice in the existing mesh within tolerence distance
+            List<int> closeVertexIDs = new List<int>();
+
+            for (int i = 0; i < fixPts.Count; i++)
+            {
+                double[] distances = 
+                meshVertices.Select(o => o.DistanceTo(fixPts[i])).ToArray();
+
+                if (distances.Min() <= tolerance)
+                {
+                    int closeVertexID = Array.IndexOf(distances, distances.Min());
+                    closeVertexIDs.Add(closeVertexID);
+                }
+            }
+
+            // if yes, output these IDs and return true; otherwise output false and return null 
+            if (closeVertexIDs.Count == fixPts.Count)
+            {
+                fineEnough = true;
+                vertexIdsToBeMoved = closeVertexIDs;
+            }
+            else
+                vertexIdsToBeMoved = null;
+
+            return fineEnough;
+        }
+
+        /// Working!!!!!!
+        /// <summary>
+        /// subdivide each quad face into four smaller quad faces 
+        /// </summary>
+        /// <param name="P"></param>
+        public static PlanktonMesh QuadSubdivide(PlanktonMesh P, List<int> faceIDs)
+        {
+            PlanktonMesh newPmsh = new PlanktonMesh();
+            // adopt all old vertices
+            newPmsh.Vertices.AddVertices(P.Vertices.ToList().Select(o => RhinoSupport.ToPlanktonXYZ(o)).ToList());
+
+            // prepare new face vertices ids
+            List<List<int>> divideFaceIDs = new List<List<int>>();
+            int count = P.Vertices.Count;
+
+            for (int i = 0; i < faceIDs.Count; i++)
+            {
+                List<int> iFaceIDs = P.Faces.GetFaceVertices(faceIDs[i]).ToList();
+                iFaceIDs.AddRange(new List<int> { count + i*5 , count+ i * 5 + 1, count+i  * 5 + 2, count+i  * 5 + 3, count+i * 5 + 4 });
+                //iFaceIDs.AddRange(new List<int> { count, count + 1, count + 2, count + 3, count + 4 });
+
+                divideFaceIDs.Add(iFaceIDs);
+            }
+
+            // append new vertex in new mesh
+            List<List<Point3d>> newVertices = new List<List<Point3d>>();
+
+            for (int j = 0; j < faceIDs.Count; j++)
+            {
+                // append center point
+                Point3d jCenter = P.Faces.GetFaceCenter(faceIDs[j]).ToPoint3d();
+                // append middle points of bounding halfedges of a face
+                List<Point3d> midPts =
+                    P.Faces.GetHalfedges(faceIDs[j]).ToList().Select(o => RhinoSupport.HalfEdgeToLine(P, o).PointAt(0.5)).ToList();
+                midPts.Add(jCenter);
+
+                // 5 new vertices in midPts and add to big list.
+                newVertices.Add(midPts);
+            }
+
+            // append new vertices to the mesh structure, 5 * faceToDivide vertices are appended. They have duplicate.
+            for(int l = 0; l < newVertices.Count; l++)
+            {
+                newPmsh.Vertices.AddVertices(newVertices[l].Select(o => RhinoSupport.ToPlanktonXYZ(o)).ToList());
+            }
+
+            // add all the subdivided faces in the new mesh now
+            for (int p = 0; p < faceIDs.Count; p++)
+            {
+                List<int> pFaceIDs = divideFaceIDs[p];
+                newPmsh.Faces.AddFace(pFaceIDs[8], pFaceIDs[7], pFaceIDs[0], pFaceIDs[4]);
+                newPmsh.Faces.AddFace(pFaceIDs[8], pFaceIDs[4], pFaceIDs[1], pFaceIDs[5]);
+                newPmsh.Faces.AddFace(pFaceIDs[8], pFaceIDs[5], pFaceIDs[2], pFaceIDs[6]);
+                newPmsh.Faces.AddFace(pFaceIDs[8], pFaceIDs[6], pFaceIDs[3], pFaceIDs[7]);
+            }
+
+            // add all the unchanged faces to the new mesh now
+            for (int q = 0; q < P.Faces.Count; q++)
+            {
+                if (faceIDs.Any(o => o == q)) // if yes, this is a target face to subdivide and skip it 
+                    ;
+                else
+                {
+                    newPmsh.Faces.AddFace(P.Faces.GetFaceVertices(q));
+                }
+            }
+
+            newPmsh.Faces.AssignFaceIndex();
+            newPmsh.Vertices.AssignVertexIndex();
+            newPmsh.Halfedges.AssignHalfEdgeIndex();
+
+            return newPmsh;
+
+        }
+
+        /// Working!!!!!!
+        /// <summary>
+        /// subdivide all faces 
+        /// </summary>
+        /// <param name="P"></param>
+        /// <returns></returns>
+        public static PlanktonMesh QuadSubdivide(PlanktonMesh P)
+        {
+            PlanktonMesh newPmsh = new PlanktonMesh();
+            // adopt all old vertices
+            newPmsh.Vertices.AddVertices(P.Vertices.ToList().Select(o => RhinoSupport.ToPlanktonXYZ(o)).ToList());
+
+            // prepare new face vertices ids
+            List<List<int>> divideFaceIDs = new List<List<int>>();
+            int vertexCount = P.Vertices.Count;
+            int faceCount = P.Faces.Count;
+            List<int> faceIDs = Enumerable.Range(0, faceCount).ToList();
+
+            for (int i = 0; i < faceCount; i++)
+            {
+                List<int> iFaceIDs = P.Faces.GetFaceVertices(faceIDs[i]).ToList();
+                iFaceIDs.AddRange(new List<int> { vertexCount + i * 5, vertexCount + i * 5 + 1, vertexCount + i * 5 + 2, vertexCount + i * 5 + 3, vertexCount + i * 5 + 4 });
+                //iFaceIDs.AddRange(new List<int> { count, count + 1, count + 2, count + 3, count + 4 });
+
+                divideFaceIDs.Add(iFaceIDs);
+            }
+
+            // append new vertex in new mesh
+            List<List<Point3d>> newVertices = new List<List<Point3d>>();
+
+            for (int j = 0; j < faceIDs.Count; j++)
+            {
+                // append center point
+                Point3d jCenter = P.Faces.GetFaceCenter(faceIDs[j]).ToPoint3d();
+                // append middle points of bounding halfedges of a face
+                List<Point3d> midPts =
+                    P.Faces.GetHalfedges(faceIDs[j]).ToList().Select(o => RhinoSupport.HalfEdgeToLine(P, o).PointAt(0.5)).ToList();
+                midPts.Add(jCenter);
+
+                // 5 new vertices in midPts and add to big list.
+                newVertices.Add(midPts);
+            }
+
+            // append new vertices to the mesh structure, 5 * faceToDivide vertices are appended. They have duplicate.
+            for (int l = 0; l < newVertices.Count; l++)
+            {
+                newPmsh.Vertices.AddVertices(newVertices[l].Select(o => RhinoSupport.ToPlanktonXYZ(o)).ToList());
+            }
+
+            // add all the subdivided faces in the new mesh now
+            for (int p = 0; p < faceIDs.Count; p++)
+            {
+                List<int> pFaceIDs = divideFaceIDs[p];
+                newPmsh.Faces.AddFace(pFaceIDs[8], pFaceIDs[7], pFaceIDs[0], pFaceIDs[4]);
+                newPmsh.Faces.AddFace(pFaceIDs[8], pFaceIDs[4], pFaceIDs[1], pFaceIDs[5]);
+                newPmsh.Faces.AddFace(pFaceIDs[8], pFaceIDs[5], pFaceIDs[2], pFaceIDs[6]);
+                newPmsh.Faces.AddFace(pFaceIDs[8], pFaceIDs[6], pFaceIDs[3], pFaceIDs[7]);
+            }
+
+            // add all the unchanged faces to the new mesh now
+            for (int q = 0; q < P.Faces.Count; q++)
+            {
+                if (faceIDs.Any(o => o == q)) // if yes, this is a target face to subdivide and skip it 
+                    ;
+                else
+                {
+                    newPmsh.Faces.AddFace(P.Faces.GetFaceVertices(q));
+                }
+            }
+
+            newPmsh.Faces.AssignFaceIndex();
+            newPmsh.Vertices.AssignVertexIndex();
+            newPmsh.Halfedges.AssignHalfEdgeIndex();
+
+            return newPmsh;
+
+        }
+
+        /// Working!!!!!!
+        /// <summary>
+        /// Plankton mesh will be changed by appending more vertices
+        /// </summary>
+        /// <param name="P"></param>
+        /// <param name="i"></param>
+        /// <returns>
+        /// return 9 integers which will be used to query the vertex when constructing a new mesh
+        /// </returns>
+        public static PlanktonMesh SubdivideOneQuad(PlanktonMesh P, int i)
+        {
+            // copy vertices from old plankton mesh to new plankton mesh
+            PlanktonMesh dividedPMesh = new PlanktonMesh();
+            dividedPMesh.Vertices.AddVertices(P.Vertices.Select(o => RhinoSupport.ToPlanktonXYZ(o)).ToList());
+
+            // ----------------9 index IDs for face construction--------------------
+            List<int> newVertexIDs = new List<int>();
+
+            // 4 face vertices index of face No. i 
+            List<int> oldVertexIDs = P.Faces.GetFaceVertices(i).ToList();
+            // 5 more integer counting for a quad face
+            List<int> appendVertexIDs = new List<int>{ dividedPMesh.Vertices.Count, dividedPMesh.Vertices.Count + 1, dividedPMesh.Vertices.Count + 2, dividedPMesh.Vertices.Count + 3, dividedPMesh.Vertices.Count + 4};
+            newVertexIDs = oldVertexIDs.Concat(appendVertexIDs).ToList();
+
+            // ----------------append PlanktonVertices----------
+
+            // center of this face
+            Point3d centerPt = P.Faces.GetFaceCenter(i).ToPoint3d();
+
+            // middle points of bounding halfedges of a face
+            List<Point3d> midPts = 
+                P.Faces.GetHalfedges(i).ToList().Select(o => RhinoSupport.HalfEdgeToLine(P, o).PointAt(0.5)).ToList();
+            midPts.Add(centerPt);
+
+            dividedPMesh.Vertices.AddVertices(midPts.Select(o => RhinoSupport.ToPlanktonXYZ(o)).ToList());
+
+            // ---------------construct new faces-----------------
+            // index 
+            //  0 --- 4 --- 1   
+            //  |     |     |
+            //  7 --- 8 --- 5
+            //  |     |     |
+            //  3 --- 6 --- 2
+            dividedPMesh.Faces.AddFace(newVertexIDs[8], newVertexIDs[7], newVertexIDs[0], newVertexIDs[4]);
+            dividedPMesh.Faces.AddFace(newVertexIDs[8], newVertexIDs[4], newVertexIDs[1], newVertexIDs[5]);
+            dividedPMesh.Faces.AddFace(newVertexIDs[8], newVertexIDs[5], newVertexIDs[2], newVertexIDs[6]);
+            dividedPMesh.Faces.AddFace(newVertexIDs[8], newVertexIDs[6], newVertexIDs[3], newVertexIDs[7]);
+
+
+
+            for (int j = 0; j < P.Faces.Count; j++)
+            {
+                if (j != i) // append other faces other than face i which has just been divided!
+                {
+                    List<int> jFaceVertices = P.Faces.GetFaceVertices(j).ToList();
+                    dividedPMesh.Faces.AddFace(jFaceVertices);
+
+                }
+            }
+
+            dividedPMesh.Faces.AssignFaceIndex();
+            dividedPMesh.Vertices.AssignVertexIndex();
+            dividedPMesh.Halfedges.AssignHalfEdgeIndex();
+
+            return dividedPMesh;
+        }
+
+        /// <summary>
+        /// select those quad faces which are near fix points and divide them
+        /// </summary>
+        /// <param name="P"></param>
+        /// <param name="fixPts"></param>
+        /// <returns></returns>
+        public static void SelectedQuadSubdivide(PlanktonMesh P, List<Point3d> fixPts)
+        {
+            List<Point3d> centers = P.Faces.ToList().Select(o => RhinoSupport.ToPoint3d(P.Faces.GetFaceCenter(o.Index))).ToList();
+
+            // find which faces(ids) to divide
+            List<int> ToDivideFaceIDs = new List<int>();
+
+            for (int i = 0; i < fixPts.Count; i++)
+            {
+                List<double> distances = 
+                    distances = centers.Select(o => o.DistanceTo(fixPts[i])).ToList();
+                int closePtID = Array.IndexOf(distances.ToArray(), distances.Min());
+                ToDivideFaceIDs.Add(closePtID);
+            }
+
+            P = QuadSubdivide(P, ToDivideFaceIDs);
+
+        }
+
+        /// <summary>
+        /// move vertices to the input fix points 
+        /// </summary>
+        /// <param name="P"></param>
+        /// <param name="targetPts"></param>
+        /// <param name="vertexToMove"></param>
+        public static void MoveVertices(PlanktonMesh P, List<Point3d> targetPts, List<int> vertexToMove)
+        {
+            if (targetPts.Count != vertexToMove.Count) // not same amount, dont do nothing
+                return;
+            else
+            {
+                // move the vertices to their targets
+                for (int i = 0; i < targetPts.Count; i++)
+                    P.Vertices.SetVertex(vertexToMove[i], targetPts[i]);
+
+            }
+
+        }
+
+
+
+        #endregion subdivision
+
+
+        #endregion by dyliu
     }
 }
 

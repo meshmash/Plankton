@@ -67,6 +67,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GhcPlanktonFold.cs" />
+    <Compile Include="GhcSofiStaightLine.cs" />
+    <Compile Include="GhcSubdivisionQuad.cs" />
+    <Compile Include="GhcToRhinoMesh.cs" />
     <Compile Include="Math\Solver.cs" />
     <Compile Include="PlanktonFoldInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

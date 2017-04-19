@@ -48,6 +48,8 @@ namespace Plankton
             NextHalfedge = NextE;
         }
 
+
+
         /// <summary>
         /// Gets an Unset PlanktonHalfedge.
         /// </summary>
