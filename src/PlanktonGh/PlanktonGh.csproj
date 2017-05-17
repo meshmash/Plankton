@@ -66,6 +66,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="RhinoSupport.cs" />
+    <Compile Include="Properties\GrasshopperAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Plankton\Plankton.csproj">
