@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Grasshopper.Kernel.Types;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace PlanktonGh
 {
@@ -69,7 +70,7 @@ namespace PlanktonGh
                 //(I suspect the problem is related to C being the same as D for triangles, so best to
                 //deal with them separately just to make sure)
                 //loop through the vertices of the face until finding the one which is the same as the start of the edge
-                //iff the next vertex around the face is the end of the edge then it matches.
+                //if the next vertex around the face is the end of the edge then it matches.
 
                 Match[0] = false;
                 if (Match.Length > 1)
@@ -571,7 +572,7 @@ namespace PlanktonGh
         }
 
         /// <summary>
-        /// get the boundary endges as a list of lines
+        /// get the boundary edges as a list of lines
         /// </summary>
         /// <param name="pmsh"></param>
         /// <returns></returns>
@@ -589,8 +590,33 @@ namespace PlanktonGh
                 Point3d p2 = pmsh.Vertices[ends.Last()].ToPoint3d();
                 bEdges.Add(new Line(p1, p2));
             }
-
+            
             return bEdges;
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pmsh"></param>
+        /// <returns></returns>
+        public static List<Line> GetInnerEdges(PlanktonMesh pmsh)
+        {
+            List<Line> innerEdges = new List<Line>();
+
+            // when a halfedge.adjacentFace = -1 means it's a naked halfedge
+            // when a halfedge and its pair are not naked, it's an inner edge
+            List<int> innerEdgeIDs = pmsh.Halfedges.Where(o => o.AdjacentFace != -1 && pmsh.Halfedges[ pmsh.Halfedges.GetPairHalfedge(o.Index)].AdjacentFace != -1 ).Select(o => o.Index).ToList();
+
+            // construct lines 
+            foreach (int i in innerEdgeIDs)
+            {
+                int[] ends = pmsh.Halfedges.GetVertices(i);
+                Point3d p1 = pmsh.Vertices[ends.First()].ToPoint3d();
+                Point3d p2 = pmsh.Vertices[ends.Last()].ToPoint3d();
+                innerEdges.Add(new Line(p1, p2));
+            }
+
+            return innerEdges;
         }
 
         /// <summary>
@@ -768,7 +794,7 @@ namespace PlanktonGh
             Point3d center = pmsh.Vertices[vIndex].ToPoint3d();
 
             for (int i = 0; i < lines.Count(); i++)
-                if (lines[i].PointAt(1).DistanceTo(center) < lines[i].Length / 10000) { lines[i].Flip(); }
+                if (lines[i].PointAt(1).DistanceTo(center) < lines[i].Length / 10000) { lines[i].Flip(); } // flip the lines so that they start from center, pointing outwards 
 
             vectors = lines.Select(o => o.UnitTangent).ToList();
             return vectors;
@@ -784,20 +810,19 @@ namespace PlanktonGh
         public static List<double> GetSectorAngles(PlanktonMesh pmsh, int vIndex, List<PlanktonHalfedge> pEdges)
         {
             List<double> sectorAngles = new List<double>();
-
             List<Vector3d> unitVecters = RhinoSupport.EdgeUnitVector(pmsh, vIndex, pEdges);
 
             for (int i = 0; i < unitVecters.Count(); i++)
             {
-                if (i != unitVecters.Count() - 1) { sectorAngles.Add(Vector3d.VectorAngle(unitVecters[i], unitVecters[i + 1])); }
-                if (i == unitVecters.Count() - 1) { sectorAngles.Add(Vector3d.VectorAngle(unitVecters[i], unitVecters[0])); break; }
+                if (i != unitVecters.Count() - 1) { sectorAngles.Add(Vector3d.VectorAngle(unitVecters[i], unitVecters[i + 1]));} // not the last one
+                else if (i == unitVecters.Count() - 1) { sectorAngles.Add(Vector3d.VectorAngle(unitVecters[i], unitVecters[0]));} // last one in loop
                 
             }
             return sectorAngles;
         }
 
         /// <summary>
-        /// get the fold angles of a inner vertex
+        /// get the fold angles of an inner vertex
         /// </summary>
         /// <param name="pmsh"></param>
         /// <param name="vIndex"></param>
@@ -811,13 +836,16 @@ namespace PlanktonGh
             {
                 PlanktonHalfedge e1 = pEdges[i];
                 PlanktonHalfedge e2 = pmsh.Halfedges[pmsh.Halfedges.GetPairHalfedge(pEdges[i].Index)];
+
+                // 2 adjacent faces of an edge
                 int f1Index = pmsh.Faces[e1.AdjacentFace].Index;
                 int f2Index = pmsh.Faces[e2.AdjacentFace].Index;
 
                 Plane pln1 = new Plane(RhinoSupport.ToPolylines(pmsh)[f1Index].ToList()[0], RhinoSupport.ToPolylines(pmsh)[f1Index].ToList()[1], RhinoSupport.ToPolylines(pmsh)[f1Index].ToList()[2]);
                 Plane pln2 = new Plane(RhinoSupport.ToPolylines(pmsh)[f2Index].ToList()[0], RhinoSupport.ToPolylines(pmsh)[f2Index].ToList()[1], RhinoSupport.ToPolylines(pmsh)[f2Index].ToList()[2]);
 
-                foldAngles.Add(Vector3d.VectorAngle(pln1.Normal, pln2.Normal) * pEdges[i].MV);
+                foldAngles.Add(Math.PI - Vector3d.VectorAngle(pln1.Normal, pln2.Normal)); // * pEdges[i].MV
+
             }
             return foldAngles;
         }
@@ -853,13 +881,21 @@ namespace PlanktonGh
         /// <returns></returns>
         public static int MVDetermination(PlanktonMesh pmsh, int eIndex) 
         {
+           
+            // 
             Line l1_up = new Line();
             Line l1_down = new Line();
             Line l2_up = new Line();
             Line l2_down = new Line();
 
+            // face1 and face2 are the adjacent faces of a edge
             int face1 = pmsh.Halfedges[eIndex].AdjacentFace;
             int face2 = pmsh.Halfedges[pmsh.Halfedges.GetPairHalfedge(eIndex)].AdjacentFace;
+
+            if (face1 == -1 || face2 == -1) 
+            {
+                return 0; // this is a naked edge
+            }
 
             l1_up = GetFaceNormal(pmsh, face1).First();
             l1_down = GetFaceNormal(pmsh, face1).Last();
@@ -871,8 +907,12 @@ namespace PlanktonGh
             {
                 return 1;
             }
-            else
+            else if (l1_up.PointAt(1).DistanceTo(l2_up.PointAt(1)) >
+                l1_down.PointAt(1).DistanceTo(l2_down.PointAt(1)))
                 return -1;
+            else
+                return 0;
+
         }
 
         /// <summary>
@@ -899,6 +939,7 @@ namespace PlanktonGh
             return ls; // unit length
         }
 
+
         #region subdivision
 
         /// <summary>
@@ -909,6 +950,7 @@ namespace PlanktonGh
         /// <returns></returns>
         public static bool CheckFixPointVertex(PlanktonMesh p, List<Point3d> fixPts, double tolerance, out List<int> vertexIdsToBeMoved)
         {
+
             bool fineEnough = false;
 
             // convert all the vertices of plankton mesh into a list of points
@@ -930,7 +972,7 @@ namespace PlanktonGh
             }
 
             // if yes, output these IDs and return true; otherwise output false and return null 
-            if (closeVertexIDs.Count == fixPts.Count)
+            if (closeVertexIDs.Count == fixPts.Count && closeVertexIDs.Distinct().Count() == closeVertexIDs.Count())
             {
                 fineEnough = true;
                 vertexIdsToBeMoved = closeVertexIDs;
@@ -939,6 +981,49 @@ namespace PlanktonGh
                 vertexIdsToBeMoved = null;
 
             return fineEnough;
+        }
+
+        /// <summary>
+        /// check if the planktonMesh is fine enough(how to implement R-Tree in this method)
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="fixPts"></param>
+        /// <param name="tolerance"></param>
+        /// <returns></returns>
+        public static bool CheckFixPointVertex(PlanktonMesh p, List<Point3d> fixPts, double tolerance)
+        {
+
+            bool fineEnough = false;
+
+            // convert all the vertices of plankton mesh into a list of points
+            List<Point3d> meshVertices = p.Vertices.ToList().Select(o => RhinoSupport.ToPoint3d(o)).ToList();
+
+            // check if each point of the input list of pts find one unique vertice in the existing mesh within tolerence distance
+            List<int> closeVertexIDs = new List<int>();
+
+            for (int i = 0; i < fixPts.Count; i++)
+            {
+                double[] distances =
+                meshVertices.Select(o => o.DistanceTo(fixPts[i])).ToArray();
+
+                if (distances.Max() <= tolerance)
+                {
+                    int closeVertexID = Array.IndexOf(distances, distances.Min());
+                    closeVertexIDs.Add(closeVertexID);
+                }
+            }
+
+            // if yes, output these IDs and return true; otherwise output false and return null 
+            if (closeVertexIDs == null)
+                return fineEnough;
+
+            else if (closeVertexIDs.Count == fixPts.Count && closeVertexIDs.Distinct().Count() == closeVertexIDs.Count())
+            {
+                fineEnough = true;
+            }
+
+            return fineEnough;
+
         }
 
         /// Working!!!!!!
@@ -1029,13 +1114,14 @@ namespace PlanktonGh
             newPmsh.Vertices.AddVertices(P.Vertices.ToList().Select(o => RhinoSupport.ToPlanktonXYZ(o)).ToList());
 
             // prepare new face vertices ids
-            List<List<int>> divideFaceIDs = new List<List<int>>();
+            List<List<int>> divideFaceIDs = new List<List<int>>(); // 
             int vertexCount = P.Vertices.Count;
             int faceCount = P.Faces.Count;
-            List<int> faceIDs = Enumerable.Range(0, faceCount).ToList();
+            List<int> faceIDs = Enumerable.Range(0, faceCount).ToList(); // a sequence of int, {0, 1, 2, ... , count - 1}
 
             for (int i = 0; i < faceCount; i++)
             {
+                // get face vertex ids of the old mesh 
                 List<int> iFaceIDs = P.Faces.GetFaceVertices(faceIDs[i]).ToList();
                 iFaceIDs.AddRange(new List<int> { vertexCount + i * 5, vertexCount + i * 5 + 1, vertexCount + i * 5 + 2, vertexCount + i * 5 + 3, vertexCount + i * 5 + 4 });
                 //iFaceIDs.AddRange(new List<int> { count, count + 1, count + 2, count + 3, count + 4 });
@@ -1090,8 +1176,7 @@ namespace PlanktonGh
             newPmsh.Vertices.AssignVertexIndex();
             newPmsh.Halfedges.AssignHalfEdgeIndex();
 
-            return newPmsh;
-
+            return RhinoSupport.WeldPMesh(newPmsh);
         }
 
         /// Working!!!!!!
@@ -1142,8 +1227,6 @@ namespace PlanktonGh
             dividedPMesh.Faces.AddFace(newVertexIDs[8], newVertexIDs[5], newVertexIDs[2], newVertexIDs[6]);
             dividedPMesh.Faces.AddFace(newVertexIDs[8], newVertexIDs[6], newVertexIDs[3], newVertexIDs[7]);
 
-
-
             for (int j = 0; j < P.Faces.Count; j++)
             {
                 if (j != i) // append other faces other than face i which has just been divided!
@@ -1157,6 +1240,10 @@ namespace PlanktonGh
             dividedPMesh.Faces.AssignFaceIndex();
             dividedPMesh.Vertices.AssignVertexIndex();
             dividedPMesh.Halfedges.AssignHalfEdgeIndex();
+
+            Mesh tmpRhinoMesh = RhinoSupport.ToRhinoMesh(dividedPMesh);
+            tmpRhinoMesh.Weld(0.1);
+            dividedPMesh = RhinoSupport.ToPlanktonMesh(tmpRhinoMesh);
 
             return dividedPMesh;
         }
@@ -1194,21 +1281,258 @@ namespace PlanktonGh
         /// <param name="vertexToMove"></param>
         public static void MoveVertices(PlanktonMesh P, List<Point3d> targetPts, List<int> vertexToMove)
         {
-            if (targetPts.Count != vertexToMove.Count) // not same amount, dont do nothing
+
+            if (targetPts == null || vertexToMove == null) 
+                return;
+            if (targetPts.Count != vertexToMove.Count) // not same amount, don¡¯t do nothing
                 return;
             else
             {
                 // move the vertices to their targets
                 for (int i = 0; i < targetPts.Count; i++)
                     P.Vertices.SetVertex(vertexToMove[i], targetPts[i]);
-
             }
 
         }
 
+        /// <summary>
+        /// use a rtree search to search for which are the closest points' ID  
+        /// </summary>
+        /// <param name="P"></param>
+        /// <param name="targetPts"></param>
+        public static void MoveVertices(PlanktonMesh P, List<Point3d> targetPts)
+        {
+            // all vertices as point3d
+            List<Point3d> meshVertices = P.Vertices.ToList().Select(o => RhinoSupport.ToPoint3d(o)).ToList();
 
+            // find out closest points 
+            List<int> closeVertexIDs = new List<int>();
+
+            for (int i = 0; i < targetPts.Count; i++)
+            {
+                closeVertexIDs.Add(RhinoSupport.GetClosestPointID(meshVertices, targetPts[i], 0.1));
+            }
+
+            if (targetPts == null || closeVertexIDs == null)
+                return;
+            if (targetPts.Count != closeVertexIDs.Count) // not same amount, don¡¯t do nothing
+                return;
+            else
+            {
+                // move the vertices to their targets
+                for (int i = 0; i < targetPts.Count; i++)
+                    P.Vertices.SetVertex(closeVertexIDs[i], targetPts[i]);
+            }
+        }
+        /// <summary>
+        /// weld a pmesh(they are broken after subdivide)
+        /// </summary>
+        /// <param name="P"></param>
+        /// <returns></returns>
+        public static PlanktonMesh WeldPMesh(PlanktonMesh P)
+        {
+            Mesh M = ToRhinoMesh(P);
+            M.Weld(0.1);
+            return RhinoSupport.ToPlanktonMesh(M);
+        }
 
         #endregion subdivision
+
+        #region sofi
+        /// <summary>
+        /// GET closest point from a list using rtree
+        /// </summary>
+        /// <param name="pts"></param>
+        /// <param name="pt"></param>
+        /// <param name="tolerrence"></param>
+        /// <returns></returns>
+        public static int GetClosestPointID(List<Point3d> pts, Point3d pt, double sphereR)
+        {
+            RTree rtree = new RTree();
+            for (int i = 0; i < pts.Count; i++)
+                rtree.Insert(pts[i], i);
+            List<int> pointIds = new List<int>();
+
+            EventHandler<RTreeEventArgs> rtreeCallBack = (object sender, RTreeEventArgs args) =>
+            {
+                pointIds.Add(args.Id);
+            };
+
+            bool findPt = false;
+            do
+            {
+                findPt = rtree.Search(new Sphere(pt, sphereR), rtreeCallBack);
+                sphereR *= 2;
+
+            } while (findPt == false || pointIds.Count == 0); // do until close points are found!
+
+            // if only one point is found, good, that 's the closest vertex, return it!
+            if (pointIds.Count == 1)
+            {
+                return pointIds.First();
+            }
+
+            else
+            {
+                List<Point3d> closePts = new List<Point3d>();
+                foreach (int i in pointIds)
+                    closePts.Add(pts[i]);
+                double[] distances = closePts.Select(o => o.DistanceTo(pt)).ToArray();
+                int closeVertexID = pointIds[Array.IndexOf(distances, distances.Min())];
+              
+                return closeVertexID;
+            }
+        }
+
+        /// <summary>
+        /// offset curve 
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="faceId"></param>
+        /// <param name="d"></param>
+        /// <returns></returns>
+        public static Curve OffsetFaceCurve(PlanktonMesh p, int faceId, double d)
+        {
+            Curve offsetCrv = null;
+            Curve edgeCrv = p.ToPolylines().ToList()[faceId].ToNurbsCurve();
+            Point3d pt = p.ToPolylines().ToList()[faceId].First();
+            Vector3d v = RhinoSupport.GetFaceNormal(p, faceId).First().Direction;
+            CurveOffsetCornerStyle style = new CurveOffsetCornerStyle();
+            offsetCrv = edgeCrv.Offset(new Plane(pt, -v), d, 0.01, style).First();
+            return offsetCrv;
+
+        }
+
+        /// <summary>
+        /// offset the boundary of a face as polyline
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="faceId"></param>
+        /// <param name="d"></param>
+        /// <param name="corners"></param>
+        /// <returns></returns>
+        public static Polyline OffsetFacePolyline(PlanktonMesh p, int faceId, double d, out List<Point3d> corners, out List<Point3d> beforeOffsetCorners)
+        {   
+            Curve offsetCrv = null;
+            Polyline polyline = p.ToPolylines().ToList()[faceId];
+            Curve edgeCrv = polyline.ToNurbsCurve();
+
+            List<Point3d> pts = p.ToPolylines().ToList()[faceId].ToList();
+            beforeOffsetCorners = pts;
+
+            PolylineCurve polylineCrv = new PolylineCurve(pts);
+            Point3d pt = pts.First();
+            Vector3d v = RhinoSupport.GetFaceNormal(p, faceId).First().Direction;
+            CurveOffsetCornerStyle style = new CurveOffsetCornerStyle();
+            offsetCrv = polylineCrv.Offset(new Plane(pt, -v), d, 0.01, style).First();
+
+            Polyline offsetPolyline = new Polyline();
+            if (offsetCrv.IsPolyline())
+                offsetCrv.ToNurbsCurve().TryGetPolyline(out offsetPolyline);
+
+            corners = offsetPolyline.ToList();
+            corners.RemoveAt(corners.Count - 1);
+
+            return offsetPolyline;
+            
+        }
+
+        public static Point3f Point3dToPoint3f(Point3d p)
+        {
+            return new Point3f((float)p.X, (float)p.Y, (float)p.Z);
+        }
+
+        public static Point3d Point3fToPoint3d(Point3f p)
+        {
+            return new Point3d(p.X, p.Y, p.Z);
+        }
+
+        //public static List<List<int>> InsideMeshFaceIds(List<List<Point3d>> corners, PlanktonMesh p)
+        //{
+        //    List<List<int>> meshFaceIds = new List<List<int>>();
+        //    List<Polyline> polylines = RhinoSupport.ToPolylines(p).ToList();
+
+        //}
+        
+        public static bool isPointOnCurve(Point3d pt, Curve crv, double tolerence)
+        {
+            bool online = false;
+            double t = 0.0;
+            crv.ClosestPoint(pt, out t);
+            Point3d closestPt = crv.PointAt(t);
+            if (closestPt.DistanceTo(pt) < tolerence)
+            {
+                online = true;
+            }
+            return online;
+        }
+
+        /// <summary>
+        /// tell if a line in on another line
+        /// </summary>
+        /// <param name="l"></param>
+        /// <param name="line"></param>
+        /// <returns></returns>
+        public static bool isLineOnLine(Line l, Line line)
+        {
+            if (RhinoSupport.isPointOnCurve(l.PointAt(0), line.ToNurbsCurve(), 0.01) && RhinoSupport.isPointOnCurve(l.PointAt(1), line.ToNurbsCurve(), 0.01))
+            {
+                return true;
+            }
+
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool isPointOnSurface(Point3d pt, Surface srf, double tolerence)
+        {
+            bool online = false;
+            double u = 0.0;
+            double v = 0.0;
+
+            srf.ClosestPoint(pt, out u, out v);
+            Point3d closestPt = srf.PointAt(u , v);
+            if (closestPt.DistanceTo(pt) < tolerence)
+            {
+                online = true;
+            }
+            return online;
+        }
+
+        #endregion
+
+        #region structure fold
+
+        public static double[,] getTranforamtionArray(Line bar, Plane globalCoor)
+        {
+            Plane localCoor = new Plane(bar.PointAt(0), bar.UnitTangent);
+            Vector3d localX = localCoor.XAxis / localCoor.XAxis.Length;
+            Vector3d localY = localCoor.YAxis / localCoor.YAxis.Length;
+            Vector3d localZ = localCoor.ZAxis / localCoor.ZAxis.Length;
+
+            Vector3d globalX = globalCoor.XAxis / globalCoor.XAxis.Length;
+            Vector3d globalY = globalCoor.YAxis / globalCoor.YAxis.Length;
+            Vector3d globalZ = globalCoor.ZAxis / globalCoor.ZAxis.Length;
+
+            double[,] t =
+            {
+                {Vector3d.Multiply(localX, globalX), Vector3d.Multiply(localX, globalY), Vector3d.Multiply(localX, globalZ),0,0,0 },
+                {Vector3d.Multiply(localY, globalX), Vector3d.Multiply(localY, globalY), Vector3d.Multiply(localY, globalZ),0,0,0 },
+                {Vector3d.Multiply(localZ, globalX), Vector3d.Multiply(localZ, globalY), Vector3d.Multiply(localZ, globalZ),0,0,0 },
+                {0,0,0,Vector3d.Multiply(localX, globalX), Vector3d.Multiply(localX, globalY), Vector3d.Multiply(localX, globalZ)},
+                {0,0,0,Vector3d.Multiply(localY, globalX), Vector3d.Multiply(localY, globalY), Vector3d.Multiply(localY, globalZ)},
+                {0,0,0,Vector3d.Multiply(localZ, globalX), Vector3d.Multiply(localZ, globalY), Vector3d.Multiply(localZ, globalZ)},
+            };
+
+            return t;
+        } 
+
+
+
+        #endregion
+
 
 
         #endregion by dyliu

@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-
-
 namespace Plankton
 {
     /// <summary>
@@ -618,10 +616,39 @@ namespace Plankton
         //    List<int> MVs = new List<int>();
         //    foreach ( PlanktonHalfedge i in this)
         //    {
-                
+
         //    }
-           
+
         //}
+
+        /// <summary>
+        /// dyliu: this works for quad, the inupt halfedge should not be a naked one
+        /// </summary>
+        /// <param name="halfedgeId"></param>
+        /// <param name="count"></param> if equals one, return 2 face ids; if 2, return 4...
+        /// <returns></returns>
+        public List<int> GetAdjacentFaces(int halfedgeId, int count)
+        {
+            if (this.IsBoundary(halfedgeId) == true || count <= 0) { return null; }
+            
+            List<int> targetFaceIds = new List<int>();
+
+            // initialization
+            int edge1 = halfedgeId;
+            int edge2 = this.GetPairHalfedge(edge1);
+
+            for (int i = 0; i < count; i++) // each loop add 2 face ids
+            {
+                targetFaceIds.Add(this[edge1].AdjacentFace);
+                targetFaceIds.Add(this[edge2].AdjacentFace);
+
+                edge1 = this.GetPairHalfedge(this.GetFaceCirculator(edge1).ElementAt(2));
+                edge2 = this.GetPairHalfedge(this.GetFaceCirculator(edge2).ElementAt(2));
+
+            }
+
+            return targetFaceIds;
+        }
 
         #endregion
 

@@ -8,18 +8,15 @@ using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
 using Rhino.Geometry;
 using MathNet.Numerics.LinearAlgebra;
-using System.Numerics;
-using MathNet.Numerics;
-using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace PlanktonFold
 {
-    public class GhcPlanktonFold : GH_Component
+    public class GhcMeshAnalysis : GH_Component
     {
 
-        public GhcPlanktonFold()
-          : base("PlanktonFold", "PlanktonFold",
-              "folding simulation with plankton mesh structure",
+        public GhcMeshAnalysis()
+          : base("MeshAnalysis", "MeshAnalysis",
+              "Analyse the input geometry, can be plankton mesh, rhino mesh, or a list of surfaces",
               "MT", "Analysis")
         {
         }
@@ -64,9 +61,14 @@ namespace PlanktonFold
             pManager.AddPlaneParameter("Pln", "Pln", "Pln", GH_ParamAccess.tree);
 
             // 7 
-            //pManager.AddGenericParameter("PMesh", "PMesh", "PMesh", GH_ParamAccess.item);
+            pManager.AddGenericParameter("PMesh", "PMesh", "PMesh", GH_ParamAccess.item);
 
-            
+            // 8 
+            pManager.AddLineParameter("M", "M", "M", GH_ParamAccess.list);
+
+            // 9 
+            pManager.AddLineParameter("V", "V", "V", GH_ParamAccess.list);
+
         }
 
         Mesh M = new Mesh();
@@ -86,6 +88,14 @@ namespace PlanktonFold
             P.Faces.AssignFaceIndex();
             P.Halfedges.AssignHalfEdgeIndex();
             P.Vertices.AssignVertexIndex();
+
+            // determine MV
+            // select all inner edges of the mesh (boundary edges don't have MV properties)
+            List<PlanktonHalfedge> innerEdges = P.Halfedges.ToList().Where(o => o.AdjacentFace != -1 &&
+                P.Halfedges[P.Halfedges.GetPairHalfedge(o.Index)].AdjacentFace != -1
+                ).ToList();
+            foreach (PlanktonHalfedge e in innerEdges)
+                e.MV = RhinoSupport.MVDetermination(P, e.Index);
 
             // get the inner vertices as index and point
             List<Point3d> cVertices = RhinoSupport.GetConstraintVertices(P);
@@ -109,24 +119,18 @@ namespace PlanktonFold
                     RhinoSupport.NeighbourVertexEdges(P, cVertexIndices[j]))
                     .ToList(), jPth);
             }
-
+            
             // get the fold angles of all inner vertices in a datatree
             DataTree<double> foldAngles = new DataTree<double>();
-            for (int j = 0; j < cVertexIndices.Count(); j++)
+            for (int j = 0; j < cVertexIndices.Count(); j++) // for the j th inner vertice
             {
                 GH_Path jPth = new GH_Path(j);
                 foldAngles.AddRange(RhinoSupport.GetFoldAngles(P, cVertexIndices[j],
                     RhinoSupport.NeighbourVertexEdges(P, cVertexIndices[j]))
                     .ToList(), jPth);
             }
+            
 
-            // select all inner edges of the mesh (boundary edges don't have MV properties)
-            List<PlanktonHalfedge> innerEdges = P.Halfedges.ToList().Where(o => o.AdjacentFace != -1 && 
-                P.Halfedges[P.Halfedges.GetPairHalfedge(o.Index)].AdjacentFace != -1
-                ).ToList();
-            // determine MV
-            foreach (PlanktonHalfedge e in innerEdges)
-                e.MV = RhinoSupport.MVDetermination(P, e.Index);
 
             // compute F matrices for all inner vertices 
             // in the order of inner vertex, each one has a F matrix. A F matrix is a indentity matrix when this constraint is satisfied
@@ -134,8 +138,8 @@ namespace PlanktonFold
             for (int j = 0; j < cVertexIndices.Count(); j++)
             {
                 List<PlanktonHalfedge> edges = RhinoSupport.NeighbourVertexEdges(P, cVertexIndices[j]);
-                List<double> rhos = RhinoSupport.GetFoldAngles(P, cVertexIndices[j], edges);
-                List<double> thetas = RhinoSupport.GetSectorAngles(P, cVertexIndices[j], edges);
+                List<double> rhos = RhinoSupport.GetFoldAngles(P, cVertexIndices[j], edges); // checked
+                List<double> thetas = RhinoSupport.GetSectorAngles(P, cVertexIndices[j], edges); // checked
                 FMatrix.Add(Solver.F(rhos, thetas));
             }
             
@@ -161,16 +165,29 @@ namespace PlanktonFold
                 }
                 pln.AddRange(iPlanes, iPth);
 
-                //for (int j = 0; j < neighbourEdgeCount; j++)
-                //{
-                //    Plane jPln = new Plane(cVertices[i], xx[j], Vector3d.CrossProduct(zz[j], xx[j]));
-                //    // this line has exception issue!!
-                //    jPln.Transform(Transform.Rotation(foldAngles.Branch(new GH_Path(0))[j], pln.XAxis, pln.Origin));
-                //    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                //    jPln.Transform(Transform.Rotation(-sectorAngles.Branch(new GH_Path(0))[j], pln.ZAxis, pln.Origin));
-                //}
             }
-            
+
+            /*
+            DataTree<double> foldAngles = new DataTree<double>();
+            for (int j = 0; j < cVertexIndices.Count(); j++) // for the j th inner vertice
+            {
+                GH_Path jPth = new GH_Path(j);
+                List<Plane> jVertexPlns = pln.Branches[j];
+
+                List<double> ifoldAngles = new List<double>();
+
+                for(int i = 0; i < jVertexPlns.Count; i++)
+                {
+                    if(i != jVertexPlns.Count - 1) // not the last plane
+                        ifoldAngles.Add(Math.PI - Vector3d.VectorAngle(jVertexPlns[i].Normal, jVertexPlns[i+1].Normal));
+                    else
+                        ifoldAngles.Add(Math.PI - Vector3d.VectorAngle(jVertexPlns[i].Normal, jVertexPlns[0].Normal));
+
+                }
+                foldAngles.AddRange(ifoldAngles, jPth);
+            }
+            */
+                
             DA.SetData("Mesh", RhinoSupport.ToRhinoMesh(P));
             DA.SetDataList("cVertices", cVertices);
             DA.SetDataTree(2, neighbourEdges);
@@ -179,6 +196,14 @@ namespace PlanktonFold
             DA.SetDataList("F Matrix", FMatrix);
             DA.SetDataTree(6, pln);
             DA.SetData(7, P);
+
+            // M
+            List<Line> mFoldLine = P.Halfedges.Where(o => o.MV == 1).ToList().Select(p => RhinoSupport.HalfEdgeToLine(P, p)).ToList();
+            DA.SetDataList("M", mFoldLine);
+
+            // V
+            List<Line> vFoldLine = P.Halfedges.Where(o => o.MV == -1).ToList().Select(p => RhinoSupport.HalfEdgeToLine(P, p)).ToList();
+            DA.SetDataList("V", vFoldLine);
 
             #region unused test
 
@@ -189,9 +214,8 @@ namespace PlanktonFold
         {
             get
             {
-                // You can add image files to your project resources and access them like this:
-                //return Resources.IconForThisComponent;
-                return null;
+
+                return Properties.Resources.mesh_analysis_Icon_06__06;
             }
         }
 

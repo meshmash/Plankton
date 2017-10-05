@@ -5,6 +5,8 @@ using Grasshopper.Kernel;
 using Rhino.Geometry;
 using Plankton;
 using PlanktonGh;
+using PlanktonFold;
+
 
 namespace PlanktonGh
 {
@@ -47,13 +49,12 @@ namespace PlanktonGh
         {
             get
             {
-                //You can add image files to your project resources and access them like this:
-                // return Resources.IconForThisComponent;
-                return null;
+
+                return PlanktonFold.Properties.Resources.pmesh_to_mesh_07;
             }
         }
 
-        /// <summary>
+        /// <summary>   
         /// Gets the unique ID for this component. Do not change this ID after release.
         /// </summary>
         public override Guid ComponentGuid

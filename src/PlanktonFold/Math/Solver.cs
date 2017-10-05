@@ -36,7 +36,7 @@ namespace PlanktonFold
         /// </summary>
         /// <param name="theta"></param>
         /// <returns></returns>
-        public static Matrix<double> B(double theta)
+        public static Matrix<double> B(double theta) // geometry angle
         {
             Matrix<double> bMatrix = DenseMatrix.OfArray(new double[,]
             {
@@ -71,8 +71,12 @@ namespace PlanktonFold
             var M = Matrix<double>.Build;
             Matrix<double> F = M.DenseIdentity(3);
 
-            for (int i = 0; i < rhos.Count(); i++) { F = F.Multiply( Chi( C(rhos[i]), B(thetas[i]) )); };
-                
+            for (int i = 0; i < rhos.Count(); i++)
+            {
+                Matrix<double> F_ = F;
+                F = F_.Multiply( Chi( C(rhos[i]), B(thetas[i]) ));
+            }
+
             return F;
         }
 
