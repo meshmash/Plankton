@@ -1,25 +1,26 @@
-language: csharp
-solution: src/Plankton.sln
+os: windows
+language: c
 install:
-- nuget restore src/Plankton.sln
+- choco install nuget
+- nuget restore src\Plankton.sln
 - nuget install NUnit.Console -Version 3.10.0 -OutputDirectory testrunner
 script:
-- msbuild /p:Configuration=Release src/Plankton.sln
-- mono ./testrunner/NUnit.ConsoleRunner.3.10.0/tools/nunit3-console.exe ./bin/Release/PlanktonTests.dll
-after_success:
-- mkdir dist
-- zip dist/plankton-${TRAVIS_BUILD_NUMBER}.zip LICENSE.txt README.md
-- zip -j dist/plankton-${TRAVIS_BUILD_NUMBER}.zip bin/Release/Plankton.dll bin/Release/Plankton.gha
-deploy:
-  provider: s3
-  access_key_id: AKIAIJ6RNS2NO5AJFEWA
-  secret_access_key:
-    secure: LaxKFOTWisPFg6nwB8vZNKQicsaWhZr3e9WEK5LDGzSR71c1UKG7a/lg7CsZiQ0rqZJ+wamWwJZEKSwfkvz2mJRJtcUGK1aoksd7gTXJuZ1Uu/kEiPF/ZlMR5c5wA3WVDICmkfljj2j6nPvXXHBKF8hfkku9zpuiTmCJ3bh3qPE=
-  bucket: meshmash
-  skip_cleanup: true
-  region: eu-west-1
-  local_dir: dist
-  upload-dir: builds
-  acl: public_read
-  on:
-    all_branches: true
+- msbuild /p:Configuration=Release src\Plankton.sln
+- testrunner\NUnit.ConsoleRunner.3.10.0\tools\nunit3-console.exe bin\Release\PlanktonTests.dll
+# after_success:
+# - mkdir dist
+# - zip dist/plankton-${TRAVIS_BUILD_NUMBER}.zip LICENSE.txt README.md
+# - zip -j dist/plankton-${TRAVIS_BUILD_NUMBER}.zip bin/Release/Plankton.dll bin/Release/Plankton.gha
+# deploy:
+#   provider: s3
+#   access_key_id: AKIAIJ6RNS2NO5AJFEWA
+#   secret_access_key:
+#     secure: LaxKFOTWisPFg6nwB8vZNKQicsaWhZr3e9WEK5LDGzSR71c1UKG7a/lg7CsZiQ0rqZJ+wamWwJZEKSwfkvz2mJRJtcUGK1aoksd7gTXJuZ1Uu/kEiPF/ZlMR5c5wA3WVDICmkfljj2j6nPvXXHBKF8hfkku9zpuiTmCJ3bh3qPE=
+#   bucket: meshmash
+#   skip_cleanup: true
+#   region: eu-west-1
+#   local_dir: dist
+#   upload-dir: builds
+#   acl: public_read
+#   on:
+#     all_branches: true
