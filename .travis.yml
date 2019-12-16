@@ -1,7 +1,7 @@
 os: windows
 language: c
 install:
-- choco install nuget
+- choco install nuget.commandline
 - nuget restore src\Plankton.sln
 - nuget install NUnit.Console -Version 3.10.0 -OutputDirectory testrunner
 script:
