@@ -2,11 +2,12 @@ os: windows
 language: c
 install:
 - choco install nuget.commandline
-- nuget restore src\\Plankton.sln
+- nuget restore src/Plankton.sln
 - nuget install NUnit.Console -Version 3.10.0 -OutputDirectory testrunner
 script:
-- msbuild /p:Configuration=Release src\\Plankton.sln
-- testrunner\\NUnit.ConsoleRunner.3.10.0\\tools\\nunit3-console.exe bin\\Release\\PlanktonTests.dll
+- msbuild -version
+- msbuild -p:Configuration=Release src/Plankton.sln
+- ./testrunner/NUnit.ConsoleRunner.3.10.0/tools/nunit3-console.exe bin/Release/PlanktonTests.dll
 # after_success:
 # - mkdir dist
 # - zip dist/plankton-${TRAVIS_BUILD_NUMBER}.zip LICENSE.txt README.md
