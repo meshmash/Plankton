@@ -30,7 +30,7 @@ namespace PlanktonGh
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddGenericParameter("PMesh", "PMesh", "The input PlanktonMesh to use the topology from", GH_ParamAccess.item);
+            pManager.AddParameter(new GH_PlanktonMeshParam(), "PMesh", "PMesh", "The input PlanktonMesh to use the topology from", GH_ParamAccess.item);
             pManager.AddPointParameter("Vertices", "Vertices", "The new list of vertex positions", GH_ParamAccess.list);
         }
 
