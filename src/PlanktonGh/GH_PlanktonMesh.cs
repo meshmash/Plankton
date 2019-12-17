@@ -270,65 +270,63 @@ namespace PlanktonGh
             {
                 m_value = null;
                 ClearCaches();
-                return true;
+                return false;
             }
 
-            if (source is GH_GeometricGoo<Mesh>)
+            if (typeof(GH_Mesh).IsAssignableFrom(source.GetType()))
             {
-                source = ((GH_GeometricGoo<Mesh>)source).Value;
-            }
-            else if (source is GH_GeometricGoo<Curve>)
-            {
-                source = ((GH_GeometricGoo<Curve>)source).Value;
-            }
-
-            if (source is PlanktonMesh)
-            {
-                m_value = source as PlanktonMesh;
+                var tmp = ((GH_Mesh)source).Value;
+                m_value = RhinoSupport.ToPlanktonMesh((Mesh)tmp);
                 ClearCaches();
                 return true;
             }
-            else if (source is Mesh)
+            if (typeof(GH_PlanktonMesh).IsAssignableFrom(source.GetType()))
             {
-                m_value = RhinoSupport.ToPlanktonMesh((Mesh)source);
+                var tmp = ((GH_PlanktonMesh)source).Value;
+                m_value = tmp as PlanktonMesh;
                 ClearCaches();
                 return true;
             }
-            //else if (source is Curve)
-            //{
-            //    m_value = RhinoMeshSupport.ExtractTMesh((Curve)source);
-            //    ClearCaches();
-            //    return true;
-            //}
-            //else if (source is Grasshopper.Kernel.Types.GH_Curve)
-            //{
-            //    m_value = RhinoMeshSupport.ExtractTMesh((Curve)source);
-            //    ClearCaches();
-            //    return true;
-            //}
 
-            return base.CastFrom(source);
+            return false;
         }
 
-        public override bool CastTo<Q>(out Q target)
+        public override bool CastTo<T>(out T target)
         {
-            if (typeof(Q) == typeof(Mesh) || typeof(Q) == typeof(GeometryBase))
+            // cast to GH_Mesh
+            if (typeof(T).IsAssignableFrom(typeof(GH_Mesh)))
             {
-                target = (Q)(object)RhinoSupport.ToRhinoMesh(m_value);
-                return true;
-            }
-            if (typeof(Q) == (typeof(GH_Mesh)))
-            {
-                target = (Q)(object)new GH_Mesh(RhinoSupport.ToRhinoMesh(m_value));
-                return true;
-            }
-            if (typeof(Q) == typeof(PlanktonMesh))
-            {
-                target = (Q)(object)m_value;
+                object msh = new GH_Mesh(RhinoSupport.ToRhinoMesh(m_value));
+                target = (T)msh;
                 return true;
             }
 
-            return base.CastTo<Q>(out target);
+            // cast to Mesh
+            if (typeof(T).IsAssignableFrom(typeof(Mesh)))
+            {
+                Object msh = RhinoSupport.ToRhinoMesh(m_value);
+                target = (T)msh;
+                return true;
+            }
+
+            // cast to GH_PlanktonMesh
+            if (typeof(T).IsAssignableFrom(typeof(GH_PlanktonMesh)))
+            {
+                object msh = new GH_PlanktonMesh(new PlanktonMesh(m_value));
+                target = (T)msh;
+                return true;
+            }
+
+            // cast to PlanktonMesh
+            if (typeof(T).IsAssignableFrom(typeof(PlanktonMesh)))
+            {
+                Object msh = new PlanktonMesh(m_value);
+                target = (T)msh;
+                return true;
+            }
+
+            target = default(T);
+            return false;
         }
 
         //public override bool Read(GH_IO.Serialization.GH_IReader reader)
