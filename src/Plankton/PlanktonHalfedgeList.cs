@@ -456,6 +456,83 @@ namespace Plankton
         }
 
         /// <summary>
+        /// Insert a new quad between a pair of connected edges
+        /// </summary>
+        /// <param name="indexA">The index of a halfedge starting at the vertex to be split. After the split it will be adjacent to the newly inserted quad</param>        
+        /// <param name="indexB">The index of a second halfedge starting at the vertex to be split. After the split its pair will be adjacent to the newly inserted quad</param>        
+        /// <returns>The index of the halfedge starting at the new vertex, and adjacent to the new quad face, or -1 on failure</returns>
+        public int InsertQuad(int indexA, int indexB)
+        {
+            int pairA = this.GetPairHalfedge(indexA);
+            int pairB = this.GetPairHalfedge(indexB);
+            int slit_endA = this[pairA].StartVertex;
+            int slit_endB = this[pairB].StartVertex;
+            int adjacent_face_A = this[indexA].AdjacentFace;
+            int adjacent_face_pairB = this[pairB].AdjacentFace;
+            int prevA = this[indexA].PrevHalfedge;
+            int nextA = this[indexA].NextHalfedge;
+            int prevPairB = this[pairB].PrevHalfedge;
+            int nextPairB = this[pairB].NextHalfedge;
+            int start_vertex = this[indexA].StartVertex;
+            bool consecutive = (nextPairB==indexA);
+
+            if (this[indexB].StartVertex != start_vertex) { return -1; }
+
+            // Make a new vertex
+            int new_vertex_index = _mesh.Vertices.Add(_mesh.Vertices[start_vertex].ToXYZ());
+
+            //iterate from pairB round to indexA changing startvertex            
+            int next_out = this[pairB].NextHalfedge;
+            while (next_out != indexA)
+            {
+                this[next_out].StartVertex = new_vertex_index;
+                next_out = this[this.GetPairHalfedge(next_out)].NextHalfedge;
+            }
+
+            // Add a new face            
+            int new_face_index = this._mesh.Faces.Add(PlanktonFace.Unset);
+
+            // Add 4 new halfedges
+            int new_halfedge0 = this.AddPair(new_vertex_index, slit_endA, adjacent_face_A);
+            int new_halfedge1 = this.GetPairHalfedge(new_halfedge0);
+            int new_halfedge2 = this.AddPair(new_vertex_index, slit_endB, new_face_index);
+            int new_halfedge3 = this.GetPairHalfedge(new_halfedge2);
+
+            // Update adjacent faces
+            this[new_halfedge1].AdjacentFace = new_face_index;
+            this[new_halfedge3].AdjacentFace = adjacent_face_pairB;
+            this[indexA].AdjacentFace = new_face_index;
+            this[pairB].AdjacentFace = new_face_index;
+
+            _mesh.Faces[new_face_index].FirstHalfedge = new_halfedge1;
+            _mesh.Faces[adjacent_face_A].FirstHalfedge = new_halfedge0;
+            _mesh.Faces[adjacent_face_pairB].FirstHalfedge = new_halfedge3;
+
+            // Update prev/nexts
+            this.MakeConsecutive(indexA, new_halfedge1);
+            this.MakeConsecutive(new_halfedge1, new_halfedge2);
+            this.MakeConsecutive(new_halfedge2, pairB);
+            this.MakeConsecutive(pairB, indexA);
+            
+            this.MakeConsecutive(new_halfedge0, nextA);
+            this.MakeConsecutive(prevPairB, new_halfedge3);
+            if (consecutive)
+            {
+                this.MakeConsecutive(new_halfedge3, new_halfedge0);
+            }
+            else
+            {
+                this.MakeConsecutive(prevA, new_halfedge0);
+                this.MakeConsecutive(new_halfedge3, nextPairB);
+            }            
+
+            // Output Index
+            _mesh.Vertices[new_vertex_index].OutgoingHalfedge = new_halfedge2;
+            _mesh.Vertices[start_vertex].OutgoingHalfedge = indexA;
+            return new_halfedge2;
+        }
+
+        /// <summary>
         /// Split 2 adjacent triangles into 4 by inserting a new vertex along the edge
         /// </summary>
         /// <param name="index">The index of the halfedge to split. Must be between 2 triangles.</param>        
