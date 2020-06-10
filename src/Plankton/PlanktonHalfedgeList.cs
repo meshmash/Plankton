@@ -551,7 +551,7 @@ namespace Plankton
             if (f != -1 && fs[f].FirstHalfedge == index)
                 fs[f].FirstHalfedge = next;
             if (f_pair != -1 && fs[f_pair].FirstHalfedge == pair)
-                fs[f_pair].FirstHalfedge = this[pair].NextHalfedge;
+                fs[f_pair].FirstHalfedge = h_rtn;
             
             // If either adjacent face was triangular it will now only have two sides. If so,
             // try to merge faces into whatever is on the RIGHT of the associated halfedge.
