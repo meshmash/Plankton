@@ -1,0 +1,13 @@
+name: plankton
+version: $version
+authors:
+  - Daniel Piker
+  - Will Pearson
+description: >
+  Plankton is a flexible and efficient library for handling n-gonal meshes.
+  Plankton is written in C# and implements the halfedge data structure. The
+  structure of the library is loosely based on Rhinocommon's mesh classes and
+  was originally created for use within C#/VB scripting components in
+  Grasshopper.
+license: LGPL-3
+url: https://github.com/meshmash/Plankton
