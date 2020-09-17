@@ -121,6 +121,23 @@ namespace Plankton
         {
             return new PlanktonXYZ(vector._x * t, vector._y * t, vector._z * t);
         }
+        // overloading to commutative operator
+        public static PlanktonXYZ operator *(float t, PlanktonXYZ vector)
+        {
+            return new PlanktonXYZ(vector._x * t, vector._y * t, vector._z * t);
+        }
+
+        /// <summary>
+        /// Computes the dot product (or scalar product, or interior product) of two vectors.
+        /// <para>This operation is commutative.</para>
+        /// </summary>
+        /// <param name="v1">First vector.</param>
+        /// <param name="v2">Second vector.</param>
+        /// <returns>A scalar representing the dot product of the two vectors.</returns>
+        public static float DotProduct(PlanktonXYZ a, PlanktonXYZ b)
+        {
+            return (a._x * b._x + a._y * b._y + a._z * b._z);
+        }
 
         /// <summary>
         /// Computes the cross product (or vector product, or exterior product) of two vectors.
@@ -135,6 +152,22 @@ namespace Plankton
         public static PlanktonXYZ CrossProduct(PlanktonXYZ a, PlanktonXYZ b)
         {
             return new PlanktonXYZ(a._y * b._z - b._y * a._z, a._z * b._x - b._z * a._x, a._x * b._y - b._x * a._y);
+        }
+
+        /// <summary>
+        /// Computes the angle between two vectors.
+        /// <para>This operation is commutative.</para>
+        /// </summary>
+        /// <param name="a">First vector.</param>
+        /// <param name="b">Second vector.</param>
+        /// <returns>The angle between vector a and vector b.
+        /// </returns>
+        public static double VectorAngle(PlanktonXYZ a, PlanktonXYZ b)
+        {
+            double normA = Math.Sqrt(Math.Pow(a._x, 2.0) + Math.Pow(a._y, 2.0) + Math.Pow(a._z, 2.0));
+            double normB = Math.Sqrt(Math.Pow(b._x, 2.0) + Math.Pow(b._y, 2.0) + Math.Pow(b._z, 2.0));
+            double cosAngle = (a._x * b._x + a._y * b._y + a._z * b._z) / (normA * normB);
+            return Math.Acos(cosAngle);
         }
 
         /// <summary>

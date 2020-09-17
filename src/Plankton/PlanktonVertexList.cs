@@ -372,6 +372,277 @@ namespace Plankton
             return (h < -1 || _mesh.Halfedges[h].AdjacentFace == -1);
         }
 
+        #region Curvature Operators
+        /// <summary>
+        /// Gets the Gaussian curvature at a vertex using the avarage Voronoi area of the neighbourhood
+        /// as described in: M. Meyer, M. Desbrun, P. Schroeder, A.H. Barr, Discrete Differential-Geometry Operators for Triangulated 2-Manifolds
+        /// </summary>
+        /// <param name="index">The index of a vertex.</param>
+        /// <returns>The Guassian curvature at the vertex.</returns>
+        public double GetGaussianCurvature(int index)
+        {
+            PlanktonXYZ vertex = this[index].ToXYZ();
+
+            int[] ring;
+            //TODO: solve Gaussian curvature for boundary
+            //if (this.IsBoundary(index) == false)
+            {
+                var ringList = this.GetVertexNeighbours(index).ToList();
+                ringList.Insert(0, ringList[ringList.Count - 1]);
+                ringList.Insert(ringList.Count, ringList[1]);
+                ring = ringList.ToArray();
+            }
+            //else
+            //{
+            //    var ringList = this.GetVertexNeighbours(index).ToList();
+            //    ringList.Insert(0, ringList[ringList.Count - 1]);
+            //    //ringList.Insert(ringList.Count, ringList[1]);
+            //    ring = ringList.ToArray();
+            //}
+            int n = ring.Length;
+
+            double mixedArea = 0.0f;
+            for (int i = 1; i < n - 1; i++)
+            {
+                double alpha = PlanktonXYZ.VectorAngle(vertex - this[ring[i - 1]].ToXYZ(), this[ring[i]].ToXYZ() - this[ring[i - 1]].ToXYZ());
+                double beta = PlanktonXYZ.VectorAngle(vertex - this[ring[i + 1]].ToXYZ(), this[ring[i]].ToXYZ() - this[ring[i + 1]].ToXYZ());
+                double norm = (vertex - this[ring[i]].ToXYZ()).Length;
+
+                if (this.IsBoundary(index) && i == 1)
+                    mixedArea += (1.0 / Math.Tan(beta)) * Math.Pow(norm, 2.0);
+                else if (this.IsBoundary(index) && i == n - 2)
+                    mixedArea += (1.0 / Math.Tan(alpha)) * Math.Pow(norm, 2.0);
+                else
+                    mixedArea += (1.0 / Math.Tan(alpha) + 1.0 / Math.Tan(beta)) * Math.Pow(norm, 2.0);
+            }
+            mixedArea /= 8.0;
+
+            if (this.IsBoundary(index))
+                n--;
+
+            double gauss = 0.0;
+            double ringAngleSum = 0.0;
+            for (int i = 1; i < n - 1; i++)
+            {
+                double theta = PlanktonXYZ.VectorAngle(this[ring[i]].ToXYZ() - vertex, this[ring[i + 1]].ToXYZ() - vertex);
+                ringAngleSum += theta;
+            }
+
+            if (this.IsBoundary(index))
+                gauss = (Math.PI - ringAngleSum) / mixedArea;
+            else
+                gauss = (2 * Math.PI - ringAngleSum) / mixedArea;
+
+            return gauss;
+        }
+
+        /// <summary>
+        /// Gets the mean curvature normal at a vertex using the avarage Voronoi area of the neighbourhood
+        /// as described in: M. Meyer, M. Desbrun, P. Schroeder, A.H. Barr, Discrete Differential-Geometry Operators for Triangulated 2-Manifolds
+        /// </summary>
+        /// <param name="index">The index of a vertex.</param>
+        /// <returns>The mean curvature normal at the vertex.</returns>
+        public PlanktonXYZ GetMeanCurvatureNormal(int index)
+        {
+            PlanktonXYZ vertex = this[index].ToXYZ();
+
+            //TODO: solve mean curvature normal for boundary
+            int[] ring;
+            //if (this.IsBoundary(index) == false)
+            {
+                var ringList = this.GetVertexNeighbours(index).ToList();
+                ringList.Insert(0, ringList[ringList.Count - 1]);
+                ringList.Insert(ringList.Count, ringList[1]);
+                ring = ringList.ToArray();
+            }
+            //else
+            //{
+            //    var ringList = this.GetVertexNeighbours(index).ToList();
+            //    ringList.Insert(0, ringList[ringList.Count - 1]);
+            //    //ringList.Insert(ringList.Count, ringList[1]);
+            //    ring = ringList.ToArray();
+            //}
+            int n = ring.Length;
+
+            //TODO: add Mixed Area for non safe Voronoi
+
+            double mixedArea = 0.0f;
+            List<double> alphaValues = new List<double>();
+            List<double> betaValues = new List<double>();
+            List<PlanktonXYZ> edgeVectors = new List<PlanktonXYZ>();
+            for (int i = 1; i < n - 1; i++)
+            {
+                double alpha = PlanktonXYZ.VectorAngle(vertex - this[ring[i - 1]].ToXYZ(), this[ring[i]].ToXYZ() - this[ring[i - 1]].ToXYZ());
+                double beta = PlanktonXYZ.VectorAngle(vertex - this[ring[i + 1]].ToXYZ(), this[ring[i]].ToXYZ() - this[ring[i + 1]].ToXYZ());
+                PlanktonXYZ edge = (vertex - this[ring[i]].ToXYZ());
+                double norm = edge.Length;
+
+                alphaValues.Add(1.0 / Math.Tan(alpha));
+                betaValues.Add(1.0 / Math.Tan(beta));
+                edgeVectors.Add(edge);
+
+                if (this.IsBoundary(index) && i == 1)
+                    mixedArea += (1.0 / Math.Tan(beta)) * Math.Pow(norm, 2.0);
+                else if (this.IsBoundary(index) && i == n - 2)
+                    mixedArea += (1.0 / Math.Tan(alpha)) * Math.Pow(norm, 2.0);
+                else
+                    mixedArea += (1.0 / Math.Tan(alpha) + 1.0 / Math.Tan(beta)) * Math.Pow(norm, 2.0);
+            }
+            mixedArea /= 8.0;
+
+            if (this.IsBoundary(index))
+                n--;
+
+            PlanktonXYZ meanNormal = new PlanktonXYZ();
+            for (int i = 0; i < edgeVectors.Count; i++)
+            {
+                meanNormal += edgeVectors[i] * ((float)alphaValues[i] + (float)betaValues[i]);
+            }
+            meanNormal *= 1.0f / (float)(2.0 * mixedArea);
+
+            return meanNormal;
+        }
+
+        /// <summary>
+        /// Gets the principle curvature directions at a vertex using a least-square fitting
+        /// as described in: M. Meyer, M. Desbrun, P. Schroeder, A.H. Barr, Discrete Differential-Geometry Operators for Triangulated 2-Manifolds
+        /// </summary>
+        /// <param name="index">The index of a vertex.</param>
+        public void GetPrincipleCurvatureDirections(int index, out PlanktonXYZ principalMin, out PlanktonXYZ principalMax)
+        {
+            PlanktonXYZ vertex = this[index].ToXYZ();
+
+            int[] ring;
+            //TODO: solve principal curvatures for boundary
+            //if (this.IsBoundary(index) == false)
+            {
+                var ringList = this.GetVertexNeighbours(index).ToList();
+                ringList.Insert(0, ringList[ringList.Count - 1]);
+                ringList.Insert(ringList.Count, ringList[1]);
+                ring = ringList.ToArray();
+            }
+            int n = ring.Length;
+
+            // Retrieve mean curvature normal and unitize the vector
+            // TODO: solve for special case of zero mean curvature (flat plane or local saddle point)
+            PlanktonXYZ normal = this.GetMeanCurvatureNormal(index);
+            normal *= (1.0f / normal.Length);   // unitize vector
+
+            // edgeVector => (x_i - x_j)
+            List<PlanktonXYZ> edgeVectors = new List<PlanktonXYZ>();
+            for (int i = 1; i < n - 1; i++)
+            {
+                PlanktonXYZ edge = (vertex - this[ring[i]].ToXYZ());
+                edgeVectors.Add(edge);
+            }
+
+            // Retrieve d_ij the unit direction in the tangent plane of the edge x_i x_j
+            List<PlanktonXYZ> ringVectors = new List<PlanktonXYZ>();
+            foreach (PlanktonXYZ e in edgeVectors)
+            {
+                float prod = PlanktonXYZ.DotProduct((-1.0f * e), normal);
+                PlanktonXYZ d = (-1.0f * e) - (PlanktonXYZ.DotProduct((-1.0f * e), normal)) * normal;
+                d = d * (1.0f / d.Length);
+                ringVectors.Add(d);
+            }
+
+            // Change basis
+            // Take first vector of d_ij as x-axis
+            // Retrieve y-axis of tangent plane -> cross-product normal x d_ij[0]
+            PlanktonXYZ yAxis = PlanktonXYZ.CrossProduct(normal, ringVectors[0]);
+
+            // Express d_ij in new basis
+            List<VectorR> d_ij = new List<VectorR>();
+            for (int i = 0; i < ringVectors.Count; i++)
+            {
+                // TODO: solve value/reference problem of MatrixR
+                MatrixR baseTrans = new MatrixR(new double[2, 2]{
+                    {ringVectors[0].X,  yAxis.X},
+                    {ringVectors[0].Y,  yAxis.Y}
+                });
+
+                LinearSystem ls = new LinearSystem();
+                VectorR v = new VectorR(new double[]{
+                    ringVectors[i].X, 
+                    ringVectors[i].Y
+                });
+                VectorR d = ls.GaussJordan(baseTrans, v);
+                d_ij.Add(d);
+            }
+
+            // Compute the coefficients of matrix E
+            double e00 = 0.0; double e01 = 0.0; double e02 = 0.0;
+            double e11 = 0.0; double e12 = 0.0;
+            double e22 = 0.0;
+            for (int i = 0; i < d_ij.Count; i++)
+            {
+                e00 += 1.0 / n * 2 * Math.Pow(d_ij[i][0], 4.0);
+                e01 += 1.0 / n * 4 * Math.Pow(d_ij[i][0], 3.0) * d_ij[i][1];
+                e02 += 1.0 / n * 2 * Math.Pow(d_ij[i][0], 2.0) * Math.Pow(d_ij[i][1], 2.0);
+                e11 += 1.0 / n * 8 * Math.Pow(d_ij[i][0], 2.0) * Math.Pow(d_ij[i][1], 2.0);
+                e12 += 1.0 / n * 4 * d_ij[i][0] * Math.Pow(d_ij[i][1], 3.0);
+                e22 += 1.0 / n * 2 * Math.Pow(d_ij[i][1], 4.0);
+            }
+            MatrixR E = new MatrixR(new double[3, 3]{
+                {e00, e01, e02},
+                {e01, e11, e12},
+                {e02, e12, e22}});
+
+            // Retrieve k_ij the summation of the estimate of the normal curvature in the direction of the edge x_i x_j
+            //List<float> kN = new List<float>();
+            List<double> k_ij = new List<double>();
+            foreach (PlanktonXYZ e in edgeVectors)
+            {
+                k_ij.Add(2 * (PlanktonXYZ.DotProduct(e, normal) / (float)Math.Pow(e.Length, 2.0f)));
+            }
+            // Compute the coefficients of the vector kappaN
+            double k0 = 0.0;
+            double k1 = 0.0;
+            double k2 = 0.0;
+            for (int i = 0; i < d_ij.Count; i++)
+            {
+                k0 += 1.0 / n * 2 * Math.Pow(d_ij[i][0], 2.0) * k_ij[i];
+                k1 += 1.0 / n * 4 * d_ij[i][0] * d_ij[i][1] * k_ij[i];
+                k2 += 1.0 / n * 2 * Math.Pow(d_ij[i][1], 2.0) * k_ij[i];
+            }
+            // Create the solution vector kappaN
+            VectorR kappaN = new VectorR(new double[]{
+                k0,
+                k1,
+                k2
+            });
+
+            // Solve the linear system to find the coeficients a, b, c of the curvature matrix
+            LinearSystem ls_D = new LinearSystem();
+            VectorR b = ls_D.GaussJordan(E, kappaN);
+
+            // Compute eigenvectors of the curvature matrix B
+            MatrixR B = new MatrixR(new double[2, 2]{
+                {b[0], b[1]},
+                {b[1], b[2]},
+            });
+            Eigenvalues ev = new Eigenvalues();
+            double lambda1, lambda2;
+            ev.ComputeEigenvalues(B, out lambda1, out lambda2);
+            VectorR eigenVec1, eigenVec2;
+            ev.ComputeEigenvectors(B, lambda1, lambda2, out eigenVec1, out eigenVec2);
+
+            // Change basis of eigenvectors to standard coordinates
+            MatrixR standardTrans = new MatrixR(new double[3, 3]{
+                    {ringVectors[0].X,  ringVectors[0].Y,  ringVectors[0].Z},
+                    {         yAxis.X,           yAxis.Y,           yAxis.Z},
+                    {        normal.X,          normal.Y,          normal.Z}
+            });
+            // TODO: fix multiplication order
+            VectorR standardEigenVec1 = new VectorR(new double[] { eigenVec1[0], eigenVec1[1], 0.0 }) * standardTrans;
+            VectorR standardEigenVec2 = new VectorR(new double[] { eigenVec2[0], eigenVec2[1], 0.0 }) * standardTrans;
+
+            // Return result
+            principalMin = new PlanktonXYZ((float)standardEigenVec1[0], (float)standardEigenVec1[1], (float)standardEigenVec1[2]);
+            principalMax = new PlanktonXYZ((float)standardEigenVec2[0], (float)standardEigenVec2[1], (float)standardEigenVec2[2]);
+        }
+        #endregion
+
         /// <summary>
         /// Gets the normal vector at a vertex.
         /// </summary>
