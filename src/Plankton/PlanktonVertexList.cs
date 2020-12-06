@@ -395,8 +395,8 @@ namespace Plankton
             if (this.IsBoundary(index) == false)
             {
                 normal += PlanktonXYZ.CrossProduct(
-                    this[n-1].ToXYZ() - vertex,
-                    this[0].ToXYZ() - vertex);
+                    this[ring[n-1]].ToXYZ() - vertex,
+                    this[ring[0]].ToXYZ() - vertex);
             }
 
             return normal * (-1.0f / normal.Length); // return unit vector
