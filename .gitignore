@@ -154,3 +154,5 @@ $RECYCLE.BIN/
 .DS_Store
 
 dist/
+nuget.exe
+testrunner/
